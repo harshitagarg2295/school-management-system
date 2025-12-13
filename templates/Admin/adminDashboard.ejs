@@ -1,0 +1,136 @@
+<!-- https://themeforest.net/item/schoolhub-school-management-dashboard-figma-template/52706786 -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin DashBoard</title>
+    <link rel="stylesheet" href="adminDashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+</head>
+
+
+<body>
+    <div class="admin_dash">
+
+        <!-- Include sidebar -->
+        <%- include("partials/AdminPageSidebar") %>
+
+            <section class="main-section">
+
+                <%- include("partials/adminNotification", { admin: admin }) %>
+
+                <div class="cards">
+
+                    <div class="stud-card card purple">
+                        <h3>
+                            <%= totalStudents %>
+                        </h3>
+                        <p>Students</p>
+                    </div>
+
+                    <div class="teach-card card">
+                        <h3>
+                            <%= totalTeachers %>
+                        </h3>
+                        <p>Teachers</p>
+                    </div>
+
+                    <div class="staff-card card purple">
+                        <h3>
+                            <%= totalStaff %>
+                        </h3>
+                        <p>Staffs</p>
+                    </div>
+
+                    <div class="award-card card">
+                        <h3>
+                            <%= totalAwards %>
+                        </h3>
+                        <p>Awards</p>
+                    </div>
+                </div>
+
+
+                <div class="charts">
+                    <div class="earnings-chart">
+
+                        <div class="earnings-header">
+
+                            <div class="header-flex">
+                                <h2 class="chart-title">Earnings</h2>
+
+                                <form method="GET" action="/adminDashboard">
+                                    <select name="year" onchange="this.form.submit()"
+                                        class="select_class year-dropdown">
+                                        <% availableYears.forEach(yr=> { %>
+                                            <option value="<%= yr %>" <%=selectedYear===yr ? "selected" : "" %>>
+                                                <%= yr %> - <%= yr + 1 %>
+                                            </option>
+                                            <% }) %>
+                                    </select>
+                                </form>
+                            </div>
+
+                            <div class="legend-row">
+                                <div class="legend-item">
+                                    <span class="legend-dot income-dot"></span>
+                                    <span>Income</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-dot expense-dot"></span>
+                                    <span>Expense</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <canvas id="earningsLineChart"></canvas>
+                    </div>
+
+                    <div class="pie-chart">
+
+                        <div class="chart-1">
+                            <h3 class="revenue">Revenue</h3>
+
+                            <!-- ✅ Fund input form -->
+                            <% if (!noData) { %>
+                                <form method="GET" action="/adminDashboard" class="fund-form"
+                                    onchange="this.form.submit()">
+                                    <input type="hidden" name="year" value="<%= selectedYear %>">
+                                    <label for="fund">Fund (₹):</label>
+                                    <input type="number" name="fund" id="fund" value="<%= fundValue %>">
+                                </form>
+                                <% } %>
+                                    <canvas class="revenue-chart"></canvas>
+                        </div>
+
+                        <div class="chart-2">
+                            <h3 class="expense">Expenses</h3>
+                            <canvas class="expense-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+    </div>
+
+
+    <script>
+        const monthlyIncomeData = JSON.parse('<%- JSON.stringify(monthlyIncomeData) %>');
+        const monthlyExpenseData = JSON.parse('<%- JSON.stringify(monthlyExpenseData) %>');
+        const expensesData = JSON.parse('<%- JSON.stringify(expensesData) %>');
+        const revenueData = JSON.parse('<%- JSON.stringify(revenueData) %>');
+
+
+    </script>
+
+    <script src="adminDashboard.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</body>
+
+</html>

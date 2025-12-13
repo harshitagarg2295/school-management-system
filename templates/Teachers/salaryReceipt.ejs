@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Salary Receipt</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #2196f3;
+      --light-bg: #f5f8ff;
+      --text-dark: #2c3e50;
+      --border: #e1e1e1;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--light-bg);
+      margin: 0;
+      padding: 40px 20px;
+      color: var(--text-dark);
+    }
+
+    .receipt-container {
+      max-width: 800px;
+      background: white;
+      margin: auto;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .receipt-header {
+      background: var(--primary);
+      color: white;
+      text-align: center;
+      padding: 25px 10px;
+    }
+
+    .receipt-header h1 {
+      font-size: 26px;
+      margin: 0;
+      font-weight: 600;
+    }
+
+    .receipt-body {
+      padding: 30px 40px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      row-gap: 15px;
+      column-gap: 25px;
+      font-size: 16px;
+    }
+
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px dashed var(--border);
+      padding-bottom: 8px;
+    }
+
+    .info-item .label {
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .info-item i {
+      color: var(--primary);
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 25px 0;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      row-gap: 12px;
+      font-size: 17px;
+    }
+
+    .summary .label {
+      font-weight: 600;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 14px;
+      color: #777;
+      margin-top: 20px;
+    }
+
+    .print-btn {
+      display: block;
+      width: fit-content;
+      margin: 25px auto 30px auto;
+      background: var(--primary);
+      color: white;
+      padding: 10px 28px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .print-btn:hover {
+      background: #1976d2;
+    }
+
+    /* ✅ Responsive Design */
+    @media (max-width: 768px) {
+      .receipt-body {
+        padding: 25px 20px;
+      }
+
+      .info-grid, .summary {
+        grid-template-columns: 1fr;
+      }
+
+      .info-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+      }
+
+      .print-btn {
+        width: 100%;
+        max-width: 250px;
+      }
+    }
+
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+
+      .receipt-container, .receipt-container * {
+        visibility: visible;
+      }
+
+      .receipt-container {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        box-shadow: none;
+      }
+
+      .print-btn {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="receipt-container">
+    <div class="receipt-header">
+      <h1><i class="fa-solid fa-file-invoice-dollar"></i> Salary Receipt</h1>
+    </div>
+
+    <div class="receipt-body">
+      <!-- Basic Info -->
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="label"><i class="fa-solid fa-user"></i> Teacher Name:</span>
+          <span><%= teacher.name %></span>
+        </div>
+
+        <div class="info-item">
+          <span class="label"><i class="fa-solid fa-calendar"></i> Month:</span>
+          <span><%= month %>/<%= year %></span>
+        </div>
+
+        <div class="info-item">
+          <span class="label"><i class="fa-solid fa-check-circle"></i> Status:</span>
+          <span><%= status %></span>
+        </div>
+
+        <div class="info-item">
+          <span class="label"><i class="fa-solid fa-clock"></i> Paid On:</span>
+          <span><%= paidOn ? paidOn.toDateString() : "-" %></span>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Summary Section -->
+      <div class="summary">
+        <div class="label">Total Salary:</div>
+        <div>₹<%= totalSalary %></div>
+
+        <div class="label">Present Days:</div>
+        <div><%= presentDays %></div>
+
+        <div class="label">Absent Days:</div>
+        <div><%= absentDays %></div>
+
+        <div class="label">Late Count:</div>
+        <div><%= lateCount %></div>
+
+        <div class="label">Total Absent (Absent + Late/2):</div>
+        <div><%= totalAbsent %></div>
+
+        <div class="label">Payable Salary:</div>
+        <div><strong>₹<%= payableSalary %></strong></div>
+      </div>
+
+      <div class="footer">This is a system-generated salary receipt.</div>
+
+      <button class="print-btn" onclick="window.print()"><i class="fa-solid fa-print"></i> Print</button>
+    </div>
+  </div>
+</body>
+
+</html>

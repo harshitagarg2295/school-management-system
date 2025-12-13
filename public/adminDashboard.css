@@ -1,188 +1,70 @@
-* {
-    margin: 0px;
-    padding: 0px;
-    box-sizing: border-box;
-}
-
-/* Styling menu section */
-
-.menu-btn {
-    display: none !important;
-    position: fixed;
-    left: 10px;
-    font-size: 24px;
-    color: #333;
-    background-color: #f7f0f0;
-    padding: 8px 10px;
-    border-radius: 6px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
-    z-index: 1000;
-}
-
 .admin_dash {
     display: flex;
-}
-
-.menu-section {
-    width: 18%;
-    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    min-height: 100vh;
 }
 
 .main-section {
-    width: 82%;
-    background-color: #f1f1f1;
+    width: 80%;
 }
-
-.menu-bar {
-    padding: 40px 30px;
-}
-
-.menu-bar .MENU {
-    font-size: 20px;
-    padding-bottom: 15px;
-    color: #343131;
-}
-
-.menu {
-    display: flex;
-    padding: 15px 15px 18px;
-}
-
-.menu i {
-    font-size: 22px;
-    color: #444343;
-
-}
-
-.menu a {
-    display: flex;
-    text-decoration: none;
-}
-
-.menu p {
-    padding-left: 20px;
-    font-size: 20px;
-    color: #766767;
-}
-
-.finance p {
-    padding-left: 32px;
-    /* position: relative; */
-}
-
-.finance .greater {
-    font-size: 15px;
-    /* position: absolute;
-    font-size: 13px;
-    position: absolute;
-    left: 50%;
-    top: 50%; */
-}
-
-.other {
-    padding-top: 15px;
-}
-
-.menu:hover {
-    background-color: #b1e6f4;
-    border-radius: 10px;
-    cursor: pointer;
-}
-
-/* Styling main section */
 
 .cards {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
     padding: 40px 20px;
 }
 
 .card {
-    margin: 5px 10px 5px 10px;
-    flex: 1 1 200px;
-    max-width: 25%;
     background-color: rgb(226, 232, 121);
     padding: 60px 90px 30px 20px;
     border-radius: 12px;
     text-align: left;
 }
 
+
 .card h3 {
     font-size: 32px;
 }
 
 .card p {
-    font-size: 22px;
+    font-size: 27px;
     margin-top: 10px;
     color: rgb(31, 31, 31);
 }
 
 .purple {
-    background-color: rgb(235, 173, 235);
     background-color: rgb(173, 211, 235);
 }
 
-/* Styling Line Charts */
-
-.charts {
-    display: flex;
-    gap: 40px;
-}
-
+/*  LINE-CHART BLOCK */
 .earnings-chart {
     background: #ffffff;
     padding: 20px;
     border-radius: 12px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-    /* max-width: 1000px; */
-    /* margin: 40px auto; */
-    max-width: 700px;
-    height: 450px;
-    margin: 20px;
+    margin: 20px auto;
+     width: 95%;    
+      min-height: 400px; 
 }
-
-#earningsLineChart {
-    max-width: 100%;
-    height: 400px;
-    max-height: 450px;
-}
-
-/* Styling Pie Charts */
-
-.pie-chart {
-    display: flex;
-    flex-direction: column;
-    /* justify-content: center; */
-    /* align-items:flex-end; */
-    min-height: 300px;
-    gap: 20px;
-}
-
-.expense-chart,
-.revenue-chart {
-    width: 100%;
-    max-width: 270px;
-    max-height: 270px;
-}
-
-.chart-2,
-.chart-1 {
-    margin-top: 30px;
-}
-
-.expense,
-.revenue {
-    text-align: center;
-    margin: 5px;
-    font-size: 25px;
-    text-decoration: underline;
-}
-
 
 .earnings-header {
     margin-bottom: 20px;
+}
+
+.header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.select_class {
+    outline: none;
+    padding: 7px 9px;
+    border-radius: 8px;
+    border: none;
+    background-color: rgb(237, 237, 239);
+    font-size: 13px;
 }
 
 .chart-title {
@@ -210,74 +92,64 @@
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    display: inline-block;
 }
 
 .income-dot {
     background-color: #60A5FA;
-    /* same as income line */
 }
 
 .expense-dot {
     background-color: #F87171;
-    /* same as expense line */
 }
 
-@media (max-width:1100px) {
-    .main-section {
-        width: 100%;
-    }
-
-    .charts {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .earnings-chart {
-        width: 100%;
-    }
-
-    .pie-chart {
-        display: flex;
-        flex-direction: row;
-        gap: 40px;
-    }
-
-    .menu-btn {
-        display: block !important;
-    }
-
-    .menu-section {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        background-color: white;
-        width: 35%;
-        height: 100vh;
-        z-index: 999;
-        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
-    }
-
-    .menu-section.active {
-        display: block;
-    }
-
-    .MENU {
-        display: none;
-    }
+#earningsLineChart {
+    max-width: 100%;
+    height: 400px !important;
 }
 
-@media (max-width:1250px) {
-    .main-section {
-        width: 100%;
-    }
+/*  PIE-CHARTS */
+.pie-chart {
+    margin-top: 30px;
+    display: flex;
+    justify-content: space-evenly;
+}
 
-    .card {
-        flex: 1 1 150px;
-        padding: 20px 40px 20px 20px;
+.expense-chart,
+.revenue-chart {
+    margin-top: 20px;
+    width: 300px;
+    height: 300px;
+}
 
-    }
+.expense,
+.revenue {
+    text-align: center;
+    font-size: 25px;
+    text-decoration: underline;
+}
+
+.fund-form {
+    margin-top: 12px;
+}
+.fund-form label{
+    font-size: 18px;
+}
+.fund-form input{
+   border: 1px solid gray;
+    border-radius: 7px;
+    outline: none;
+    padding: 5px 0px 5px 14px;
+    width: 132px;
+
+}
+.no-record {
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+    padding: 40px 0;
+}
+
+@media(max-width:1250px) {
 
     .card h3 {
         font-size: 25px;
@@ -288,46 +160,158 @@
     }
 }
 
-@media(max-width:920px) {
+@media(max-width:1100px) {
+
     .main-section {
+        margin-left: 30px;
+    }
+
+    .earnings-chart {
         width: 100%;
+        margin-left: 15px;
+
     }
 
-    .card {
-        flex: 1 1 50px;
-        padding: 20px 20px 20px 10px;
-        margin: 5px;
-    }
+}
 
-    .card h3 {
-        font-size: 20px;
+@media (max-width:1100px) and (min-width:900px) {
+    .main-section {
+        margin-left: 280px !important;
+        /* EXACT Sidebar width */
+        width: calc(100% - 280px);
     }
 }
 
-@media(max-width:600px) {
+@media(max-width:900px) {
+
     .main-section {
+        margin-left: 30px;
         width: 100%;
     }
 
     .cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .card {
+        text-align: center;
+        padding: 40px 50px;
+    }
+
+    .expense-chart,
+    .revenue-chart {
+        width: 250px;
+        height: 250px;
+    }
+ .earnings-chart {
+        margin-left: 0px;
+
+    }
+}
+
+@media(max-width:770px) {
+
+    .expense-chart,
+    .revenue-chart {
+        width: 230px;
+        height: 230px;
+    }
+}
+
+/* ============ 700px ============ */
+@media(max-width:700px) {
+    .earnings-chart {
+        margin: 15px 0px;
+        padding: 15px;
+    }
+
+    #earningsLineChart {
+        height: 300px;
+    }
+
+    .legend-row {
         flex-direction: column;
-        align-items: center;
+        gap: 12px;
+    }
+}
+
+/* ============ 600px ============ */
+@media(max-width:600px) {
+
+    .cards {
+        grid-template-columns: 1fr;
+        justify-items: center;
     }
 
     .card {
         width: 90%;
-        max-width: none;
-        padding: 20px;
-        margin: 10px 0;
-        text-align: center;
+        padding: 35px 20px;
     }
 
     .card h3 {
-        font-size: 20px;
+        font-size: 21px;
     }
 
     .card p {
         font-size: 16px;
     }
 
+    .pie-chart {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .expense-chart,
+    .revenue-chart {
+        width: 250px;
+        height: 250px;
+    }
+}
+
+/* ============ 500px ============ */
+@media(max-width:500px) {
+
+    /* CHART SCROLL ENABLED */
+    .earnings-chart {
+        overflow-x: auto;
+    }
+
+    #earningsLineChart {
+        width: 600px !important;
+    }
+
+    .pie-chart {
+        overflow-x: auto;
+        display: block;
+        white-space: nowrap;
+        text-align: center;
+    }
+
+    .expense-chart,
+    .revenue-chart {
+        display: inline-block;
+        margin: 50px;
+    }
+}
+
+@media(max-width:400px) {
+
+    .expense-chart,
+    .revenue-chart {
+        width: 220px;
+        height: 220px;
+        margin: 20px;
+    }
+    .earnings-chart{
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+}
+
+/* Prevent overflow issues */
+canvas {
+    max-width: 100% !important;
 }

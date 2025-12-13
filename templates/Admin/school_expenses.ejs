@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expenses</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="/adminDashboard.css">
+</head>
+
+<style>
+    body {
+        /* background-color: #f1f1f1; */
+        overflow-x: hidden;
+    }
+
+    .expense-page {
+        width: 82%;
+    }
+
+    .expense-graph {
+        display: flex;
+        gap: 24px;
+    }
+
+    .line-graph {
+        background: #ffffff;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        /* height: 490px; */
+        height: auto;
+        min-height: 420px;
+        margin: 40px 20px 20px 30px;
+        width: 100%;
+        max-width: 750px;
+        position: relative;
+    }
+
+    #ExpenseLineChart {
+        width: 850px !important;
+        height: 380px !important;
+    }
+
+
+    .line-graph h2 {
+        text-align: center;
+        margin: 7px 0px 12px;
+    }
+
+    .piechart {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin-left: 20px;
+        gap: 20px;
+    }
+
+    .piechart-container {
+        width: 350px;
+        height: 350px;
+        position: relative;
+    }
+
+    .expense-piechart {
+        width: 100% !important;
+        height: 100% !important;
+        max-width: 350px;
+        max-height: 350px;
+    }
+
+    .year-dropdown {
+        position: absolute;
+        right: 20px;
+        top: 18px;
+        padding: 8px 12px;
+    }
+
+    .expense-card {
+        width: 80vw;
+        background: #ffffff;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        margin: 40px 40px 40px 40px;
+    }
+
+    .expense-nav {
+        display: flex;
+        justify-content: space-between;
+        margin: 20px 0px 30px 0px;
+    }
+
+    .nav-header {
+        display: flex;
+        gap: 10px;
+    }
+
+    .search-stud {
+        display: flex;
+        align-items: center;
+    }
+
+    .search-stud i {
+        position: relative;
+        left: 25px;
+        font-size: 16px;
+    }
+
+    .search-stud input {
+        padding: 7px 2px 7px 30px;
+        border-radius: 16px;
+        border: 1px solid grey;
+        font-size: 15px;
+    }
+
+    .select_class {
+        outline: none;
+        padding: 7px 9px;
+        border-radius: 8px;
+        border: none;
+        background-color: rgb(237, 237, 239);
+        font-size: 13px;
+    }
+
+    .add-expense {
+        font-size: 14px;
+        background-color: rgb(66, 154, 242);
+        color: white;
+    }
+
+    .expense-form {
+        display: none;
+        margin: 7px 12px;
+    }
+
+    .expense-form input,
+    .expense-form select {
+        margin: 7px 10px;
+        text-align: center;
+        padding: 5px 10px;
+        border-radius: 3px;
+        border: 1px solid grey;
+    }
+
+    .expense-form button {
+        padding: 5px 10px;
+        background-color: rgb(66, 154, 242);
+        color: white;
+        margin: 10px 5px;
+        font-size: 16px;
+        border-radius: 6px;
+        outline: none;
+        border: none;
+    }
+
+    .expense-edit-form input,
+    .expense-edit-form select {
+        width: 140px;
+        margin: 4px;
+        padding: 5px 1px;
+    }
+
+    .expense-edit-form button {
+        padding: 6px;
+        background-color: #60A5FA;
+        border: none;
+        color: white;
+        border-radius: 4px;
+    }
+
+    .expense-header ul,
+    .list {
+        display: grid;
+        grid-template-columns: 0.8fr 1.8fr 1.8fr 1.5fr 1.5fr 1.8fr 1fr;
+        list-style: none;
+        font-size: 18px;
+        padding: 10px 10px;
+        align-items: center;
+        gap: 8px;
+        word-break: break-word;
+        min-width: 950px;
+        /* 👈 SCROLL ENABLED */
+    }
+
+    .expense-header ul {
+        background-color: #b1e6f4;
+        border-radius: 7px;
+        font-size: 20px;
+        color: rgb(70, 66, 66);
+    }
+
+    .expense-header ul li {
+        margin-top: 15px;
+    }
+
+    .list {
+        background-color: white;
+        border-bottom: 1px solid #ddd;
+        padding: 15px 10px;
+    }
+
+    .list:hover {
+        background-color: rgb(231, 194, 219);
+    }
+
+    .icons {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    .select-month {
+        background-color: rgb(228, 226, 226);
+        border: 1px solid grey;
+    }
+
+    .table-wrapper {
+        width: 100%;
+        overflow-x: auto !important;
+        overflow-y: hidden;
+        border-radius: 6px;
+    }
+
+    .expense-form-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .expense-form.show {
+        display: flex !important;
+        flex-wrap: nowrap;
+        gap: 12px;
+        min-width: max-content;
+    }
+
+    .expense-form-wrapper::-webkit-scrollbar {
+        height: 5px;
+    }
+
+    .expense-form-wrapper::-webkit-scrollbar-thumb {
+        background: #bbb;
+        border-radius: 50px;
+    }
+
+
+    @media (max-width:1300px) and (min-width:900px) {
+        .expense-page {
+            margin-left: 280px !important;
+            width: calc(100% - 280px) !important;
+        }
+    }
+
+    @media (max-width: 1423px) {
+        .piechart {
+            margin-left: 0;
+        }
+
+        .piechart-container {
+            width: 280px;
+            height: 280px;
+        }
+
+        .expense-piechart {
+            max-width: 280px !important;
+            max-height: 280px !important;
+        }
+    }
+
+    @media (max-width: 1200px) {
+        .expense-graph {
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 25px;
+        }
+
+        .expense-nav {
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .nav-header {
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .search-stud input {
+            width: 260px;
+        }
+    }
+
+    @media (max-width: 900px) {
+        .expense-graph {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .line-graph {
+            width: 100% !important;
+            max-width: 100% !important;
+            overflow-x: scroll !important;
+            overflow-y: hidden !important;
+            white-space: nowrap;
+            min-height: 360px !important;
+            padding-bottom: 10px;
+            margin-left: 0 !important;
+        }
+
+        .piechart {
+            margin-left: 0 !important;
+            margin-top: 20px;
+        }
+
+        .piechart-container {
+            width: 260px;
+            height: 260px;
+        }
+
+        .expense-piechart {
+            max-width: 260px !important;
+            max-height: 260px !important;
+        }
+
+        .expense-page {
+            margin-left: 0 !important;
+            width: 100% !important;
+        }
+
+        .expense-card {
+            width: 100% !important;
+            margin: 40px auto !important;
+        }
+
+        .expense-nav {
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+            text-align: center;
+        }
+
+        .search-stud {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .search-stud input {
+            width: 50% !important;
+        }
+
+        .nav-header {
+            width: 100%;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .select_class {
+            width: 150px;
+            text-align: center;
+        }
+
+        .add-expense {
+            width: 150px;
+            text-align: center;
+        }
+
+    }
+
+    @media (max-width: 600px) {
+
+        #ExpenseLineChart {
+            width: 800px !important;
+            height: 350px !important;
+        }
+
+        .piechart-container {
+            width: 220px;
+            height: 220px;
+        }
+
+        .expense-piechart {
+            max-width: 220px !important;
+            max-height: 220px !important;
+        }
+
+        .search-stud input {
+            width: 90% !important;
+        }
+
+        .month-year,
+        .categories,
+        .add-expense {
+            width: 100%;
+            max-width: 280px;
+        }
+
+        .nav-header {
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+    }
+
+    @media(max-width:500px) {
+        .line-graph h2 {
+            margin: 7px 0px 25px;
+        }
+
+        .year-dropdown {
+            right: 10px;
+            top: 60px;
+            font-size: 13px;
+            padding: 6px 8px;
+        }
+    }
+
+    .pdf-btn {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 15px;
+    }
+
+    .print-btn {
+        padding: 10px 15px;
+        border-radius: 8px;
+        border: none;
+        font-size: 14px;
+        background-color: rgb(66, 154, 242);
+        color: white;
+
+    }
+
+    @media print {
+        body {
+            background: white !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            font-size: 12px;
+        }
+
+       .menu-section,
+        .hamburger,
+        .no-print,
+        .expense-graph,
+        .expense-nav,
+        .expense-form-wrapper,
+        .pdf-btn,
+        .notification {
+            display: none !important;
+        }
+
+        /* 2. Reset Container Margins/Widths */
+        .expense-page {
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .expense-card {
+            width: 100% !important;
+            margin: 0 !important;
+            box-shadow: none !important;
+            padding: 10px !important;
+        }
+
+        .table-wrapper {
+            overflow: visible !important;
+        }
+
+        /* 3. FIX THE GRID & HIDE ACTION COLUMN */
+        .expense-header ul,
+        .list {
+            display: grid !important;
+            grid-template-columns: 0.5fr 1.5fr 2fr 1fr 1.5fr 2fr !important;
+            min-width: 100% !important;
+            padding: 5px 0 !important;
+            font-size: 12px !important;
+            gap: 5px !important;
+        }
+
+        .expense-header ul li:last-child {
+            display: none !important;
+        }
+
+        .icons {
+            display: none !important;
+        }
+
+        .expense-edit-form {
+            display: none !important;
+        }
+
+        .expense-wrapper {
+            page-break-inside: avoid;
+        }
+    }
+</style>
+
+<body>
+
+    <div class="admin_dash">
+        <%- include("partials/AdminPageSidebar") %>
+
+            <div class="expense-page">
+
+                <%- include("partials/adminNotification", { admin: admin }) %>
+
+                    <div class="expense-graph">
+
+                        <div class="line-graph">
+                            <h2>Expenses Data</h2>
+
+
+                            <!-- LINE: Year dropdown (keep previous naming) -->
+                            <form method="GET" action="/school_expenses" style="margin-bottom:12px;">
+                                <!-- preserve table filters so page state na lost ho -->
+                                <input type="hidden" name="search" value="<%= search %>">
+                                <input type="hidden" name="categories" value="<%= selectedCategory %>">
+                                <input type="hidden" name="month-year" value="<%= selectedMonthYear %>">
+                                <!-- preserve pie month too -->
+                                <input type="hidden" name="pieMonth" value="<%= pieMonth %>">
+
+                                <select name="year" onchange="this.form.submit()" class="select_class year-dropdown">
+                                    <% availableYears.forEach(yr=> { %>
+                                        <option value="<%= yr %>" <%=selectedYear===yr ? "selected" : "" %>>
+                                            <%= yr %> - <%= yr + 1 %>
+                                        </option>
+                                        <% }) %>
+                                </select>
+                            </form>
+
+                            <canvas id="ExpenseLineChart"></canvas>
+                        </div>
+
+                        <div class="piechart">
+                            <!-- PIE: Month selector (Apr–Mar) -->
+                            <form method="GET" action="/school_expenses" style="margin-bottom:10px;">
+                                <!-- preserve year & table filters -->
+                                <input type="hidden" name="year" value="<%= selectedYear %>">
+                                <input type="hidden" name="search" value="<%= search %>">
+                                <input type="hidden" name="categories" value="<%= selectedCategory %>">
+                                <input type="hidden" name="month-year" value="<%= selectedMonthYear %>">
+
+                                <select name="pieMonth" onchange="this.form.submit()" class="select_class select-month">
+                                    <option value="current-year" <%=pieMonth==="current-year" ? "selected" : "" %>>
+                                        <%= selectedYear %> - <%= selectedYear + 1 %> (Year)
+                                    </option>
+                                    <option value="0" <%=pieMonth==="0" ? "selected" : "" %>>April</option>
+                                    <option value="1" <%=pieMonth==="1" ? "selected" : "" %>>May</option>
+                                    <option value="2" <%=pieMonth==="2" ? "selected" : "" %>>June</option>
+                                    <option value="3" <%=pieMonth==="3" ? "selected" : "" %>>July</option>
+                                    <option value="4" <%=pieMonth==="4" ? "selected" : "" %>>August</option>
+                                    <option value="5" <%=pieMonth==="5" ? "selected" : "" %>>September</option>
+                                    <option value="6" <%=pieMonth==="6" ? "selected" : "" %>>October</option>
+                                    <option value="7" <%=pieMonth==="7" ? "selected" : "" %>>November</option>
+                                    <option value="8" <%=pieMonth==="8" ? "selected" : "" %>>December</option>
+                                    <option value="9" <%=pieMonth==="9" ? "selected" : "" %>>January</option>
+                                    <option value="10" <%=pieMonth==="10" ? "selected" : "" %>>February</option>
+                                    <option value="11" <%=pieMonth==="11" ? "selected" : "" %>>March</option>
+                                </select>
+                            </form>
+
+                            <div class="piechart-container">
+                                <canvas class="expense-piechart"></canvas>
+                                <h3 class="expense">Expenses</h3>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="expense-card">
+
+                        <div class="expense-nav">
+                            <h1>School Expenses</h1>
+
+                            <div class="nav-content">
+                                <form method="GET" action="/school_expenses" class="nav-header">
+                                    <div class="search-stud">
+                                        <i class="fa fa-search"></i>
+                                        <input type="text" name="search" id="searchInput"
+                                            placeholder="Search by Expense">
+
+                                    </div>
+
+                                    <!-- Month Year dropdown -->
+                                    <select name="month-year" class="month-year select_class"
+                                        onchange="this.form.submit()">
+                                        <option value="">All Months</option>
+                                        <% for(let y=2025; y <=new Date().getFullYear(); y++) { for(let m=1; m <=12;
+                                            m++) { let value=`${y}-${m.toString().padStart(2, '0' )}`; let label=new
+                                            Date(y, m - 1).toLocaleString('default', { month: 'long' , year: 'numeric'
+                                            }); %>
+                                            <option value="<%= value %>" <%=selectedMonthYear===value ? "selected" : ""
+                                                %>>
+                                                <%= label %>
+                                            </option>
+                                            <% }} %>
+                                    </select>
+
+                                    <!-- Categories Dropdown -->
+                                    <select name="categories" class="categories select_class"
+                                        onchange="this.form.submit()">
+
+                                        <option value="">All Categories</option>
+                                        <% const categories=["Maintenance", "Management" , "Transportation"
+                                            ,"Infrastructure" ,"Salary Distribution" , "Laboratory" , "Library"
+                                            , "Sports" , "Arts & Crafts" , "Other" ]; %>
+                                            <% categories.forEach(cat=> { %>
+                                                <option value="<%= cat %>" <%=selectedCategory===cat ? "selected" : ""
+                                                    %>>
+                                                    <%= cat %>
+                                                </option>
+                                                <% }); %>
+                                    </select>
+
+                                    <button type="button" class="add-expense select_class">Add Expense</button>
+                                </form>
+
+                            </div>
+                        </div>
+
+                        <div class="table-wrapper">
+
+                            <div class="expense-header">
+                                <ul>
+                                    <li>ID</li>
+                                    <li>Category</li>
+                                    <li>Expense</li>
+                                    <li>Quantity</li>
+                                    <li>Amount</li>
+                                    <li>Payment Date</li>
+                                    <li>Action</li>
+                                </ul>
+                            </div>
+
+                            <!-- Hidden Form for add expense-->
+
+                            <div class="expense-form-wrapper">
+
+                                <form class="expense-form" action="/add-expense" method="POST">
+                                    <select class=".expense-category" name="category">
+                                        <option value="maintenance">Maintenance</option>
+                                        <option value="management">Management</option>
+                                        <option value="transportation">Transportation</option>
+                                        <option value="infrastructure">Infrastructure</option>
+                                        <option value="salary distribution">Salary Distribution</option>
+                                        <option value="laboratory">Laboratory</option>
+                                        <option value="library">Library</option>
+                                        <option value="sports">Sports</option>
+
+                                        <option value="arts & crafts">Arts & Crafts</option>
+                                        <option value="other">Others</option>
+                                    </select>
+                                    <input type="text" name="title" placeholder="Title" required
+                                        style="text-transform: capitalize;">
+                                    <input type="text" name="quantity" placeholder="Quantity" required
+                                        style="text-transform: capitalize;">
+                                    <input type="text" name="amount" placeholder="Amount" required>
+                                    <input type="date" name="paymentDate" placeholder="paymentDate" required>
+                                    <button type="submit">Save</button>
+                                </form>
+                            </div>
+
+                            <div class="expense-list">
+                                <% expenses.forEach((expense, index)=> { %>
+                                    <div class="expense-wrapper" id="wrapper-<%= expense._id %>"
+                                        data-expense="<%= expense.title.toLowerCase() %>">
+
+                                        <!-- Normal View -->
+                                        <div class="list" id="display-<%= expense._id %>">
+                                            <div class="id">
+                                                <%= index + 1 %>
+                                            </div>
+                                            <div class="category">
+                                                <%= expense.category %>
+                                            </div>
+                                            <div class="title">
+                                                <%= expense.title %>
+                                            </div>
+                                            <div class="quantity">
+                                                <%= expense.quantity %>
+                                            </div>
+                                            <div class="amount">₹<%= expense.amount.toLocaleString('en-IN') %>
+                                            </div>
+                                            <div class="payment-date">
+                                                <%= expense.paymentDate.toISOString().split("T")[0] %>
+                                            </div>
+
+                                            <div class="icons">
+                                                <!-- Edit icon -->
+                                                <i class="fa-solid fa-pen-to-square" style="cursor:pointer"
+                                                    onclick="enableEdit('<%= expense._id %>')"></i>
+
+                                                <!-- Delete Form -->
+                                                <form action="/delete-expense/<%= expense._id %>" method="POST"
+                                                    style="display:inline;" onsubmit="return confirmDelete()">
+                                                    <button type="submit" style="background:none; border:none;">
+                                                        <i class="fa-solid fa-trash" style="color: red;"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+
+                                        <!-- Editable Form View -->
+                                        <form id="edit-<%= expense._id %>" class="expense-edit-form list"
+                                            action="/edit-expense/<%= expense._id %>" method="POST"
+                                            style="display: none;">
+                                            <div class="id">
+                                                <%= index + 1 %>
+                                            </div>
+
+                                            <select name="category" required>
+                                                <option value="maintenance" <%=expense.category==="Maintenance"
+                                                    ? "selected" : "" %>>Maintenance</option>
+                                                <option value="management" <%=expense.category==="Management"
+                                                    ? "selected" : "" %>>Management</option>
+                                                <option value="transportation" <%=expense.category==="Transportation"
+                                                    ? "selected" : "" %>
+                                                    >Transportation</option>
+                                                <option value="infrastructure" <%=expense.category==="Infrastructure"
+                                                    ? "selected" : "" %>
+                                                    >Infrastructure</option>
+                                                <option value="salary distribution"
+                                                    <%=expense.category==="Salary Distribution" ? "selected" : "" %>
+                                                    >Salary
+                                                    Distribution</option>
+                                                <option value="laboratory" <%=expense.category==="Laboratory"
+                                                    ? "selected" : "" %>
+                                                    >Laboratory</option>
+                                                <option value="library" <%=expense.category==="Library" ? "selected"
+                                                    : "" %>
+                                                    >Library
+                                                </option>
+                                                <option value="sports" <%=expense.category==="Sports" ? "selected" : ""
+                                                    %>
+                                                    >Sports
+                                                </option>
+                                                <option value="arts & crafts" <%=expense.category==="Arts & Crafts"
+                                                    ? "selected" : "" %>>Arts & Crafts</option>
+                                                <option value="others" <%=expense.category==="Other" ? "selected" : ""
+                                                    %>
+                                                    >Others
+                                                </option>
+                                            </select>
+
+                                            <input type="text" name="title" value="<%= expense.title %>" required
+                                                style="text-transform: capitalize;">
+                                            <input type="text" name="quantity" value="<%= expense.quantity %>" required>
+                                            <input type="text" name="amount" value="<%= expense.amount %>" required>
+                                            <input type="date" name="paymentDate"
+                                                value="<%= expense.paymentDate.toISOString().split('T')[0] %>" required>
+
+                                            <button type="submit">Save</button>
+                                        </form>
+
+                                    </div>
+                                    <% }) %>
+                            </div>
+                        </div>
+                        <div class="pdf-btn">
+                            <button onclick="window.print()" class="print-btn no-print">
+                                Download PDF
+                            </button>
+                        </div>
+                    </div>
+
+            </div>
+    </div>
+
+
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const monthlyExpenseData = JSON.parse('<%- JSON.stringify(monthlySpendingAmount) %>');
+    const pieLabels = JSON.parse('<%- JSON.stringify(pieCategoryLabels) %>');
+    const pieData = JSON.parse('<%- JSON.stringify(pieCategoryData) %>');
+</script>
+
+<script src="/schoolExpense.js"></script>
+
+</html>

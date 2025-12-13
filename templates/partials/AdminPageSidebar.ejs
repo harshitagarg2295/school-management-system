@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+</head>
+
+<style>
+    * {
+        margin: 0px;
+        padding: 0px;
+        box-sizing: border-box;
+    }
+
+    /* Sidebar Wrapper */
+    .menu-section {
+        width: 280px !important;
+        transition: transform 0.3s ease-in-out;
+        z-index: 1100;
+    }
+
+    /* Sidebar Box */
+    .menu-bar {
+        padding: 40px 30px;
+        overflow-y: auto;
+        position: fixed;
+        top: 0;
+        left: 0;
+        /* left: -30px; */
+        height: 100%;
+        background: #ffffff !important;
+        box-shadow: 5px 0px 15px rgba(0, 0, 0, 0.08);
+        width: 280px !important;
+    }
+
+    /* ---------- HAMBURGER ICON ---------- */
+    .hamburger {
+        display: none;
+        font-size: 28px;
+        color: #2c3e50;
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        cursor: pointer;
+        z-index: 1200;
+        padding: 6px 10px;
+    }
+
+    /* ---------- LIST + HOVER ---------- */
+
+
+    .MENU {
+        font-size: 20px !important;
+        font-weight: bold !important;
+        color: #444;
+        margin-bottom: 15px;
+    }
+
+    .menu {
+        display: flex;
+        align-items: center;
+        padding: 15px 15px 18px;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+    .menu i,
+    .menu-icon {
+        font-size: 22px !important;
+        color: #444343;
+    }
+
+    .menu a {
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        gap: 15px;
+        color: #555;
+        font-size: 21px !important;
+        width: 100%;
+    }
+
+    .menu:hover {
+        background-color: #b1e6f4;
+    }
+
+    .menu__group {
+        list-style: none;
+        padding: 5px 0px;
+        color: #555;
+        font-size: 21px !important;
+    }
+
+    .menu__btn {
+        width: 100%;
+        padding: 15px 15px 18px;
+        font-size: 18px !important;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border: none;
+        background: none;
+        cursor: pointer;
+        color: #555;
+
+    }
+
+    .submenu {
+        display: none;
+        padding-left: 30px;
+    }
+
+    .submenu li a {
+        display: block;
+        padding: 8px 10px;
+        font-size: 18px !important;
+        color: #464545;
+        text-decoration: none;
+    }
+
+    .menu__group.active .submenu {
+        display: block;
+    }
+
+    .caret {
+        font-size: 13px !important;
+        margin-left: auto;
+        transition: transform 0.3s;
+    }
+
+    .menu__group.active .caret {
+        transform: rotate(180deg);
+    }
+
+    .menu__btn:hover {
+        background-color: #b1e6f4;
+        border-radius: 10px;
+        cursor: pointer;
+    }
+
+    .submenu li a:hover {
+        background-color: #b1e6f4;
+        border-radius: 10px;
+    }
+
+    .finance {
+        margin-right: 10px;
+    }
+
+    /* ---------- MOBILE BEHAVIOR ---------- */
+    @media (max-width: 900px) {
+        .menu-section {
+            transform: translateX(-100%);
+            position: fixed;
+            height: 100vh;
+        }
+
+        .menu-section.active {
+            transform: translateX(0%);
+        }
+
+        .hamburger {
+            display: block;
+        }
+
+        .menu-bar {
+            left: -30px;
+        }
+    }
+</style>
+
+<body>
+    <div class="hamburger" id="adminHamburger">
+        <i class="fa-solid fa-bars"></i>
+    </div>
+
+    <section class="menu-section">
+        <div class="menu-bar">
+
+            <p class="MENU">MENU</p>
+
+            <!-- Dashboard -->
+            <div class="menu">
+                <a href="/adminDashboard">
+                    <i class="fa-solid fa-house"></i>
+                    <p>Dashboard</p>
+                </a>
+            </div>
+
+            <!-- Teachers -->
+            <div class="menu">
+                <a href="/teach-menu">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                    <p>Teachers</p>
+                </a>
+            </div>
+
+            <!-- Staffs -->
+            <div class="menu">
+                <a href="/staff-menu">
+                    <i class="fa-solid fa-user-tie"></i>
+                    <p style="margin-left: 7px;">Staffs</p>
+                </a>
+            </div>
+
+            <!-- Students -->
+            <div class="menu">
+                <a href="/stud-menu">
+                    <i class="fa-solid fa-users"></i>
+                    <p>Students</p>
+                </a>
+            </div>
+
+            <!-- Attendance Dropdown -->
+            <li class="menu__group">
+                <button class="menu__btn">
+                    <i class="fa-solid fa-users-line menu-icon"></i> Attendance
+                    <i class="fa-solid fa-chevron-down caret"></i>
+                </button>
+                <ul class="submenu">
+                    <li><a href="/view-attendance-teachers">Teachers</a></li>
+                    <li><a href="/view-attendance-students">Students</a></li>
+                    <li><a href="/view-attendance-staffs">Staffs</a></li>
+                </ul>
+            </li>
+
+            <!-- Finance Dropdown -->
+            <li class="menu__group">
+                <button class="menu__btn">
+                    <i class="fa-solid fa-dollar-sign menu-icon finance"></i> Finance
+                    <i class="fa-solid fa-chevron-down caret"></i>
+                </button>
+                <ul class="submenu">
+                    <li><a href="/school_fees_collection">Fees Collection</a></li>
+                    <li><a href="/school_expenses">School Expenses</a></li>
+                </ul>
+            </li>
+
+            <!-- Timetable -->
+            <li class="menu__group">
+                <button class="menu__btn" data-target="timetableSub">
+                    <div><i class="fa-solid fa-calendar-alt"></i><span style="margin-left: 15px;">Timetable</span></div>
+                    <i class="fa-solid fa-chevron-down caret"></i>
+                </button>
+                <ul class="submenu" style="list-style: none;">
+                    <li><a href="/add-timetable/monthly-test"><span>📝</span> Monthly Test</a></li>
+                    <li><a href="/add-timetable/exams"><span>📅</span> Exams</a></li>
+                </ul>
+            </li>
+
+            <!-- Announcement -->
+            <div class="menu">
+                <a href="/admin/add-announcement">
+                    <i class="fa-solid fa-bullhorn"></i>
+                    <p>Announcements</p>
+                </a>
+            </div>
+
+            <!-- Calendar -->
+            <div class="menu">
+                <a href="/calen-menu?role=admin">
+                    <i class="fa-solid fa-calendar"></i>
+                    <p>Calendar</p>
+                </a>
+            </div>
+
+            <p class="MENU other">OTHER</p>
+
+            <!-- Profile -->
+            <div class="menu">
+                <a href="/profile-menu">
+                    <i class="fa fa-circle-user"></i>
+                    <p>Profile</p>
+                </a>
+            </div>
+
+            <!-- Settings -->
+            <div class="menu">
+                <a href="/setting">
+                    <i class="fa-solid fa-gear"></i>
+                    <p>Settings</p>
+                </a>
+            </div>
+
+        </div>
+    </section>
+
+    <script>
+        document.querySelectorAll(".menu__btn").forEach(btn => {
+            btn.addEventListener("click", function () {
+                const group = this.parentElement;
+
+                // Close other dropdowns
+                document.querySelectorAll(".menu__group").forEach(item => {
+                    if (item !== group) item.classList.remove("active");
+                });
+
+                // Toggle current dropdown
+                group.classList.toggle("active");
+            });
+        });
+
+
+        const adminSidebar = document.querySelector(".menu-section");
+        const adminHamburger = document.getElementById("adminHamburger");
+        const adminIcon = adminHamburger.querySelector("i");
+
+        adminHamburger.addEventListener("click", () => {
+            adminSidebar.classList.toggle("active");
+
+            if (adminSidebar.classList.contains("active")) {
+                adminIcon.classList.replace("fa-bars", "fa-times");
+            } else {
+                adminIcon.classList.replace("fa-times", "fa-bars");
+            }
+        });
+
+        /* CLOSE ON OUTSIDE CLICK */
+        document.addEventListener("click", (e) => {
+            if (window.innerWidth <= 900 &&
+                adminSidebar.classList.contains("active") &&
+                !adminSidebar.contains(e.target) &&
+                !adminHamburger.contains(e.target)) {
+
+                adminSidebar.classList.remove("active");
+                adminIcon.classList.replace("fa-times", "fa-bars");
+            }
+        });
+
+        /* FIX ICON ON RESIZE */
+        window.addEventListener("resize", () => {
+            if (window.innerWidth > 900) {
+                adminIcon.classList.replace("fa-times", "fa-bars");
+            }
+        });
+
+    </script>
+
+</body>
+
+</html>

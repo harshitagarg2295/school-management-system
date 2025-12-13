@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Fees Payment - Rishikulam Public School</title>
+  <style>
+  body {
+  background: linear-gradient(135deg, #cfe2ff, #f7faff);
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", sans-serif;
+}
+
+/* Main Box */
+.payment-container {
+  max-width: 700px;
+  margin: 60px auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  padding: 40px 45px;
+  text-align: center;
+  transition: 0.3s ease;
+}
+
+h2 {
+  font-size: 26px;
+  color: #1a2a5b;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.school-name {
+  font-size: 20px;
+  color: #324d9d;
+  margin-top: 20px;
+  font-weight: 600;
+  margin-bottom: 25px;
+}
+
+/* Summary Section */
+.summary {
+  background: #f3f7ff;
+  border: 1px solid #dce6ff;
+  padding: 15px 18px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 15px;
+  color: #333;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.summary .right {
+  color: #1a9b4a;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+/* Installment List */
+.installment-list {
+  list-style: none;
+  padding: 0;
+  margin: 15px 0 30px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background: #fcfcff;
+}
+
+.installment-list li {
+  padding: 10px 16px;
+  border-bottom: 1px dashed #e6e6e6;
+  display: flex;
+  justify-content: space-between;
+  color: #333;
+  font-size: 15px;
+  flex-wrap: wrap;
+}
+
+.installment-list li:last-child {
+  border-bottom: none;
+}
+
+/* Proceed Section */
+.proceed {
+  margin-top: 30px;
+}
+
+.proceed p {
+  color: #555;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.proceed button {
+  background: #007bff;
+  color: #fff;
+  border: none;
+  padding: 14px 40px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.2s;
+  box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+}
+
+.proceed button:hover {
+  background: #0056c9;
+  transform: translateY(-1px);
+}
+
+/* ------------ RESPONSIVE ------------- */
+
+/* Tablets */
+@media (max-width: 768px) {
+
+  .payment-container {
+    margin: 30px 15px;
+    padding: 30px 25px;
+  }
+
+  h2 {
+    font-size: 24px;
+  }
+
+  .school-name {
+    font-size: 18px;
+  }
+
+  .summary {
+    font-size: 14px;
+  }
+
+  .summary .right {
+    font-size: 17px;
+  }
+
+  .installment-list li {
+    font-size: 14px;
+    padding: 10px 12px;
+    gap: 8px;
+  }
+
+  .proceed button {
+    padding: 12px 30px;
+    font-size: 15px;
+  }
+}
+
+/* Mobile Phones */
+@media (max-width: 480px) {
+
+  .payment-container {
+    padding: 25px 18px;
+    margin: 20px;
+  }
+
+  h2 {
+    font-size: 22px;
+  }
+
+  .school-name {
+    font-size: 17px;
+  }
+
+  .summary {
+    padding: 12px;
+  }
+
+  .summary div {
+    width: 100%;
+    text-align: left;
+  }
+
+  .summary .right {
+    text-align: right;
+    width: 100%;
+  }
+
+  .installment-list li {
+    flex-direction: column;
+    align-items: flex-start;
+    font-size: 14px;
+  }
+
+  .proceed button {
+    width: 100%;
+    padding: 14px 0;
+  }
+}
+
+/* Ultra Small Devices */
+@media (max-width: 360px) {
+  .payment-container {
+    padding: 18px;
+  }
+
+  .proceed p {
+    font-size: 14px;
+  }
+
+  .summary,
+  .installment-list li {
+    font-size: 13px;
+  }
+}
+
+  </style>
+</head>
+
+<body>
+
+  <div class="payment-container">
+    <h2>Fees Payment</h2>
+    <div class="school-name">Rishikulam Public School</div>
+
+    <div class="summary">
+      <div>Student: <strong>
+          <%= student.name %>
+        </strong> • Class: <%= student.class %>
+      </div>
+      <div class="right">Total: ₹<span id="totalAmount">0</span></div>
+    </div>
+
+    <ul class="installment-list" id="installmentList">
+      <% selectedIndexes.forEach(i=> { %>
+        <li data-index="<%= i %>" data-amount="<%= student.feeStatus[i].amount %>"
+          data-installment="<%= student.feeStatus[i].installment %>" data-feetype="<%= student.feeStatus[i].feeType %>">
+          <span>
+            <%= student.feeStatus[i].feeType %> — <%= student.feeStatus[i].installment %>
+          </span>
+          <span>₹<%= student.feeStatus[i].amount %></span>
+        </li>
+        <% }) %>
+    </ul>
+
+    <div class="proceed">
+      <p>You will be redirected to a secure payment gateway.</p>
+      <button id="proceedBtn">Proceed to Pay</button>
+    </div>
+  </div>
+
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script>
+    // ✅ Calculate total 
+    const items = document.querySelectorAll('#installmentList li');
+    let selectedInstallments = [];
+
+    items.forEach(li => {
+      selectedInstallments.push({
+        index: li.getAttribute('data-index'),
+        installment: li.getAttribute('data-installment'),
+        feeType: li.getAttribute('data-feetype'),
+        amount: li.getAttribute('data-amount')
+      });
+    });
+
+    let total = selectedInstallments.reduce((sum, i) => sum + parseInt(i.amount || 0), 0);
+    document.getElementById('totalAmount').textContent = total;
+
+    // ✅ Proceed to Pay
+    document.getElementById("proceedBtn").onclick = async function () {
+      if (total < 1) {
+        alert("Please select at least one installment to pay!");
+        return;
+      }
+
+      const response = await fetch("/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: total })
+      });
+
+      const order = await response.json();
+      const installmentsData = encodeURIComponent(JSON.stringify(selectedInstallments));
+
+      const options = {
+        key: "rzp_test_RSEpP4AhOamoYZ",
+        amount: order.amount,
+        currency: "INR",
+        name: "XYZ Public School",
+        description: "Fees Payment",
+        order_id: order.id,
+        handler: function (response) {
+          window.location.href = `/payment-success?payment_id=${response.razorpay_payment_id}&amount=${total}&installments=${installmentsData}`;
+        },
+        theme: { color: "#007bff" }
+      };
+
+      const rzp = new Razorpay(options);
+      rzp.open();
+    };
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Submit Result</title>
+
+  <style>
+    :root {
+      --primary: #2196f3;
+      --text-dark: #2c3e50;
+      --light-bg: #f4f7fb;
+      --border: #e0e0e0;
+      --card-bg: #ffffff;
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background: var(--light-bg);
+      color: var(--text-dark);
+    }
+
+    .teacher-dash {
+      display: flex;
+    }
+
+    .result-card {
+      flex: 1;
+      margin: 40px;
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: var(--shadow);
+      box-sizing: border-box;
+      transition: 0.3s ease;
+    }
+
+    /* ---------- Header ---------- */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 25px;
+      border-bottom: 3px solid var(--primary);
+      padding-bottom: 10px;
+    }
+
+    .header h2 {
+      font-size: 26px;
+      color: var(--primary);
+      color: #2c3e50;
+      font-weight: 600;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header h2::before {
+      content: "📘";
+      font-size: 24px;
+    }
+
+    .dynamic-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .select_class {
+      outline: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background-color: #eef2f6;
+      font-size: 14px;
+      min-width: 130px;
+      transition: all 0.2s ease;
+    }
+
+    .select_class:hover {
+      background: #dce9ff;
+      border-color: var(--primary);
+    }
+
+    .search-stud {
+      display: flex;
+      align-items: center;
+      background: #fff;
+      border-radius: 20px;
+      padding: 2px 8px;
+      border: 1px solid var(--border);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .search-stud i {
+      color: #888;
+      margin-left: 6px;
+    }
+
+    .search-stud input {
+      border: none;
+      outline: none;
+      padding: 8px 10px;
+      border-radius: 16px;
+      font-size: 15px;
+    }
+
+    /* ---------- Info & Inputs ---------- */
+    .info {
+      margin: 40px 0 20px;
+      color: #555;
+      font-size: 18px;
+      text-align: left;
+    }
+
+    .outof input {
+      text-align: center;
+      border-radius: 5px;
+      width: 70px;
+      border: 1px solid var(--border);
+      padding: 5px;
+    }
+
+    /* ---------- Table Styling ---------- */
+    .table-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: 10px;
+      background: var(--card-bg);
+    }
+
+    .results-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      min-width: 600px;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .results-table th {
+      background-color: #3793df;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 500;
+      padding: 14px 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .results-table td {
+      border: 1px solid var(--border);
+      padding: 12px 5px;
+      text-align: center;
+      background: #fafcff;
+      transition: background 0.2s ease;
+    }
+
+    .results-table tr:hover td {
+      background: rgba(33, 150, 243, 0.07);
+    }
+
+    .results-table td:first-child,
+    .results-table th:first-child {
+      text-align: left;
+      font-weight: 500;
+      padding-left: 10px;
+      color: var(--text-dark);
+    }
+
+    .marks-input {
+      width: 70px;
+      text-align: center;
+      border-radius: 6px;
+      padding: 5px;
+      border: 1px solid var(--border);
+      background: #fff;
+      transition: border 0.2s ease;
+    }
+
+    .marks-input:focus {
+      border-color: var(--primary);
+      outline: none;
+    }
+
+    .percentage {
+      width: 80px;
+      text-align: center;
+      background-color: #f7f7f7;
+      border: none;
+      font-weight: bold;
+      color: var(--text-dark);
+    }
+
+    /* ---------- Buttons ---------- */
+    .btn {
+      margin: 40px 0;
+      display: flex;
+      justify-content: center;
+    }
+
+    .save-btn {
+      font-size: 16px;
+      padding: 10px 20px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 3px 10px rgba(33, 150, 243, 0.3);
+    }
+
+    .save-btn:hover {
+      background: #1976d2;
+      transform: translateY(-1px);
+    }
+
+    /* ---------- Responsive ---------- */
+
+    @media (max-width: 992px) {
+      .result-card {
+        width: 90%;
+        margin: 20px auto;
+        padding: 25px;
+      }
+
+      .header h2 {
+        font-size: 22px;
+      }
+
+      .select_class {
+        font-size: 13px;
+        min-width: 110px;
+      }
+
+      .results-table th,
+      .results-table td {
+        font-size: 15px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      .header h2 {
+        font-size: 20px;
+      }
+
+      .dynamic-options {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .select_class,
+      .search-stud {
+        width: 100%;
+      }
+
+      .info {
+        font-size: 16px;
+      }
+
+      .save-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="teacher-dash">
+    <%- include("partials/TeacherPageSidebar") %>
+
+      <div class="result-card">
+        <!-- Header -->
+        <div class="header">
+          <h2>Submit Students Result</h2>
+
+          <form method="GET" action="/teachers/submit-result" class="dynamic-options">
+            <select name="type" id="typeSelect" class="select_class" onchange="this.form.submit()">
+              <option value="">Select Type</option>
+              <option value="Monthly Test" <%=examType==="Monthly Test" ? "selected" :"" %>>Monthly Test</option>
+              <option value="Exam" <%=examType==="Exam" ? "selected" :"" %>>Exam</option>
+            </select>
+
+            <% if (examType==="Monthly Test" ) { %>
+              <select name="sub" class="select_class" onchange="this.form.submit()">
+                <option value="">Select Month</option>
+                <% months.forEach(m=> { %>
+                  <option value="<%= m %>" <%=examName===m ? "selected" :"" %>><%= m %>
+                  </option>
+                  <% }) %>
+              </select>
+              <% } %>
+
+                <% if (examType==="Exam" ) { %>
+                  <select name="sub" class="select_class" onchange="this.form.submit()">
+                    <option value="">Select Exam</option>
+                    <% examSubtypes.forEach(s=> { %>
+                      <option value="<%= s %>" <%=examName===s ? "selected" :"" %>><%= s %>
+                      </option>
+                      <% }) %>
+                  </select>
+                  <% } %>
+
+                    <select name="classFilter" class="select_class" onchange="this.form.submit()">
+                      <option value="" <%=!classFilter ? "selected" :"" %>>Select Class</option>
+                      <% classList.forEach(c=> { %>
+                        <option value="<%= c %>" <%=classFilter===c ? "selected" :"" %>><%= c %>
+                        </option>
+                        <% }) %>
+                    </select>
+
+                    <div class="search-stud">
+                      <i class="fa fa-search"></i>
+                      <input type="text" id="searchInput" placeholder="Search by Name">
+                    </div>
+          </form>
+        </div>
+
+        <% if (!classFilter) { %>
+          <div class="info">Please select a class and exam type</div>
+          <% } %>
+
+            <% if (classFilter) { %>
+              <form id="resultForm" method="POST" action="/teachers/submit-result">
+                <input type="hidden" name="classFilter" value="<%= classFilter %>">
+                <input type="hidden" name="examType" value="<%= examType %>">
+                <input type="hidden" name="examName" value="<%= examName %>">
+                <input type="hidden" name="year" value="<%= year %>">
+
+                <div class="info outof">
+                  Out Of :
+                  <input type="number" name="outOf"
+                    value="<%= (students.length && resultsMap[students[0]._id.toString()]?.outOf) ? resultsMap[students[0]._id.toString()].outOf : '' %>"
+                    required>
+                </div>
+
+                <div class="table-wrapper">
+                  <table class="results-table">
+                    <thead>
+                      <tr>
+                        <th>Student Name</th>
+                        <% subjectsForClass.forEach(sub=> { %>
+                          <th>
+                            <%= sub %>
+                          </th>
+                          <% }) %>
+                            <th>Percentage</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% students.forEach(stu=> {
+                        const existing = resultsMap[stu._idStr];
+                        %>
+                        <tr class="student-row" data-name="<%= stu.name.toLowerCase() %>">
+                          <td>
+                            <%= stu.name %>
+                          </td>
+                          <% subjectsForClass.forEach(sub=> {
+                            const oldVal = (existing && existing.marks && existing.marks[sub] !== undefined) ?
+                            existing.marks[sub]: "";
+                            const isMySubject = teacherSubjects.includes(sub);
+                            %>
+                            <td>
+                              <input class="marks-input" type="number" name="marks[<%= stu._idStr %>][<%= sub %>]"
+                                value="<%= oldVal %>" <%=oldVal && !isMySubject ? "readonly" : "" %>>
+                            </td>
+                            <% }) %>
+                              <td><input class="percentage" type="text" readonly></td>
+                        </tr>
+                        <% }) %>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div class="btn">
+                  <button type="submit" class="save-btn">Save Results</button>
+                </div>
+              </form>
+              <% } %>
+      </div>
+  </div>
+
+  <script>
+    const searchInput = document.getElementById("searchInput");
+    if (searchInput) {
+      searchInput.addEventListener("input", function () {
+        const searchText = this.value.toLowerCase();
+        const studentRows = document.querySelectorAll(".student-row");
+        studentRows.forEach(row => {
+          const name = row.dataset.name;
+          row.style.display = name.includes(searchText) ? "" : "none";
+        });
+      });
+    }
+
+    document.getElementById("resultForm")?.addEventListener("submit", function (e) {
+      const examType = "<%= examType %>";
+      const examName = "<%= examName %>";
+      if (!examType || !examName) {
+        alert("⚠️ Please select exam type before saving!");
+        e.preventDefault();
+      }
+    });
+
+    function calculatePercentages() {
+      const outOfInput = document.querySelector("input[name='outOf']");
+      const outOf = parseFloat(outOfInput.value);
+      if (isNaN(outOf) || outOf <= 0) return;
+      document.querySelectorAll("tbody tr").forEach(row => {
+        const markInputs = row.querySelectorAll(".marks-input");
+        const percInput = row.querySelector(".percentage");
+        let totalObtained = 0;
+        markInputs.forEach(inp => {
+          const val = parseFloat(inp.value);
+          if (!isNaN(val)) totalObtained += val;
+        });
+        const totalOutOf = outOf * markInputs.length;
+        percInput.value = totalOutOf > 0 ? ((totalObtained / totalOutOf) * 100).toFixed(2) + "%" : "";
+      });
+    }
+
+    window.addEventListener("DOMContentLoaded", calculatePercentages);
+    document.addEventListener("input", e => {
+      if (e.target.classList.contains("marks-input") || e.target.name === "outOf") {
+        calculatePercentages();
+      }
+    });
+  </script>
+</body>
+
+</html>

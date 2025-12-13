@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Announcements</title>
+
+    <style>
+        :root {
+            --primary: #2196f3;
+            --text-dark: #2c3e50;
+            --bg-light: #f4f7fb;
+            --border: #e0e0e0;
+            --card-bg: #ffffff;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        body {
+            margin: 0;
+            font-family: "Poppins", sans-serif;
+            background: var(--bg-light);
+            color: var(--text-dark);
+        }
+
+        .student-dash,
+        .admin-dash,
+        .teacher-dash {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ---------- Announcement Container ---------- */
+        .announcement {
+            flex: 1;
+            padding: 40px 60px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            margin: 40px;
+            box-shadow: var(--shadow);
+            transition: 0.3s ease;
+        }
+
+        .announcement h2 {
+            font-size: 28px;
+            margin-bottom: 25px;
+            text-align: center;
+            color: var(--primary);
+            color: #2c3e50;
+            font-weight: 600;
+            border-bottom: 3px solid var(--primary);
+            display: inline-block;
+            padding-bottom: 5px;
+        }
+
+        .announcement p {
+            margin-top: 60px;
+            font-size: 18px;
+            color: #666;
+            text-align: center;
+        }
+
+        /* ---------- Announcement Cards ---------- */
+        .data {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .data:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 16px rgba(33, 150, 243, 0.2);
+        }
+
+        .data .date {
+            font-weight: 600;
+            font-size: 16px;
+            color: var(--primary);
+            margin-bottom: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .data .date span {
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        .data .class,
+        .data .title,
+        .data .msg {
+            font-size: 16px;
+            color: #333;
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+
+        .data .class strong,
+        .data .title strong {
+            color: var(--primary);
+        }
+
+        .data .msg {
+            background: #f7faff;
+            border-left: 4px solid var(--primary);
+            padding: 12px 14px;
+            border-radius: 6px;
+            font-size: 15.5px;
+            color: #444;
+        }
+
+        /* ---------- Responsive ---------- */
+        @media (max-width: 992px) {
+            .announcement {
+                margin: 25px;
+                padding: 30px;
+            }
+
+            .announcement h2 {
+                font-size: 24px;
+            }
+
+            .data {
+                padding: 18px 20px;
+            }
+
+            .data .msg {
+                font-size: 15px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .announcement {
+                margin: 20px;
+                padding: 20px;
+            }
+
+            .announcement h2 {
+                font-size: 22px;
+            }
+
+            .data {
+                padding: 16px 18px;
+            }
+
+            .data .date {
+                font-size: 15px;
+            }
+
+            .data .class,
+            .data .title,
+            .data .msg {
+                font-size: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .announcement {
+                margin: 15px;
+                padding: 15px;
+            }
+
+            .announcement h2 {
+                font-size: 20px;
+            }
+
+            .data {
+                padding: 14px;
+            }
+
+            .data .date {
+                font-size: 14px;
+            }
+
+            .data .class,
+            .data .title,
+            .data .msg {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="<%= role === 'admin' ? 'admin-dash' : role === 'teacher' ? 'teacher-dash' : 'student-dash' %>">
+        <% if (role==="admin" ) { %>
+            <%- include("partials/AdminPageSidebar") %>
+                <% } else if (role==="teacher" ) { %>
+                    <%- include("partials/TeacherPageSidebar") %>
+                        <% } else { %>
+                            <%- include("partials/StudentPageSidebar") %>
+                                <% } %>
+
+                                    <div class="announcement">
+                                        <h2>Announcements</h2>
+
+                                        <% if (announcements.length===0) { %>
+                                            <p>No announcements found.</p>
+                                            <% } %>
+
+                                                <% announcements.forEach(a=> { %>
+                                                    <div class="data">
+                                                        <div class="date">
+                                                            <%= a.date.toDateString() %>,
+                                                                <% if (a.by==="Principal" ) { %>
+                                                                    <span>By: Principal</span>
+                                                                    <% } else if (a.by==="Teacher" ) { %>
+                                                                        <span>By: <%= a.teacherName %></span>
+                                                                        <% } %>
+                                                        </div>
+
+                                                        <% if (a.class && a.class !=="All" && a.class !=="Teachers" ) {
+                                                            %>
+                                                            <div class="class">
+                                                                <strong>For Class: </strong>
+                                                                <%= a.class %>
+                                                            </div>
+                                                            <% } %>
+
+                                                                <div class="title">
+                                                                    <strong>Title: </strong>
+                                                                    <%= a.title %>
+                                                                </div>
+
+                                                                <div class="msg">
+                                                                    <%= a.description %>
+                                                                </div>
+                                                    </div>
+                                                    <% }) %>
+                                    </div>
+    </div>
+</body>
+
+</html>

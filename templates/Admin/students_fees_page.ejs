@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fees Page : <%= student.name %>
+    </title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="/adminDashboard.css">
+</head>
+
+<style>
+    /* --- Reset & Basics --- */
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        /* font-family: sans-serif; */
+    }
+
+    body {
+        background-color: #f1f1f1;
+    }
+
+    .admin_dash {
+        display: flex;
+        min-height: 100vh;
+    }
+
+    .main-content {
+        flex: 1;
+        padding: 15px;
+        width: 100%;
+    }
+
+    /* --- Fees Card Container --- */
+    .fees-card {
+        background-color: rgb(184, 213, 224);
+        padding: 25px;
+        border-radius: 8px;
+        max-width: 1400px;
+        margin: 0 auto;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .fees-card h2 {
+        font-size: 30px;
+        text-align: center;
+        margin: 30px 0px;
+    }
+
+    /* --- Student Details --- */
+    .student-details {
+        display: flex;
+        justify-content: space-between;
+        margin: 0px 30px;
+    }
+
+
+    .student-details p {
+        margin: 15px 0px 15px;
+        font-size: 20px;
+    }
+
+    hr {
+        border: 0;
+        border-top: 1px solid #9fbcc9;
+        margin: 20px 0;
+    }
+
+    /* --- Fee Structure Header --- */
+    .fee-structure-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .fee-structure-header h1 {
+        margin: 10px;
+    }
+
+    /* --- Desktop Table Layout (Grid) --- */
+    .fee-header {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1.2fr 1.2fr 1fr;
+        background-color: rgb(81, 155, 183);
+        border-radius: 8px 8px 0 0;
+        text-align: center;
+        font-size: 20px;
+        padding: 15px 20px;
+    }
+
+    .fee-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1.2fr 1.2fr 1fr;
+        padding: 12px 15px;
+        background-color: #f9f9f9;
+        border-bottom: 1px solid #ddd;
+        align-items: center;
+        text-align: center;
+        gap: 10px;
+    }
+
+    .fee-row p {
+        font-size: 17px;
+        margin: 5px 0;
+    }
+
+    .fee-row:last-child {
+        border-bottom: none;
+        border-radius: 0 0 8px 8px;
+    }
+
+    /* --- Inputs & Status Badges --- */
+    .status {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 17px;
+        font-weight: 500;
+        min-width: 90px;
+    }
+
+    .status.paid {
+        background-color: #e0f8f1;
+        color: #1aaa55;
+    }
+
+    .status.pending {
+        background-color: #fff1e5;
+        color: #e67817;
+        cursor: pointer;
+    }
+
+    select.status {
+        border: 1px solid #ccc;
+        cursor: pointer;
+    }
+
+    .status .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: currentColor;
+        margin-right: 6px;
+    }
+
+    .paymentDate,
+    .mode {
+        padding: 6px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        width: 90%;
+        text-align: center;
+    }
+
+    .save-fee {
+        background-color: rgb(66, 154, 242);
+        color: white;
+        border: none;
+        padding: 12px 40px;
+        border-radius: 25px;
+        font-size: 16px;
+        cursor: pointer;
+        margin-top: 20px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .view-result-btn {
+        background-color: rgb(66, 154, 242);
+        color: white;
+        padding: 8px 15px;
+        border-radius: 6px;
+        font-size: 18px;
+        text-decoration: none;
+    }
+
+    .edit-btn {
+        margin-left: 10px;
+        cursor: pointer;
+    }
+
+
+    @media (max-width: 850px) {
+
+        .fee-header {
+            display: none;
+        }
+
+        .fee-row {
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+            border: 1px solid #eee;
+        }
+
+        /* 3. Style each item inside the card to look like "Label : Value" */
+        .fee-row>p,
+        .fee-row>div {
+            display: flex;
+            justify-content: space-between;
+            /* Label left, Value right */
+            align-items: center;
+            width: 100%;
+            margin-bottom: 8px;
+            font-size: 15px;
+            text-align: right;
+            /* Values align right */
+        }
+
+        /* 4. Add Labels automatically using CSS ::before */
+
+        /* First Child: Fee Type */
+        .fee-row>p:nth-child(1)::before {
+            content: "Fee Type :";
+            font-weight: bold;
+            color: #555;
+            text-align: left;
+            margin-right: 10px;
+        }
+
+        /* Second Child: Installment */
+        .fee-row>p:nth-child(2)::before {
+            content: "Installment :";
+            font-weight: bold;
+            color: #555;
+            text-align: left;
+            margin-right: 10px;
+        }
+
+        /* Third Child: Amount */
+        .fee-row>p:nth-child(3)::before {
+            content: "Amount :";
+            font-weight: bold;
+            color: #555;
+            text-align: left;
+            margin-right: 10px;
+        }
+
+        /* Fourth Child: Status (Wrapper Div) */
+        .fee-row>div:nth-child(4)::before {
+            content: "Status :";
+            font-weight: bold;
+            color: #555;
+            text-align: left;
+            margin-right: 10px;
+        }
+
+        /* Fifth Child: Date (Wrapper Div) */
+        .fee-row>p:nth-child(5)::before,
+        /* If plain text */
+        .fee-row>div:nth-child(5)::before {
+            /* If input wrapper */
+            content: "Date :";
+            font-weight: bold;
+            color: #555;
+            text-align: left;
+            margin-right: 10px;
+        }
+
+        /* Sixth Child: Mode (Wrapper Div) */
+        .fee-row>div:nth-child(6)::before {
+            content: "Mode :";
+            font-weight: bold;
+            color: #555;
+            text-align: left;
+            margin-right: 10px;
+        }
+
+        /* Inputs sizing for Mobile */
+        .paymentDate,
+        .mode {
+            width: 150px;
+        }
+
+        /* Center the Save button on mobile */
+        .save-fee {
+            width: 100%;
+        }
+    }
+
+    @media(max-width: 550px) {
+        .student-details {
+            flex-direction: column;
+        }
+        .fee-structure-header {
+            justify-content: center;
+        }
+    }
+</style>
+
+<body>
+    <div class="admin_dash">
+        <%- include("partials/AdminPageSidebar") %>
+
+            <div class="main-content">
+                <div class="fees-card">
+
+                    <h2><strong>Student Name : </strong>
+                        <%= student.name %>
+                    </h2>
+
+                    <div class="student-details">
+                        <div>
+                            <p><strong>Student ID :</strong>
+                                <%= student.id %>
+                            </p>
+                            <p><strong>Class :</strong>
+                                <%= student.class %>
+                            </p>
+                            <p><strong>Total Fees :</strong> ₹<%= student.fees.toLocaleString('en-IN') %>
+                            </p>
+                        </div>
+                        <div>
+                            <p><strong>Phone :</strong>
+                                <%= student.phone %>
+                            </p>
+                            <p><strong>DOB :</strong>
+                                <%= student.DOB.toDateString() %>
+                            </p>
+                            <p><strong>Address :</strong>
+                                <%= student.address %>
+                            </p>
+                        </div>
+                    </div>
+                    <hr>
+
+                    <div class="fee-structure">
+                        <div class="fee-structure-header">
+                            <h1>Fee Structure</h1>
+                            <a href="/admin/view-result/<%= student._id %>" class="view-result-btn">View Result</a>
+                        </div>
+
+                        <!-- Header (Hidden on Mobile) -->
+                        <div class="fee-header">
+                            <span>Fee Type</span>
+                            <span>Installment</span>
+                            <span>Amount</span>
+                            <span>Status</span>
+                            <span>Date</span>
+                            <span>Mode</span>
+                        </div>
+
+                        <form action="/update-fee-status/<%= student._id %>" method="POST">
+                            <div class="fee-content">
+                                <% student.feeStatus.forEach((fee, i)=> { %>
+                                    <div class="fee-row" id="fee-row-<%= i %>">
+
+                                        <!-- 1. Fee Type -->
+                                        <p>
+                                            <%= fee.feeType %>
+                                        </p>
+
+                                        <!-- 2. Installment -->
+                                        <p>
+                                            <%= fee.installment %>
+                                        </p>
+
+                                        <!-- 3. Amount -->
+                                        <p>₹<%= fee.amount.toLocaleString('en-IN') %>
+                                        </p>
+
+                                        <!-- 4. Status Wrapper -->
+                                        <div class="status-col">
+                                            <% if (fee.status==='Pending' || fee.editable) { %>
+                                                <div class="status pending" onclick="toggleEdit('<%= i %>')"
+                                                    id="status-display-<%= i %>">
+                                                    <span class="dot"></span> Pending
+                                                </div>
+                                                <select name="feeStatus[<%= i %>][status]" class="status"
+                                                    id="status-select-<%= i %>" style="display:none;">
+                                                    <option value="Pending">Pending</option>
+                                                    <option value="Paid">Paid</option>
+                                                </select>
+                                                <% } else { %>
+                                                    <input type="hidden" name="feeStatus[<%= i %>][status]"
+                                                        value="<%= fee.status %>">
+                                                    <span class="status paid"><span class="dot"></span> Paid</span>
+                                                    <% } %>
+                                        </div>
+
+                                        <!-- 5. Date Wrapper -->
+                                        <div class="date-col">
+                                            <% if (fee.status==='Pending' || fee.editable) { %>
+                                                <input type="date" class="paymentDate"
+                                                    name="feeStatus[<%= i %>][paymentDate]"
+                                                    value="<%= fee.paymentDate ? fee.paymentDate.toISOString().split('T')[0] : '' %>">
+                                                <% } else { %>
+                                                    <input type="hidden" name="feeStatus[<%= i %>][paymentDate]"
+                                                        value="<%= fee.paymentDate ? fee.paymentDate.toISOString().split('T')[0] : '' %>">
+                                                    <p id="date-display-<%= i %>"
+                                                        style="margin:0; width:auto; display:inline;">
+                                                        <%= fee.paymentDate ?
+                                                            fee.paymentDate.toISOString().split("T")[0] : '-' %>
+                                                    </p>
+                                                    <% } %>
+                                        </div>
+
+                                        <!-- 6. Mode Wrapper -->
+                                        <div class="mode-col">
+                                            <% if (fee.status==='Pending' || fee.editable) { %>
+                                                <select class="mode" name="feeStatus[<%= i %>][mode]">
+                                                    <option value="Online" <%=fee.mode==='Online' ? 'selected' : '' %>
+                                                        >Online</option>
+                                                    <option value="Offline" <%=fee.mode==='Offline' ? 'selected' : '' %>
+                                                        >Offline</option>
+                                                </select>
+                                                <% } else { %>
+                                                    <input type="hidden" name="feeStatus[<%= i %>][mode]"
+                                                        value="<%= fee.mode %>">
+                                                    <span style="margin-right:10px;">
+                                                        <%= fee.mode || '-' %>
+                                                    </span>
+                                                    <i class="fa-solid fa-pen-to-square edit-btn"
+                                                        onclick="enableEdit('<%=i %>')"></i>
+                                                    <% } %>
+                                        </div>
+
+                                    </div>
+                                    <% }) %>
+                            </div>
+                            <button type="submit" class="save-fee">Save Changes</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+    </div>
+</body>
+
+<script>
+    function toggleEdit(index) {
+        document.getElementById(`status-display-${index}`).style.display = "none";
+        document.getElementById(`status-select-${index}`).style.display = "inline-flex";
+    }
+
+    function enableEdit(index) {
+        const row = document.getElementById(`fee-row-${index}`);
+        const dateDisplay = document.getElementById(`date-display-${index}`);
+        let formattedDate = '';
+
+        if (dateDisplay && dateDisplay.innerText.trim() !== '-' && dateDisplay.innerText.trim() !== '') {
+            try { formattedDate = new Date(dateDisplay.innerText).toISOString().split('T')[0]; } catch (e) { }
+        }
+
+        // Re-inject HTML keeping the structure (Div wrappers) same for CSS to work
+        row.innerHTML = `
+            <p>${row.children[0].innerText}</p>
+            <p>${row.children[1].innerText}</p>
+            <p>${row.children[2].innerText}</p>
+
+            <div class="status-col">
+                <select name="feeStatus[${index}][status]" class="status">
+                    <option value="Pending">Pending</option>
+                    <option value="Paid" selected>Paid</option>
+                </select>
+            </div>
+
+            <div class="date-col">
+                <input type="date" class="paymentDate" name="feeStatus[${index}][paymentDate]" value="${formattedDate}">
+            </div>
+
+            <div class="mode-col">
+                <select name="feeStatus[${index}][mode]" class="mode">
+                    <option value="Online">Online</option>
+                    <option value="Offline">Offline</option>
+                </select>
+            </div>
+        `;
+    }
+</script>
+
+</html>

@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fees Page : <%= student.name %>
+    </title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="/adminDashboard.css">
+</head>
+
+<style>
+    /* --- Reset & Basics --- */
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        background-color: #f1f1f1;
+        font-family: sans-serif;
+    }
+
+    .student-dash {
+        display: flex;
+        min-height: 100vh;
+    }
+
+    /* --- Main Card Container --- */
+    .fees-card {
+        flex: 1;
+        background-color: rgb(184, 213, 224);
+        padding: 30px 25px;
+        margin: 20px;
+        border-radius: 8px;
+        max-width: 100%;
+    }
+
+    .fees-card h2 {
+        font-size: 28px;
+        text-align: center;
+        margin: 30px 0px;
+    }
+
+    /* --- Student Details Section --- */
+    .student-details {
+        display: flex;
+        justify-content: space-between;
+        margin: 0px 30px;
+        flex-wrap: wrap;
+    }
+
+    .student-details p {
+        margin: 15px 0px;
+        font-size: 18px;
+    }
+
+    hr {
+        border: 0;
+        border-top: 1px solid #9fbcc9;
+        margin: 20px 0;
+    }
+
+    /* --- Header Area --- */
+    .fee-structure-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+
+    .fee-structure-header h1 {
+        margin: 10px;
+    }
+
+    .pay-fee-btn {
+        background-color: rgb(66, 154, 242);
+        color: white;
+        font-size: 16px;
+        padding: 10px 20px;
+        border-radius: 8px;
+        outline: none;
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    /* --- Desktop Table Layout (Grid) --- */
+    .fee-header {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1.2fr 1fr;
+        background-color: rgb(81, 155, 183);
+        border-radius: 8px 8px 0 0;
+        text-align: center;
+        font-size: 17px;
+        padding: 15px 10px;
+        font-weight: 500;
+    }
+
+    .fee-content {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .fee-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1.2fr 1fr;
+        padding: 15px 10px;
+        background-color: #f9f9f9;
+        border-bottom: 1px solid #ddd;
+        align-items: center;
+        text-align: center;
+    }
+
+    .fee-row:last-child {
+        border-radius: 0 0 8px 8px;
+        border-bottom: none;
+    }
+
+    .fee-row p {
+        font-size: 16px;
+        margin: 0;
+        word-wrap: break-word;
+    }
+
+    /* --- Status Badges --- */
+    .status {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 600;
+        min-width: 90px;
+    }
+
+    .status.paid {
+        background-color: #e0f8f1;
+        color: #1aaa55;
+    }
+
+    .status.pending {
+        background-color: #fff1e5;
+        color: #e67817;
+    }
+
+    .status .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: currentColor;
+        margin-right: 6px;
+    }
+
+
+    @media (max-width: 850px) {
+
+        /* 1. Hide the table header */
+        .fee-header {
+            display: none;
+        }
+
+        /* 2. Turn Row into a Card */
+        .fee-row {
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            margin-bottom: 15px;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid #eee;
+        }
+
+        /* 3. Style items to look like "Label : Value" */
+        .fee-row p {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 10px;
+            font-size: 16px;
+            text-align: right;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 5px;
+        }
+
+        .fee-row p:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        /* 4. Add Labels using CSS ::before */
+
+        /* Fee Type */
+        .fee-row p:nth-child(1)::before {
+            content: "Fee Type :";
+            font-weight: bold;
+            color: #555;
+        }
+
+        /* Installment */
+        .fee-row p:nth-child(2)::before {
+            content: "Installment :";
+            font-weight: bold;
+            color: #555;
+        }
+
+        /* Amount */
+        .fee-row p:nth-child(3)::before {
+            content: "Amount :";
+            font-weight: bold;
+            color: #555;
+        }
+
+        /* Status */
+        .fee-row p:nth-child(4)::before {
+            content: "Status :";
+            font-weight: bold;
+            color: #555;
+        }
+
+        /* Date */
+        .fee-row p:nth-child(5)::before {
+            content: "Date :";
+            font-weight: bold;
+            color: #555;
+        }
+
+        /* Mode */
+        .fee-row p:nth-child(6)::before {
+            content: "Mode :";
+            font-weight: bold;
+            color: #555;
+        }
+
+        /* Adjustments for card */
+        .student-details {
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .fees-card {
+            padding: 15px;
+            margin: 10px;
+        }
+
+        .pay-fee-btn {
+            width: 100%;
+            text-align: center;
+            margin-top: 10px;
+        }
+    }
+
+    @media(max-width: 550px) {
+
+        .fee-structure-header {
+            justify-content: center;
+        }
+    }
+</style>
+
+<body>
+    <div class="student-dash">
+
+        <!-- Include sidebar -->
+        <%- include("partials/StudentPageSidebar") %>
+
+            <div class="fees-card">
+
+                <h2><strong>Student Name : </strong>
+                    <%= student.name %>
+                </h2>
+
+                <div class="student-details">
+                    <div class="school-related-details">
+                        <p><strong>Student ID :</strong>
+                            <%= student.id %>
+                        </p>
+                        <p><strong>Class :</strong>
+                            <%= student.class %>
+                        </p>
+                        <p><strong>Total Fees :</strong> ₹<%= student.fees.toLocaleString('en-IN') %>
+                        </p>
+                    </div>
+
+                    <div class="basic-details">
+                        <p><strong>Phone :</strong>
+                            <%= student.phone %>
+                        </p>
+                        <p><strong>Date of Birth :</strong>
+                            <%= student.DOB.toDateString() %>
+                        </p>
+                        <p><strong>Address :</strong>
+                            <%= student.address %>
+                        </p>
+                    </div>
+                </div>
+                <hr>
+
+                <div class="fee-structure">
+                    <div class="fee-structure-header">
+                        <h1>Fee Structure</h1>
+                        <a href="/students/checkout-fees" style="text-decoration: none;">
+                            <button class="pay-fee-btn">Pay Online Fees</button>
+                        </a>
+                    </div>
+
+                    <!-- Header -->
+                    <div class="fee-header">
+                        <span>Fee Type</span>
+                        <span>Installment</span>
+                        <span>Amount</span>
+                        <span>Status</span>
+                        <span>Date of Payment</span>
+                        <span>Mode</span>
+                    </div>
+
+                    <!-- Content Rows -->
+                    <div class="fee-content">
+                        <% student.feeStatus.forEach((fee, i)=> { %>
+                            <div class="fee-row" id="fee-row-<%= i %>">
+                                <!-- 1. Fee Type -->
+                                <p>
+                                    <%= fee.feeType %>
+                                </p>
+
+                                <!-- 2. Installment -->
+                                <p>
+                                    <%= fee.installment %>
+                                </p>
+
+                                <!-- 3. Amount -->
+                                <p>₹<%= fee.amount.toLocaleString('en-IN') %>
+                                </p>
+
+                                <!-- 4. Status -->
+                                <p>
+                                    <% if (fee.status==='Paid' ) { %>
+                                        <span class="status paid"><span class="dot"></span> Paid</span>
+                                        <% } else { %>
+                                            <span class="status pending"><span class="dot"></span> Pending</span>
+                                            <% } %>
+                                </p>
+
+                                <!-- 5. Date -->
+                                <p>
+                                    <%= fee.paymentDate ? fee.paymentDate.toISOString().split("T")[0] : '-' %>
+                                </p>
+
+                                <!-- 6. Mode -->
+                                <p>
+                                    <%= fee.mode ? fee.mode : '-' %>
+                                </p>
+                            </div>
+                            <% }) %>
+                    </div>
+                </div>
+            </div>
+    </div>
+</body>
+
+</html>

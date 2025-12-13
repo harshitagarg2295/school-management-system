@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Settings</title>
+
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #f9fafb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --primary: #4f46e5;
+      --radius: 14px;
+      --shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    body.dark {
+      --bg: #111827;
+      --card: #1f2937;
+      --text: #f3f4f6;
+      --muted: #9ca3af;
+      --shadow: 0 4px 20px rgba(255, 255, 255, 0.05);
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      transition: 0.25s ease;
+    }
+
+    .admin_dash {
+      display: flex;
+    }
+
+    .settings-container {
+      max-width: 950px;
+      margin: 20px auto;
+      padding: 20px;
+      font-family: "Inter", sans-serif;
+    }
+
+    .settings-title {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 18px;
+      text-align: center;
+    }
+
+    .settings-card {
+      background: var(--card);
+      padding: 35px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+
+    .settings-card h2 {
+      margin: 0 0 12px 0;
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .settings-card form {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .old-password,
+    .new-password {
+      width: 100%;
+      position: relative;
+
+    }
+
+    .old-password input,
+    .new-password input {
+      width: 100%;
+      padding: 14px;
+      margin: 8px 0;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 15px;
+    }
+
+    .old-password p {
+      position: absolute;
+      right: 15px;
+      z-index: 10;
+      font-size: 14px;
+    }
+
+    .old-password p a {
+      text-decoration: none;
+      color: var(--primary);
+    }
+
+    .old-password {
+      margin-bottom: 7px;
+    }
+
+    .new-password {
+      margin-top: 15px;
+    }
+
+    .save-pass-btn {
+      margin-top: 10px;
+      width: 100%;
+      padding: 12px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .save-pass-btn:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+    }
+
+    /* Logout Button */
+    .logout-btn {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid var(--muted);
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
+      font-weight: 600;
+      margin-top: 10px;
+      transition: 0.2s;
+    }
+
+    .logout-btn:hover {
+      background: #ef4444;
+      color: white;
+      border-color: #ef4444;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .settings-card {
+        padding: 18px;
+      }
+
+      .settings-title {
+        font-size: 24px;
+      }
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <!-- AUTO SIDEBAR LOAD -->
+
+  <div class="admin_dash">
+
+
+    <% if (userType==="admin" ) { %>
+      <%- include("partials/AdminPageSidebar") %>
+        <% } else if (userType==="teacher" ) { %>
+          <%- include("partials/TeacherPageSidebar") %>
+            <% } else { %>
+              <%- include("partials/StudentPageSidebar") %>
+                <% } %>
+
+                  <div class="settings-container">
+
+                    <div class="settings-title">Settings</div>
+
+                    <!-- Change Password Card -->
+                    <div class="settings-card">
+                      <h2>Change Password</h2>
+
+                      <form action="/change-password" method="post" class="password-box">
+
+                        <div class="old-password">
+
+                          <input type="text" name="username" value="<%= user.username %>">
+
+                          <input type="password" name="currentPassword" id="currentPassword"
+                            placeholder="Enter Current Password" required>
+                          <i class="fa fa-eye" id="toggleCurrent"
+                            style="position: absolute; right: 20px; top: 73%; transform: translateY(-50%); cursor: pointer;"></i>
+
+                          <p><a href="/forgot-password?role=<%= userType %>">Forget Password</a></p>
+
+                        </div>
+
+                        <div class="new-password">
+                          <input type="text" name="newPassword" placeholder="Enter New Password" required>
+                          <input type="password" name="confirmPassword" id="confirmPassword"
+                            placeholder="Confirm New Password" required>
+                          <i class="fa fa-eye" id="toggleConfirm"
+                            style="position: absolute; right: 20px; top: 73%; transform: translateY(-50%); cursor: pointer;"></i>
+                        </div>
+
+
+                        <button class="save-pass-btn" type="submit">
+                          Save Password
+                        </button>
+                      </form>
+                    </div>
+
+                    <!-- Logout -->
+                    <button id="logoutBtn" class="logout-btn">Logout</button>
+
+                  </div>
+  </div>
+  <script>
+
+    const userType = "<%= userType %>";
+
+    // LOGOUT — dynamic per userType
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    logoutBtn.addEventListener("click", () => {
+
+      const confirmLogout = confirm("Are you sure you want to logout?");
+      if (!confirmLogout) return;
+
+      window.location = "/logout";
+
+    });
+
+    function setupToggle(inputId, iconId) {
+      const input = document.getElementById(inputId);
+      const icon = document.getElementById(iconId);
+
+      icon.addEventListener("click", () => {
+        const type = input.type === "password" ? "text" : "password";
+        input.type = type;
+
+        icon.classList.toggle("fa-eye");
+        icon.classList.toggle("fa-eye-slash");
+      });
+    }
+
+    setupToggle("currentPassword", "toggleCurrent");
+    setupToggle("confirmPassword", "toggleConfirm");
+
+  </script>
+
+</body>
+
+</html>

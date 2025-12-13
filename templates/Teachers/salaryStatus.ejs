@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Salary Status : <%= teacher.name %>
+  </title>
+
+  <style>
+    :root {
+      --primary: #2196f3;
+      --light-bg: #f4f7fb;
+      --text-dark: #2c3e50;
+      --success: #27ae60;
+      --danger: #e74c3c;
+      --border: #e0e0e0;
+      --card-bg: #ffffff;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background: var(--light-bg);
+      color: var(--text-dark);
+    }
+
+    .teacher-dash {
+      display: flex;
+    }
+
+    .salary-card {
+      margin: 50px 20px 50px 70px;
+      width: 83%;
+      background: var(--card-bg);
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      padding: 40px 30px;
+      transition: all 0.3s ease;
+    }
+
+    .salary-card h2 {
+      margin-bottom: 40px;
+      font-size: 28px;
+      color: var(--primary);
+      color: #2c3e50;
+      font-weight: 600;
+      border-bottom: 3px solid var(--primary);
+      padding-bottom: 10px;
+      display: inline-block;
+    }
+
+    .header,
+    .row {
+      display: grid;
+      grid-template-columns: 2fr 2fr 2fr 1fr 2fr;
+      align-items: center;
+      font-size: 18px;
+      text-align: center;
+      gap: 10px;
+    }
+
+    .header {
+      font-weight: bold;
+      padding-bottom: 20px;
+      border-bottom: 2px solid var(--border);
+      background: rgba(33, 150, 243, 0.1);
+      border-radius: 10px;
+      padding-top: 20px;
+    }
+
+    .row {
+      border-bottom: 1px solid var(--border);
+      padding: 16px 0;
+      transition: background 0.3s ease;
+    }
+
+    .row:hover {
+      background: rgba(33, 150, 243, 0.05);
+    }
+
+    .status-paid {
+      color: var(--success);
+      font-weight: bold;
+      background: rgba(46, 204, 113, 0.1);
+      padding: 6px 12px;
+      border-radius: 20px;
+    }
+
+    .status-pending {
+      color: var(--danger);
+      font-weight: bold;
+      background: rgba(231, 76, 60, 0.1);
+      padding: 6px 12px;
+      border-radius: 20px;
+    }
+
+    .download-btn {
+      background: var(--primary);
+      color: #fff;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 8px;
+      text-decoration: none;
+      cursor: pointer;
+      font-size: 15px;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 6px rgba(33, 150, 243, 0.25);
+    }
+
+    .download-btn:hover {
+      background: #1976d2;
+      transform: translateY(-1px);
+      box-shadow: 0 3px 8px rgba(33, 150, 243, 0.35);
+    }
+
+    /* Scrollable for smaller widths */
+    .list {
+      overflow-x: auto;
+      width: 100%;
+    }
+
+    /* ✅ Tablet screens */
+    @media (max-width: 992px) {
+      .salary-card {
+        width: 100%;
+        margin: 30px 15px;
+        padding: 30px 20px;
+      }
+
+      .header,
+      .row {
+        grid-template-columns: 1.5fr 1.5fr 1.5fr 1fr 1.5fr;
+        font-size: 16px;
+      }
+
+      .download-btn {
+        font-size: 14px;
+        padding: 6px 10px;
+      }
+    }
+
+    /* ✅ Mobile screens */
+    @media (max-width: 768px) {
+      .salary-card {
+        margin: 20px;
+        width: 100%;
+        padding: 20px;
+      }
+
+      .header {
+        display: none;
+      }
+
+      .row {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 18px;
+        margin-bottom: 16px;
+        background: var(--card-bg);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+      }
+
+      .row span {
+        margin: 6px 0;
+        font-size: 16px;
+      }
+
+      .row span::before {
+        font-weight: 600;
+        color: var(--primary);
+        display: inline-block;
+        width: 150px;
+      }
+
+      .row span:nth-child(1)::before {
+        content: "Month: ";
+      }
+
+      .row span:nth-child(2)::before {
+        content: "Total Salary: ";
+      }
+
+      .row span:nth-child(3)::before {
+        content: "Paid Salary: ";
+      }
+
+      .row span:nth-child(4)::before {
+        content: "Status: ";
+      }
+
+      .row span:nth-child(5)::before {
+        content: "Receipt: ";
+      }
+    }
+
+    /* ✅ Extra small screens */
+    @media (max-width: 480px) {
+      .salary-card {
+        margin: 15px;
+        padding: 15px;
+      }
+
+      .row {
+        font-size: 15px;
+        padding: 12px;
+      }
+
+      .row span::before {
+        width: 120px;
+        font-size: 14px;
+      }
+
+      .download-btn {
+        font-size: 13px;
+        padding: 5px 8px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="teacher-dash">
+    <%- include("partials/TeacherPageSidebar") %>
+
+      <div class="salary-card">
+        <h2>My Salary Status</h2>
+
+        <div class="header">
+          <h3>Month</h3>
+          <h3>Total Salary</h3>
+          <h3>Paid Salary</h3>
+          <h3>Status</h3>
+          <h3>Receipt</h3>
+        </div>
+
+        <div class="list">
+          <% if (salaryData.length> 0) { %>
+            <% salaryData.forEach(item=> { %>
+              <div class="row">
+                <span>
+                  <%= item.monthYear %>
+                </span>
+                <span>₹<%= item.totalSalary %></span>
+                <span>
+                  <% if (item.status==="paid" ) { %>
+                    ₹<%= item.payableSalary %>
+                      <% } else { %>
+                        -
+                        <% } %>
+                </span>
+                <span class="<%= item.status === 'paid' ? 'status-paid' : 'status-pending' %>">
+                  <%= item.status.charAt(0).toUpperCase() + item.status.slice(1) %>
+                </span>
+                <span>
+                  <% if (item.status==="paid" ) { %>
+                    <a href="/teachers/download-receipt/<%= item.month %>/<%= item.year %>"
+                      class="download-btn">Download</a>
+                    <% } else { %>
+                      -
+                      <% } %>
+                </span>
+              </div>
+              <% }) %>
+                <% } else { %>
+                  <p style="margin-top:20px;">No salary records found.</p>
+                  <% } %>
+        </div>
+      </div>
+  </div>
+</body>
+
+</html>

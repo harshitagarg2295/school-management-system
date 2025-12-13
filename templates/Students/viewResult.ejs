@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Result : <%= student.name %>
+    </title>
+</head>
+
+<style>
+    .student-dash,
+    .admin-dash {
+        display: flex;
+        background: #f7f9fc;
+    }
+
+    .result-card {
+        flex: 1;
+        padding: 40px;
+        font-family: "Segoe UI", Tahoma, sans-serif;
+    }
+
+    .heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 40px;
+    }
+
+    .heading h2 {
+        font-size: 32px;
+        color: #2c3e50;
+        margin: 0;
+    }
+
+    .select_class {
+        outline: none;
+        padding: 8px 12px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        background: #ffffff;
+        font-size: 16px;
+        transition: border 0.2s;
+        cursor: pointer;
+    }
+
+    .select_class:focus {
+        border: 1px solid #3498db;
+    }
+
+
+    .main-section {
+        margin: 40px 0 50px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 25px;
+    }
+
+    .main-section div {
+        font-size: 18px;
+        background: #f5f7fa;
+        padding: 12px 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .main-section label {
+        font-weight: 700;
+        color: #4a4a4a;
+        margin-right: 6px;
+    }
+
+    .marks-card {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        background: #ffffff;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .subjects,
+    .marks {
+        padding: 20px 40px;
+    }
+
+    .subjects div:first-child,
+    .marks div:first-child {
+        font-size: 20px;
+        font-weight: 700;
+        color: #34495e;
+        margin-bottom: 10px;
+    }
+
+    .subjects div:not(:first-child),
+    .marks p {
+        font-size: 18px;
+        padding: 6px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .subjects div:last-child,
+    .marks p:last-child {
+        border-bottom: none;
+    }
+
+    .outOf {
+        margin-top: 25px;
+        text-align: right;
+        font-size: 18px;
+        font-weight: 600;
+        color: #2c3e50;
+        padding: 12px 20px;
+
+    }
+
+    .percentage {
+        display: flex;
+        justify-content: center;
+    }
+
+    .percentage div {
+        margin: 35px auto 0;
+        display: inline-block;
+        padding: 12px 30px;
+        background: #3498db;
+        color: #fff;
+        font-size: 20px;
+        font-weight: 600;
+        border-radius: 30px;
+        text-align: center;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        transition: transform 0.2s ease, background 0.2s ease;
+        cursor: default;
+    }
+
+    .percentage div:hover {
+        background: #2980b9;
+    }
+
+
+    @media (max-width: 992px) {
+
+        .result-card {
+            padding: 30px 20px;
+        }
+
+        .heading {
+            flex-direction: column;
+            text-align: center;
+            gap: 15px;
+        }
+
+        .heading h2 {
+            font-size: 28px;
+        }
+
+        .select_class {
+            /* width: 60%; */
+            font-size: 15px;
+            padding: 8px;
+        }
+
+        .main-section {
+            gap: 20px;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .main-section div {
+            width: 45%;
+            text-align: center;
+            padding: 12px;
+        }
+
+        .subjects,
+        .marks {
+            padding: 20px 25px;
+        }
+
+        .subjects div:first-child,
+        .marks div:first-child {
+            font-size: 18px;
+        }
+
+        .subjects div:not(:first-child),
+        .marks p {
+            font-size: 17px;
+        }
+    }
+
+
+    @media (max-width: 768px) {
+
+        .result-card {
+            padding: 25px 15px;
+        }
+
+        .main-section div {
+            width: 100%;
+            font-size: 17px;
+        }
+
+        .marks-card {
+            grid-template-columns: 1fr 1fr;
+            column-gap: 10px;
+        }
+
+        .subjects,
+        .marks {
+            padding: 15px 18px;
+        }
+
+        .subjects div:first-child,
+        .marks div:first-child {
+            font-size: 18px;
+        }
+
+        .subjects div:not(:first-child),
+        .marks p {
+            font-size: 16px;
+        }
+
+        .percentage div {
+            font-size: 18px;
+            padding: 10px 25px;
+        }
+    }
+
+    @media (max-width: 480px) {
+
+        .heading h2 {
+            font-size: 24px;
+        }
+
+        .select_class {
+            width: 100%;
+            padding: 10px;
+        }
+
+        .main-section div {
+            font-size: 16px;
+            padding: 10px;
+        }
+
+        .subjects,
+        .marks {
+            padding: 12px 15px;
+        }
+
+        .subjects div:not(:first-child),
+        .marks p {
+            font-size: 15px;
+        }
+
+        .percentage div {
+            width: 100%;
+            font-size: 18px;
+            padding: 10px;
+        }
+    }
+</style>
+
+<body>
+
+    <div class="<%= role === 'admin' ? 'admin-dash' : 'student-dash' %>">
+
+        <% if(role==="admin" ){ %>
+            <%- include("partials/AdminPageSidebar") %>
+                <% } else { %>
+                    <%- include("partials/StudentPageSidebar") %>
+                        <% } %>
+                            <div class="result-card">
+
+                                <div class="heading">
+                                    <h2>View Result</h2>
+
+                                    <!-- ✅ Dropdown of available exams -->
+                                    <form method="GET"
+                                        action="<%= role === 'admin' ? '/admin/view-result/' + student._id : '/students/view-result' %>">
+                                        <select class="select_class" name="exam" onchange="this.form.submit()">
+                                            <option value="">Select Exam</option>
+                                            <% exams.forEach(e=> { %>
+                                                <option value="<%= e.id %>" <%=selectedResult &&
+                                                    String(selectedResult._id)===String(e.id) ? "selected" : "" %>>
+                                                    <%= e.label %>
+                                                </option>
+                                                <% }) %>
+                                        </select>
+                                    </form>
+                                </div>
+
+
+                                <div class="main-section">
+                                    <div><label for="">Name : </label>
+                                        <%= student.name %>
+                                    </div>
+                                    <div><label for="">Class : </label>
+                                        <%= student.class%>
+                                    </div>
+                                    <div><label for="">Id: </label>
+                                        <%= student.id%>
+                                    </div>
+                                </div>
+
+                                <% if (selectedResult) { %>
+                                    <div class="outOf">Out Of : <%= selectedResult.outOf %>
+                                    </div>
+
+                                    <div class="marks-card">
+                                        <div class="subjects">
+                                            <div class="sub">Subjects</div>
+                                            <% if (marksPlain) { %>
+                                                <% Object.keys(marksPlain).forEach(sub=> { %>
+                                                    <div>
+                                                        <%= sub %>
+                                                    </div>
+                                                    <% }) %>
+                                                        <% } %>
+                                        </div>
+
+                                        <div class="marks">
+                                            <div class="mark">Marks</div>
+                                            <% if (marksPlain) { %>
+                                                <% Object.values(marksPlain).forEach(m=> { %>
+                                                    <p>
+                                                        <%= m %>
+                                                    </p>
+                                                    <% }) %>
+                                                        <% } %>
+                                        </div>
+                                    </div>
+
+                                    <% const total=Object.values(marksPlain || {}).reduce((a,b)=>a+b,0);
+                                        const percentage = (
+                                        total / (Object.keys(marksPlain || {}).length * selectedResult.outOf)
+                                        * 100).toFixed(2);
+                                        %>
+                                        <div class="percentage">
+                                            <div>Percentage : <%= percentage %>%</div>
+                                        </div>
+                                        <% } else { %>
+                                            <p style="margin-top:40px;font-size:18px;color:#555;">Select an exam to
+                                                view result.</p>
+                                            <% } %>
+
+                            </div>
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Students</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="/adminDashboard.css">
+</head>
+<style>
+    body {
+        background-color: #f1f1f1;
+    }
+
+    .students-section {
+        width: 82%;
+    }
+
+    .students-page {
+        background-color: white;
+        padding: 10px 18px;
+        margin: 20px 10px 20px 20px;
+        border-radius: 8px;
+    }
+
+    .headers {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+    }
+
+    .headers h1 {
+        width: 350px;
+        margin-right: 490px;
+    }
+
+    .search-stud {
+        display: flex;
+        align-items: center;
+    }
+
+    .search-stud i {
+        position: relative;
+        left: 25px;
+        font-size: 16px;
+    }
+
+    .search-stud input {
+        padding: 7px 2px 7px 30px;
+        border-radius: 16px;
+        border: 1px solid grey;
+        font-size: 15px;
+    }
+
+    .students-header {
+        background-color: #b1e6f4;
+        border-radius: 7px;
+        margin-top: 15px;
+        min-width: max-content;
+    }
+
+    .students-header ul {
+        display: grid;
+        grid-template-columns: 0.2fr 1fr 0.5fr 0.7fr 0.8fr 1fr 0.9fr 0.6fr 0.6fr;
+        list-style: none;
+        font-size: 20px;
+        color: rgb(70, 66, 66);
+        padding: 10px 6px 13px 5px;
+        gap: 10px;
+    }
+
+    .students-header ul li {
+        margin-top: 22px;
+    }
+
+    .list {
+        display: grid;
+        grid-template-columns: 0.2fr 1fr 0.5fr 0.7fr 0.8fr 1fr 0.9fr 0.6fr 0.6fr;
+        font-size: 18px;
+        padding: 20px 10px;
+        align-items: center;
+        word-break: break-word;
+        border-bottom: 1px solid black;
+
+    }
+
+    .list:hover {
+        background-color: rgb(231, 194, 219);
+    }
+
+    .icons {
+        display: flex;
+        gap: 10px;
+        cursor: pointer;
+    }
+
+    .btn {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+    }
+
+    .add_stud {
+        margin: 10px 5px;
+        padding: 7px 10px;
+        font-size: 16px;
+        border-radius: 6px;
+        outline: none;
+        border: none;
+        background-color: rgb(66, 154, 242);
+        color: white;
+    }
+
+    .student-form {
+        display: none;
+        margin: 10px 5px 15px;
+    }
+
+    .student-form input {
+        margin: 0px;
+        text-align: center;
+        padding: 5px 0px;
+        border-radius: 3px;
+        border: 1px solid grey;
+    }
+
+    .student-form button {
+        padding: 7px 14px;
+        background-color: rgb(66, 154, 242);
+        color: white;
+        border: none;
+        border-radius: 5px;
+    }
+
+    .student-edit-form input {
+        width: 140px;
+        margin: 4px;
+        padding: 5px 1px;
+    }
+
+    .student-edit-form button {
+        padding: 6px;
+        background-color: #60A5FA;
+        border: none;
+        color: white;
+        border-radius: 4px;
+        width: 70px;
+    }
+
+    .dropdown {
+        position: relative;
+    }
+
+    .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        right: -50px;
+        background-color: rgba(15, 15, 15, 0.8);
+        min-width: 180px;
+        z-index: 1000;
+        padding: 8px 0px 8px;
+        text-align: center;
+        display: none;
+        border-radius: 6px;
+    }
+
+    .functionalities {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .dropdown-menu a {
+        margin: 5px;
+        text-decoration: none;
+        color: white;
+        transition: all 0.3s ease;
+
+    }
+
+    .select_class {
+        padding: 8px 14px;
+        font-size: 14px;
+        font-weight: 500;
+        border-radius: 10px;
+        border: 2px solid gray;
+        outline: none;
+        background: linear-gradient(to right, #ffffff, #f7faff);
+        color: #333;
+        cursor: pointer;
+        transition: 0.25s ease-in-out;
+    }
+
+    .select_class:hover {
+        border-color: #60a5fa;
+        background: linear-gradient(to right, #eef7ff, #ffffff);
+    }
+
+    .select_class:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 6px rgba(37, 99, 235, 0.4);
+    }
+
+
+    .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        overflow-y: auto;
+        border-radius: 6px;
+    }
+
+    .students-header ul,
+    .list {
+        min-width: 950px;
+        /* ORIGINAL width preserved */
+    }
+
+    .student-form-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .student-form.show {
+        display: flex !important;
+        flex-wrap: nowrap;
+        gap: 12px;
+        min-width: max-content;
+    }
+
+    .student-form-wrapper::-webkit-scrollbar {
+        height: 5px;
+    }
+
+    .student-form-wrapper::-webkit-scrollbar-thumb {
+        background: #bbb;
+        border-radius: 50px;
+    }
+
+
+    @media (max-width:1350px) and (min-width:900px) {
+        .students-section {
+            margin-left: 280px !important;
+            /* EXACT Sidebar width */
+            width: calc(100% - 280px);
+        }
+
+        .headers h1 {
+            margin-right: 0px;
+            width: auto;
+        }
+
+        .student-edit-form input {
+            width: 110px;
+        }
+    }
+
+    @media(max-width:900px) {
+        .students-section {
+            width: 100%;
+        }
+
+        .student-edit-form input {
+            width: 110px;
+        }
+
+        .headers h1 {
+            margin-right: 0px;
+            width: auto;
+        }
+    }
+
+    @media(max-width:600px) {
+        .headers {
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+    }
+
+    @media(max-width: 534px) {
+
+
+        .headers h1 {
+            padding-top: 15px;
+        }
+
+        .students-page {
+            margin: 0 10px;
+            padding: 0;
+        }
+
+    }
+
+    .pdf-btn {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 15px;
+        margin-bottom: 15px;
+    }
+
+    .print-btn {
+        padding: 10px 15px;
+        border-radius: 8px;
+        border: none;
+        font-size: 14px;
+        background-color: rgb(66, 154, 242);
+        color: white;
+
+    }
+
+    @media print {
+        body {
+            background: white !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            font-size: 12px;
+        }
+
+        .menu-section,
+        .hamburger,
+        .no-print,
+        .headers,
+        .teacher-form-wrapper,
+        .pdf-btn,
+        .btn,
+        .notification {
+            display: none !important;
+        }
+
+        /* 2. Reset Container Margins/Widths */
+        .students-section {
+            margin-left: 0 !important;
+            width: 100% !important;
+        }
+
+        .students-page {
+            width: 100% !important;
+            margin: 0 !important;
+            box-shadow: none !important;
+            padding: 0px !important;
+        }
+
+        .table-wrapper {
+            overflow: visible !important;
+        }
+
+        /* 3. FIX THE GRID & HIDE ACTION COLUMN */
+        .students-header ul,
+        .list {
+            display: grid !important;
+            grid-template-columns: 0.2fr 1fr 0.5fr 0.5fr 0.8fr 1fr 0.9fr 0.6fr !important;
+            min-width: 100% !important;
+            padding: 5px 0 !important;
+            font-size: 12px !important;
+            gap: 5px !important;
+        }
+
+        .students-header ul li:last-child {
+            display: none !important;
+        }
+
+        .icons {
+            display: none !important;
+        }
+
+        .student-edit-form {
+            display: none !important;
+        }
+
+        .student-wrapper {
+            page-break-inside: avoid;
+        }
+    }
+</style>
+
+<body>
+
+    <div class="admin_dash">
+
+        <!-- Include sidebar -->
+        <%- include("partials/AdminPageSidebar") %>
+
+            <section class="students-section">
+
+                <%- include("partials/adminNotification", { admin: admin }) %>
+
+                    <div class="students-page">
+
+                        <div class="headers">
+
+                            <h1>All Students List</h1>
+
+                            <form method="GET" action="/stud-menu" style="margin: 10px 0;">
+                                <select class="select_class" name="classFilter" onchange="this.form.submit()">
+                                    <option value="">Classes</option>
+                                    <% allClasses.forEach(c=> { %>
+                                        <option value="<%= c %>" <%=classFilter===c ? "selected" : "" %>><%= c %>
+                                        </option>
+                                        <% }) %>
+                                </select>
+                            </form>
+
+                            <div class="search-stud">
+                                <i class="fa fa-search"></i>
+                                <input type="text" id="searchInput" placeholder="Search by Name">
+                            </div>
+                        </div>
+
+                        <div class="table-wrapper">
+                            <div class="students-header">
+                                <ul>
+                                    <div class="header-checkbox"></div>
+                                    <li>Student Name</li>
+                                    <li>Id</li>
+                                    <li>Class</li>
+                                    <li>DOB</li>
+                                    <li>Address</li>
+                                    <li>Phone Number</li>
+                                    <li>Fees</li>
+                                    <li>Action</li>
+                                </ul>
+                                <hr>
+                            </div>
+
+                            <div class="btn">
+                                <button class="add_stud">Add Student</button>
+                            </div>
+
+                            <!-- Hidden Form for add student -->
+                            <div class="student-form-wrapper">
+
+                                <form class="student-form" action="/add-student" method="POST">
+                                    <input type="text" name="name" placeholder="Name" required
+                                        style="text-transform: capitalize;">
+                                    <input type="text" name="id" placeholder="ID" required
+                                        style="text-transform: capitalize;">
+                                    <input type="text" name="class" placeholder="Class + Section" required
+                                        style="text-transform: uppercase;">
+                                    <input type="date" name="DOB" placeholder="DOB" required>
+                                    <input type="text" name="address" placeholder="Address" required
+                                        style="text-transform: capitalize;">
+                                    <input type="text" name="phone" placeholder="Phone Number" required>
+                                    <input type="text" name="fees" placeholder="Fees" required>
+                                    <button type="submit">Save</button>
+                                </form>
+                            </div>
+
+                            <div class="student-list">
+
+                                <% students.forEach((student, index)=> { %>
+                                    <div class="student-wrapper" id="wrapper-<%= student._id %>"
+                                        data-name="<%= student.name.toLowerCase() %>">
+
+                                        <!-- Normal View -->
+                                        <div class="list" id="display-<%= student._id %>">
+                                            <div class="id">
+                                                <%= index + 1 %>
+                                            </div>
+                                            <div class="name">
+                                                <%= student.name %>
+                                            </div>
+                                            <div class="id">
+                                                <%= student.id %>
+                                            </div>
+                                            <div class="class">
+                                                <%= student.class %>
+                                            </div>
+                                            <div class="DOB">
+                                                <%= student.DOB.toISOString().split("T")[0]%>
+                                            </div>
+                                            <div class="address">
+                                                <%= student.address %>
+                                            </div>
+                                            <div class="phone">
+                                                <%= student.phone %>
+                                            </div>
+                                            <div class="fees">
+                                                <%= student.fees.toLocaleString('en-IN') %>
+                                            </div>
+                                            <div class="icons">
+
+                                                <!-- Edit icon -->
+                                                <i class="fa-solid fa-pen-to-square" style="cursor:pointer"
+                                                    onclick="enableEdit('<%= student._id %>')"></i>
+
+                                                <!-- Delete Form -->
+                                                <form action="/delete-student/<%= student._id %>" method="POST"
+                                                    style="display:inline;" onsubmit="return confirmDelete()">
+                                                    <button type="submit" style="background:none; border:none;">
+                                                        <i class="fa-solid fa-trash" style="color: red;"></i>
+                                                    </button>
+                                                </form>
+
+                                                <div class="dropdown">
+                                                    <i class="fa-solid fa-ellipsis three-dots"></i>
+
+                                                    <div class="dropdown-menu">
+                                                        <div class="functionalities">
+                                                            <a href="/view-attendance-students">View Attendance</a>
+                                                            <a href="/fee-status/<%= student._id %>">Fees Status</a>
+                                                            <a href="/admin/view-result/<%= student._id %>">View
+                                                                Result</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Editable Form View -->
+                                        <form id="edit-<%= student._id %>" class="student-edit-form list"
+                                            action="/edit-student/<%= student._id %>" method="POST"
+                                            style="display:none;">
+                                            <div class="id">
+                                                <%= index + 1 %>
+                                            </div>
+                                            <input type="text" name="name" value="<%= student.name %>" required
+                                                style="text-transform: capitalize;">
+                                            <input type="text" name="id" value="<%= student.id %>" required
+                                                style="text-transform: capitalize;">
+                                            <input type="text" name="class" value="<%= student.class %>" required
+                                                style="text-transform: uppercase;">
+                                            <input type="date" name="DOB"
+                                                value="<%= student.DOB.toISOString().split('T')[0]%>" required>
+                                            <input type="text" name="address" value="<%= student.address %>" required
+                                                style="text-transform: capitalize;">
+                                            <input type="text" name="phone" value="<%= student.phone %>" required>
+                                            <input type="text" name="fees" value="<%= student.fees %>" required>
+                                            <button type="submit">Save</button>
+
+                                        </form>
+
+                                    </div>
+                                    <% }) %>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="pdf-btn">
+                        <button onclick="window.print()" class="print-btn no-print">
+                            Download PDF
+                        </button>
+                    </div>
+            </section>
+    </div>
+
+    <script>
+
+        const searchInput = document.getElementById("searchInput");
+
+        searchInput.addEventListener("input", function () {
+            const searchText = this.value.toLowerCase();
+            const studentRows = document.querySelectorAll(".student-wrapper");
+
+            studentRows.forEach(row => {
+                const name = row.dataset.name;
+                row.style.display = name.includes(searchText) ? "" : "none";
+            });
+        });
+
+        let btn = document.querySelector(".add_stud");
+
+        btn.addEventListener("click", () => {
+            // document.querySelector(".student-form").style.display = 'block';
+            document.querySelector(".student-form").classList.add("show");
+
+        });
+
+        function enableEdit(id) {
+            document.getElementById("display-" + id).style.display = "none";
+            document.getElementById("edit-" + id).style.display = "grid";  // grid for layout
+        }
+
+        function confirmDelete() {
+            return confirm("Are you sure you want to delete this student?");
+        }
+
+        const allDots = document.querySelectorAll(".three-dots");
+        const allMenus = document.querySelectorAll(".dropdown-menu");
+
+        allDots.forEach((dot, index) => {
+            dot.addEventListener("click", () => {
+                // Hide all dropdowns first
+                allMenus.forEach(menu => menu.style.display = "none");
+
+                // Show clicked one
+                allMenus[index].style.display = "block";
+            });
+        });
+
+        // Hide if clicked outside
+        document.addEventListener("click", function (e) {
+            if (!e.target.closest(".dropdown")) {
+                allMenus.forEach(menu => menu.style.display = "none");
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        .teacher-dash {
+            display: flex;
+        }
+
+        .main-section {
+            width: 60%;
+            padding: 30px 20px 30px 100px;
+        }
+
+        .name {
+            padding: 30px 0px 0px 20px;
+            color: #002244;
+        }
+
+        .teacher-data {
+            margin-top: 30px;
+        }
+
+        .data {
+            display: flex;
+            align-items: center;
+            gap: 180px;
+        }
+
+        .data h3 {
+            width: 250px;
+            padding: 20px;
+            font-size: 22px;
+            color: rgb(46, 46, 46);
+        }
+
+        .data p,
+        .data select {
+            display: inline-block;
+            font-size: 18px;
+            font-weight: 500;
+            padding: 8px 18px;
+            min-width: 250px;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+            transition: all 0.2s ease-in-out;
+        }
+
+        .data p:hover,
+        .data select:hover {
+            border-color: #bbb;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        .flex {
+            display: flex;
+            gap: 60px;
+        }
+
+        .data p:hover {
+            transform: scale(1.01);
+            transition: 0.25s ease;
+            border-color: rgba(0, 105, 255, 0.45);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+        }
+
+        /* Highlight if class teacher is NOT assigned */
+        .select-warning {
+            background-color: #fff7d6 !important;
+            /* light yellow */
+            border: 2px solid #ffbb33 !important;
+            /* orange border */
+            animation: warnPulse 1.4s infinite;
+        }
+
+        /* Soft blinking animation */
+        @keyframes warnPulse {
+            0% {
+                box-shadow: 0 0 0px rgba(255, 165, 0, 0.4);
+            }
+
+            50% {
+                box-shadow: 0 0 10px rgba(255, 165, 0, 0.8);
+            }
+
+            100% {
+                box-shadow: 0 0 0px rgba(255, 165, 0, 0.4);
+            }
+        }
+
+
+        @media (max-width:1200px) {
+
+            .main-section {
+                width: 65%;
+                padding: 30px 20px 30px 60px;
+            }
+
+            .data {
+                gap: 100px;
+            }
+
+            .data h3 {
+                width: 200px;
+                font-size: 20px;
+            }
+
+            .data p,
+            .data select {
+                min-width: 200px;
+            }
+        }
+
+        @media (max-width:992px) {
+
+            .main-section {
+                width: 100%;
+                padding: 25px 30px;
+            }
+
+            .data {
+                gap: 60px;
+            }
+
+            .data h3 {
+                width: 170px;
+                font-size: 19px;
+            }
+
+            .data p,
+            .data select {
+                min-width: 170px;
+                font-size: 17px;
+                padding: 7px 12px;
+            }
+        }
+
+        @media (max-width:820px) {
+
+            .main-section {
+                width: 100%;
+                padding: 25px 40px;
+            }
+
+            .data {
+                gap: 40px;
+            }
+
+            .data h3 {
+                width: 300px;
+                font-size: 18px;
+            }
+
+            .data p,
+            .data select {
+                width: 100%;
+                font-size: 16px;
+            }
+
+            .flex {
+                flex-direction: column;
+                gap: 30px;
+            }
+        }
+
+        @media (max-width:480px) {
+
+            .data {
+                flex-direction: column;
+                gap: 6px;
+                align-items: flex-start;
+            }
+
+            .data h3 {
+                padding: 0;
+                margin: 0;
+                font-size: 16px;
+            }
+
+            .data p,
+            .data select {
+                width: 100%;
+                text-align: center;
+                padding: 8px;
+                font-size: 15px;
+                margin: 10px 0px 15px;
+            }
+
+            .name {
+                padding-left: 5px;
+                font-size: 24px;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="teacher-dash">
+
+        <%- include("partials/TeacherPageSidebar") %>
+
+            <div class="flex">
+
+                <div class="main-section">
+
+                    <h1 class="name">
+                        <%= teacher.name %>
+                    </h1>
+
+                    <div class="teacher-data">
+
+                        <div class="data">
+                            <h3>Classes</h3>
+                            <p>
+                                <%= teacher.class %>
+                            </p>
+                        </div>
+
+                        <div class="data">
+                            <h3>Subjects</h3>
+                            <p>
+                                <%= teacher.subject %>
+                            </p>
+                        </div>
+
+                        <div class="data">
+                            <h3>Salary</h3>
+                            <p>
+                                <%= teacher.salary %>
+                            </p>
+                        </div>
+
+                        <div class="data">
+                            <h3>Address</h3>
+                            <p>
+                                <%= teacher.address %>
+                            </p>
+                        </div>
+
+                        <div class="data">
+                            <h3>Phone Number</h3>
+                            <p>
+                                <%= teacher.phone %>
+                            </p>
+                        </div>
+
+                        <form method="POST" action="/update-class-teacher" id="classTeacherForm">
+                            <div class="data">
+                                <h3>Class Teacher</h3>
+
+                                <select class="isClassTeacher" name="classTeacher" id="classTeacherSelect">
+                                    <option value="">Option</option>
+                                    <option value="yes" <%=teacher.classTeacher==="yes" ? "selected" : "" %>>Yes
+                                    </option>
+                                    <option value="no" <%=teacher.classTeacher==="no" ? "selected" : "" %>>No</option>
+                                </select>
+
+                                <select name="assignedClass" id="assignedClassSelect" style="display:none;">
+                                    <% sortedClasses.forEach(c=> { %>
+                                        <option value="<%= c %>" <%=teacher.assignedClass===c ? "selected" : "" %>>
+                                            <%= c %>
+                                        </option>
+                                        <% }) %>
+                                </select>
+
+                                <p id="noMessage" style="display:none;">No</p>
+                                <p id="classMessage" style="display:none;"></p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <%- include("partials/attendanceCalendar", { size: "small" , type: "attendance-teacher" , attendance:
+                    attendance }) %>
+
+            </div>
+    </div>
+
+</body>
+
+<script>
+
+    const isClassTeacher = "<%= teacher.classTeacher %>";
+    const assignedClass = "<%= teacher.assignedClass %>";
+
+    const classTeacherSelect = document.getElementById("classTeacherSelect");
+    const assignedClassSelect = document.getElementById("assignedClassSelect");
+    const noMessage = document.getElementById("noMessage");
+    const classMessage = document.getElementById("classMessage");
+    const form = document.getElementById("classTeacherForm");
+
+    // When Yes/No changes
+    classTeacherSelect.addEventListener("change", function () {
+        if (this.value === "yes") {
+            assignedClassSelect.style.display = "inline-block"; // show classes
+            noMessage.style.display = "none";
+            classTeacherSelect.style.display = "none";          // hide yes/no
+        } else if (this.value === "no") {
+            assignedClassSelect.style.display = "none";
+            noMessage.style.display = "block";                  // show No
+            classMessage.style.display = "none";
+            classTeacherSelect.style.display = "none";
+            form.submit();
+        }
+    });
+
+    // When Class is selected (ek hi bar allow)
+    assignedClassSelect.addEventListener("change", function () {
+        if (this.value) {
+            classMessage.textContent = this.value + " Grade";
+            classMessage.style.display = "block";   // show message
+            assignedClassSelect.style.display = "none"; // hide dropdown
+            form.submit();
+        }
+    });
+
+    // Refresh ke baad bhi UI correct ho
+    window.addEventListener("DOMContentLoaded", () => {
+
+        // 🔥 Highlight if NOT assigned
+        if (!isClassTeacher || !assignedClass) {
+            classTeacherSelect.classList.add("select-warning");
+        }
+
+        if (classTeacherSelect.value === "yes" && assignedClassSelect.value) {
+            // Agar class already selected hai
+            classMessage.textContent = assignedClassSelect.value + " Grade";
+            classMessage.style.display = "block";
+            assignedClassSelect.style.display = "none";
+            classTeacherSelect.style.display = "none";
+        } else if (classTeacherSelect.value === "yes") {
+            assignedClassSelect.style.display = "inline-block";
+            classTeacherSelect.style.display = "none";
+        } else if (classTeacherSelect.value === "no") {
+            noMessage.style.display = "block";
+            classTeacherSelect.style.display = "none";
+        }
+    });
+</script>
+
+
+</html>

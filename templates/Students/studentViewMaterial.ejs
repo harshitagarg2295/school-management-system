@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Material</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<style>
+    body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: #f4f6f9;
+        margin: 0;
+    }
+
+    .teacher-dash {
+        display: flex;
+    }
+
+    /* Main Card */
+    .material-card {
+        flex: 1;
+        padding: 40px 60px;
+        background: #ffffff;
+        border-radius: 16px;
+        margin: 30px;
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.07);
+        transition: 0.3s;
+    }
+
+    .material-card:hover {
+        box-shadow: 0 10px 26px rgba(0, 0, 0, 0.12);
+    }
+
+    /* Heading */
+    .material-card h2 {
+        font-size: 26px;
+        margin-bottom: 28px;
+        color: #2c3e50;
+        font-weight: 600;
+        text-align: center;
+        border-bottom: 3px solid #3498db;
+        display: inline-block;
+        padding-bottom: 6px;
+    }
+
+    /* Search Section */
+    .search-stud {
+        display: flex;
+        margin-bottom: 30px;
+        width: 100%;
+    }
+
+    .search-container {
+        position: relative;
+        width: 100%;
+        max-width: 420px;
+    }
+
+    .search-container i {
+        position: absolute;
+        top: 50%;
+        left: 15px;
+        transform: translateY(-50%);
+        color: #7f8c8d;
+        font-size: 16px;
+    }
+
+    .search-container input {
+        width: 100%;
+        padding: 12px 12px 12px 42px;
+        border: 1px solid #d0d7de;
+        border-radius: 30px;
+        font-size: 15px;
+        background: #fafafa;
+        transition: 0.25s ease;
+    }
+
+    .search-container input:focus {
+        border-color: #3498db;
+        background: #fff;
+        box-shadow: 0 0 6px rgba(52, 152, 219, 0.3);
+        outline: none;
+    }
+
+    /* Material Grid */
+    .material-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 28px;
+        margin-top: 20px;
+    }
+
+    /* Each Material Card */
+    .material-box {
+        background-color: #ffffff;
+        border-radius: 12px;
+        padding: 20px 18px;
+        border: 1px solid #e3e8ee;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: 0.25s ease;
+    }
+
+    .material-box:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 20px rgba(0, 0, 0, 0.09);
+    }
+
+    /* Title */
+    .title {
+        font-size: 1.15em;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 10px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #ecf0f1;
+    }
+
+    /* Description */
+    .description {
+        font-size: 0.95em;
+        color: #656d72;
+        margin-bottom: 18px;
+        line-height: 1.5;
+    }
+
+    /* Footer */
+    .material-footer {
+        border-top: 1px solid #ecf0f1;
+        padding-top: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .meta-info {
+        display: flex;
+        gap: 15px;
+        font-size: 0.85em;
+        color: #7f8c8d;
+        align-items: center;
+    }
+
+    .meta-item i {
+        margin-right: 4px;
+        color: #3498db;
+    }
+
+    /* Download Button */
+    .download-btn {
+        padding: 8px 16px;
+        background-color: #3498db;
+        color: white;
+        border: none;
+        border-radius: 25px;
+        font-size: 0.9em;
+        cursor: pointer;
+        font-weight: 600;
+        transition: background 0.25s ease;
+    }
+
+    .download-btn:hover {
+        background-color: #227ac5;
+    }
+
+    /* No data style */
+    .material-card p[style] {
+        padding: 50px;
+        border-radius: 12px;
+        background: #f8fbff;
+        border: 1px dashed #b6d9ff;
+    }
+
+    /* Responsive Fixes */
+    @media (max-width: 992px) {
+        .material-card {
+            margin: 25px;
+            padding: 30px 30px;
+        }
+
+        .search-container {
+            max-width: 350px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .material-card {
+            margin: 15px;
+            padding: 25px 20px;
+        }
+
+        .title {
+            font-size: 1.1em;
+        }
+
+        .search-container input {
+            font-size: 14px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .material-card {
+            margin: 10px;
+            padding: 20px;
+        }
+
+        .download-btn {
+            padding: 7px 14px;
+            font-size: 0.85em;
+        }
+    }
+</style>
+
+
+<body>
+
+    <div class="teacher-dash">
+
+        <%- include("partials/StudentPageSidebar") %>
+
+            <div class="material-card">
+
+                <h2>Access Your Learning Resources</h2>
+
+                <div class="search-stud">
+                    <div class="search-container">
+                        <i class="fas fa-search"></i>
+                        <input type="text" name="search" id="searchInput" placeholder="Search by Title or Teacher">
+                    </div>
+                </div>
+
+                <div class="material-grid">
+
+                    <% if (materials && materials.length> 0) { %>
+                        <% materials.forEach(material=> { %>
+
+                            <div class="material-box">
+                                <div class="title">
+                                    <%= material.title %>
+                                </div>
+                                <div class="description">
+                                    <%= material.description %>
+                                </div>
+
+                                <div class="material-footer">
+                                    <div class="meta-info">
+                                        <span class="meta-item">
+                                            <i class="fas fa-user-tie"></i>
+                                            <p>
+                                                <%= material.uploadedBy %>
+                                            </p>
+                                        </span>
+                                        <span class="meta-item">
+                                            <i class="far fa-clock"></i>
+                                            <p>
+                                                <%= new Date(material.uploadedAt).toISOString().split('T')[0] %>
+                                            </p>
+                                        </span>
+                                    </div>
+
+                                    <a href="<%= material.fileUrl %>" download="<%= material.title %>">
+                                        <button class="download-btn">
+                                            <i class="fas fa-download"></i> Download
+                                        </button>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <% }) %>
+                                <% } else { %>
+                                    <p style="grid-column: 1 / -1; text-align: center; padding: 50px; color: #7f8c8d;">
+                                        No study material found for your class (<%= studentClass %>) yet. Check back
+                                            later!
+                                    </p>
+                                    <% } %>
+                </div>
+            </div>
+    </div>
+</body>
+
+<script>
+  
+    const searchInput = document.getElementById('searchInput');
+    const materialGrid = document.querySelector('.material-grid');
+    
+   
+    const materialCards = materialGrid ? materialGrid.querySelectorAll('.material-box') : [];
+
+    searchInput.addEventListener('keyup', function() {
+       
+        const searchTerm = this.value.toLowerCase().trim();
+
+       
+        materialCards.forEach(card => {
+            
+            // Card के अंदर से Title और Teacher Name का टेक्स्ट प्राप्त करें
+  
+            const titleElement = card.querySelector('.title');
+            const teacherElement = card.querySelector('.fa-user-tie').nextElementSibling; // i.fa-user-tie के बाद वाला <p>
+
+            const titleText = titleElement ? titleElement.textContent.toLowerCase() : '';
+            const teacherText = teacherElement ? teacherElement.textContent.toLowerCase() : '';
+
+            // Search Term की जाँच Title या Teacher Name दोनों में करें
+            if (titleText.includes(searchTerm) || teacherText.includes(searchTerm)) {
+                // अगर match करता है, तो card को दिखाओ
+                card.style.display = 'flex'; // Card एक flex item है
+            } else {
+                // अगर match नहीं करता है, तो card को छुपाओ
+                card.style.display = 'none';
+            }
+        });
+    });
+
+   
+</script>
+</html>

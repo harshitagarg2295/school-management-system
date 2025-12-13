@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>timetable</title>
+    <style>
+        body {
+            background: #f4f6f9;
+            margin: 0;
+        }
+
+        .admin-dash {
+            display: flex;
+        }
+
+        /* MAIN CARD */
+        .timetable-card {
+            font-family: "Segoe UI", Arial, sans-serif;
+            width: 100%;
+            flex: 1;
+            margin: 30px 130px;
+            padding: 35px 45px;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+            transition: 0.3s ease;
+        }
+
+        .timetable-card:hover {
+            box-shadow: 0 8px 26px rgba(0, 0, 0, 0.10);
+        }
+
+        /* HEADING */
+        .timetable-card h2 {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 26px;
+            font-weight: 600;
+            display: inline-block;
+            padding-bottom: 6px;
+            border-bottom: 3px solid #3498db;
+            margin-bottom: 35px;
+        }
+
+        /* DROPDOWN SECTION */
+        .dropdowns {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 22px;
+            margin-bottom: 35px;
+        }
+
+        /* SELECT INPUT */
+        select {
+            padding: 12px 16px;
+            background: #f8fbff;
+            border: 1px solid #d3dae2;
+            border-radius: 10px;
+            font-size: 15px;
+            min-width: 200px;
+            transition: 0.25s;
+        }
+
+        select:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 6px rgba(52, 152, 219, .35);
+            outline: none;
+        }
+
+        /* GRID */
+        .timetable-grid {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 22px 30px;
+            margin-top: 15px;
+            align-items: start;
+        }
+
+        /* DATE INPUT */
+        .timetable-grid input[type="date"] {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid #d0d7de;
+            background: #fafafa;
+            font-size: 15px;
+            text-align: center;
+            transition: 0.25s;
+        }
+
+        .timetable-grid input[type="date"]:focus {
+            border-color: #3498db;
+            background: white;
+            outline: none;
+        }
+
+        /* SUBJECT NAME CELL */
+        .subject-cell {
+            font-weight: 600;
+            background: #eef3f9;
+            padding: 14px 18px;
+            border-radius: 10px;
+            font-size: 16px;
+            text-align: center;
+            border: 1px solid #dce3eb;
+            transition: 0.25s;
+        }
+
+        .subject-cell:hover {
+            background: #dce7ff;
+            transform: translateX(2px);
+        }
+
+        /* EMPTY STATE MESSAGE */
+        .selection-message {
+            grid-column: 1/-1;
+            padding: 40px;
+            text-align: center;
+            font-size: 18px;
+            border-radius: 12px;
+            background: #f8fbff;
+            border: 1px dashed #b6d9ff;
+            color: #666;
+        }
+
+        /* SAVE BUTTON FIX */
+        .btn {
+            display: flex;
+            justify-content: center;
+            margin-top: 35px;
+        }
+
+        .btn button {
+            background: #3498db;
+            border: none;
+            color: white;
+            font-size: 17px;
+            padding: 12px 35px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.25s;
+            font-weight: 500;
+        }
+
+        .btn button:hover {
+            background: #2c82c9;
+            transform: translateY(-2px);
+        }
+
+        /* ---------- RESPONSIVE BREAKPOINTS ---------- */
+        @media (max-width: 992px) {
+            .timetable-card {
+                margin: 20px;
+                padding: 30px;
+            }
+
+            .timetable-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .timetable-card {
+                margin: 15px;
+                padding: 24px;
+            }
+
+            select {
+                width: 100%;
+            }
+
+            .timetable-grid input {
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .timetable-card {
+                margin: 10px;
+                padding: 20px;
+            }
+
+            .subject-cell {
+                padding: 10px 12px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-dash">
+        <%- include("partials/AdminPageSidebar") %>
+
+            <form id="timetableForm" action="/save-timetable" method="POST">
+                <div class="timetable-card">
+                    <h2>
+                        <%= (typeof type !=='undefined' && type==="monthly" ) ? "Add Monthly Test Timetable"
+                            : "Add Exams Timetable" %>
+                    </h2>
+
+                    <input type="hidden" name="type" value="<%= type %>">
+
+                    <div class="dropdowns">
+                        <select id="classSelect" name="className">
+                            <option value="">Select Class</option>
+                            <% classList.forEach(c=> { %>
+                                <option value="<%= c %>" <%=c===selectedClass ? "selected" : "" %>>
+                                    <%= c %>
+                                </option>
+                                <% }) %>
+                        </select>
+
+                        <% if (type==="monthly" ) { %>
+                            <select id="testType" name="period">
+                                <option value="">Select Month</option>
+                                <% ["January", "February" , "March" , "April" , "May" , "June" , "July" , "August"
+                                    , "September" , "October" , "November" , "December" ].forEach(m=> { %>
+                                    <option value="<%= m %>" <%=m===selectedPeriod ? "selected" : "" %>> <%= m %>
+                                    </option>
+                                    <% }) %>
+                            </select>
+                            <% } else { %>
+                                <select id="testType" name="period">
+                                    <option value="">Select Exam</option>
+                                    <% ["Quarterly", "Half-Yearly" , "Annual" , "Pre-Board" ].forEach(e=> { %>
+                                        <option value="<%= e %>" <%=e===selectedPeriod ? "selected" : "" %>> <%= e %>
+                                        </option>
+                                        <% }) %>
+                                </select>
+                                <% } %>
+                    </div>
+
+                    <div class="timetable-grid" id="timetableGrid">
+                        <% if (subjects.length===0) { %>
+                            <div class="selection-message">
+                                <p> Please select a Class and a Month/Exam to add/view timetable.</p>
+                            </div>
+                            <% } else { %>
+                                <% subjects.forEach(sub=> { %>
+                                    <% <!-- Saved timetable से content ढूंढना -->
+                                        const savedSubject = savedTimetable ?.subjects.find(s => s.name === sub);%>
+
+                                        <input type="date" name="<%= sub %>"
+                                            value="<%= savedSubject ? moment(savedSubject.date).format('YYYY-MM-DD') : '' %>">
+                                        <div class="subject-cell">
+                                            <%= sub %>
+                                        </div>
+
+                                        <% }) %>
+                                            <% } %>
+                    </div>
+
+                    <% if (subjects.length===0) { %>
+                        <div class="btn" style="display: none;">
+                            <button type="submit">Save</button>
+                        </div>
+                        <% } else { %>
+                            <div class="btn">
+                                <button type="submit">Save</button>
+                            </div>
+                            <% } %>
+            </form>
+    </div>
+
+    <script>
+        const classSelect = document.getElementById('classSelect');
+        const testTypeSelect = document.getElementById('testType');
+        const timetableForm = document.getElementById('timetableForm');
+        const type = "<%= type %>";
+
+        // --- 1. Class/Exam Change Filter Logic ---
+        // Class या Period बदलने पर पेज को नए डेटा के साथ रिलोड करना
+        const redirectTotimetable = () => {
+            const className = classSelect.value || 'null'; // Use 'null' as placeholder if not selected
+            const period = testTypeSelect.value || 'null';
+            // Only redirect if both are selected, otherwise we rely on the submit check
+            if (className !== 'null' && period !== 'null') {
+                window.location.href = `/get-timetable-view/${type}/${className}/${period}`;
+            }
+        };
+
+        classSelect.addEventListener('change', redirectTotimetable);
+        testTypeSelect.addEventListener('change', redirectTotimetable);
+
+
+        // --- 2. Save Button Alert Logic (No Back-end Redirection for missing fields) ---
+        timetableForm.addEventListener("submit", function (e) {
+            const className = classSelect.value;
+            const period = testTypeSelect.value;
+
+            if (!className || !period) {
+                alert("⚠️ Please select a Class and a Month/Exam before saving!");
+                e.preventDefault(); // Stop the form from submitting
+                return;
+            }
+        });
+    </script>
+</body>
+
+</html>

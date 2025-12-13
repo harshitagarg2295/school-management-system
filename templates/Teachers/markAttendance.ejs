@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mark Attendance</title>
+
+    <style>
+        /* --- GLOBAL & RESET --- */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            background-color: #f4f6f9;
+        }
+
+        .teacher-dash {
+            display: flex;
+        }
+
+        .attendance_card {
+            width: 80%;
+            margin: 20px auto;
+            border-radius: 8px;
+            background-color: white;
+            padding: 30px 25px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        }
+
+        /* ---------------- HEADER FIXED START ---------------- */
+        .headers {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .headers h1 {
+            width: auto;
+            margin: 0;
+            font-size: 26px;
+        }
+
+        .search-stud {
+            display: flex;
+            align-items: center;
+            position: relative;
+            min-width: 240px;
+        }
+
+        .search-stud i {
+            position: absolute;
+            left: 10px;
+            font-size: 16px;
+            color: #777;
+        }
+
+        .search-stud input {
+            padding: 10px 10px 10px 35px;
+            border-radius: 6px;
+            border: 1px solid #cfd6dd;
+            font-size: 15px;
+            width: 100%;
+            outline: none;
+        }
+
+        /* MONTH-YEAR SECTION */
+        .date_month_year {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .btn,
+        .select_class,
+        input[type="date"] {
+            border-radius: 6px;
+            border: 1px solid #cfd6dd;
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+
+        .date_month_year form select {
+            padding: 8px 14px;
+            font-size: 15px;
+            border: 1px solid #cfd6dd;
+            border-radius: 8px;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        .save_month_year {
+            padding: 8px 18px !important;
+            background: #4fa3f7;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .save_month_year:hover {
+            background: #2f8ae2;
+        }
+
+        /* ---------------- TABLE LAYOUT (CRITICAL FIXES) ---------------- */
+
+        .attendance_table {
+            overflow-x: auto;
+            margin-top: 30px;
+            width: 100%;
+            padding-bottom: 20px;
+            scrollbar-width: thin;
+            scrollbar-color: #b4b4b4 #f1f1f1;
+        }
+
+        .attend_list_header,
+        .attend_list {
+            width: fit-content;
+            min-width: 100%;
+        }
+
+        .list ul {
+            list-style: none;
+            display: flex;
+            padding: 0;
+            margin: 0;
+            align-items: center;
+        }
+
+        .attend_list_header {
+            background-color: #b1e6f4;
+            border-radius: 7px 7px 0 0;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            padding: 20px 0px;
+        }
+
+        .attend_list_header ul li {
+            color: #444;
+            font-weight: 500;
+        }
+
+        .attend_list {
+            border: 1px solid #ddd;
+            border-top: none;
+            background: white;
+            height: 65px;
+            display: flex;
+            align-items: center;
+        }
+
+        .attend_list:last-child {
+            border-radius: 0 0 7px 7px;
+            padding: 35px 0px;
+        }
+
+        /* --- 1. NAME COLUMN (FIXED & STICKY) --- */
+        .students_name {
+            padding: 0 15px;
+            font-weight: 600;
+            font-size: 18px;
+            color: #2c3e50;
+            width: 220px;
+            min-width: 220px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            height: 100%;
+            position: sticky;
+            left: 0;
+            z-index: 10;
+            border-right: 1px solid #eee;
+        }
+
+        .attend_list_header .students_name {
+            background-color: #b1e6f4 !important;
+            z-index: 100;
+            border-radius: 7px 0 0 0;
+            justify-content: center;
+        }
+
+        .attend_list .students_name {
+            padding: 15px 45px;
+            background-color: white !important;
+            z-index: 90;
+        }
+
+        /* --- 2. DATE & CIRCLE COLUMNS (SYNC LOGIC) --- */
+
+        .list ul li:not(.students_name) {
+            width: 60px;
+            min-width: 60px;
+            flex-shrink: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+
+        /* --- CIRCLE DROPDOWN STYLING (IMAGE 1 STYLE) --- */
+
+
+        .dropdown-wrapper {
+            position: relative;
+            width: 28px;
+            height: 28px;
+        }
+
+        .dropdown-wrapper:hover {
+            border-color: #429af2;
+        }
+
+        .attendance_dropdown {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            appearance: none;
+            text-align: center;
+            /* hides ^ arrow only in modern browsers like Chrome and Edge.*/
+            -webkit-appearance: none;
+            /*hides from Safari and older versions of Chrome.*/
+            -moz-appearance: none;
+            /* for Firefox. */
+        }
+
+        .custom-arrow {
+            font-size: 12px;
+            color: rgb(34, 33, 33);
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            /* So click passes through to <select> */
+        }
+
+        img.status-icon {
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            border-radius: 50%;
+
+        }
+
+        /* --- CELLS & COLORS --- */
+
+        .holiday-cell {
+            background-color: #b1e6f4;
+            width: 40px !important;
+            height: 30px !important;
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .today-cell {
+            background-color: rgb(89, 165, 240);
+            color: white !important;
+            padding: 6px 0px;
+            border-radius: 6px;
+        }
+
+        /* --- POPUP & BUTTONS --- */
+        .attendance-btn {
+            background-color: rgb(66, 154, 242);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 4px 6px rgba(66, 154, 242, 0.3);
+        }
+
+        .attendance-btn:hover {
+            background-color: #2f8ae2;
+            transform: translateY(-1px);
+        }
+
+        .holiday-popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .holiday-card {
+            background: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 350px;
+        }
+
+        .holiday-card h3 {
+            color: #429af2;
+            margin-bottom: 15px;
+        }
+
+        .holiday-card button {
+            background: #429af2;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 992px) {
+            .attendance_card {
+                width: 100%;
+                margin: 10px 0;
+                padding: 15px;
+                border-radius: 0;
+            }
+
+            .students_name {
+                width: 180px;
+                min-width: 180px;
+                padding: 15px !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .headers {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+
+            .headers h1 {
+                text-align: center;
+            }
+
+            .search-stud {
+                width: 100%;
+            }
+
+            .date_month_year {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .date_month_year form {
+                width: 100%;
+                display: flex;
+                gap: 10px;
+            }
+
+            .students_name {
+                width: 140px;
+                min-width: 140px;
+                font-size: 14px;
+            }
+
+            .list ul li:not(.students_name) {
+                width: 50px;
+                min-width: 50px;
+            }
+
+            .dropdown-wrapper,
+            img.status-icon {
+                width: 28px;
+                height: 28px;
+            }
+
+            .custom-arrow {
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .students_name {
+                width: 120px;
+                min-width: 120px;
+                font-size: 13px;
+            }
+
+            .list ul li:not(.students_name) {
+                width: 45px;
+                min-width: 45px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="teacher-dash">
+
+        <!-- Sidebar -->
+        <%- include("partials/TeacherPageSidebar") %>
+
+            <div class="attendance_card">
+
+                <div class="headers">
+                    <h1>Mark Attendance</h1>
+                    <div class="search-stud">
+                        <i class="fa fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search by Name">
+                    </div>
+                </div>
+
+                <div class="date_month_year">
+
+                    <!-- Holiday Form -->
+                    <form method="POST" action="/teachers/mark-holiday"
+                        style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                        <label style="font-size: 14px; color: #555;">Declare Holiday:</label>
+                        <input type="date" name="date" required class="btn">
+                        <input type="text" name="reason" placeholder="Reason" class="btn"
+                            style="flex: 1; min-width: 100px;">
+                        <button type="submit" class="btn"
+                            style="background-color: #429af2; color: white; border:none; padding: 8px 15px;">Mark</button>
+                    </form>
+
+                    <!-- Month Year Selector -->
+                    <form method="GET" action="/teachers/mark-attendance"
+                        style="display: flex; gap: 10px; flex: 1; justify-content: flex-end;">
+                        <select name="month">
+                            <% for(let m=1; m <=12; m++) { %>
+                                <option value="<%= m %>" <%=parseInt(month)===m ? "selected" : "" %>>
+                                    <%= moment().month(m - 1).format("MMMM") %>
+                                </option>
+                                <% } %>
+                        </select>
+                        <select name="year">
+                            <% for(let y=2022; y <=2030; y++) { %>
+                                <option value="<%= y %>" <%=parseInt(year)===y ? "selected" : "" %>>
+                                    <%= y %>
+                                </option>
+                                <% } %>
+                        </select>
+                        <button class="save_month_year" type="submit">Go</button>
+                    </form>
+                </div>
+
+                <!-- TABLE CONTAINER -->
+                <div class="attendance_table">
+
+                    <div class="attend_list_header list">
+                        <ul>
+                            <li class="students_name sticky-name">Name</li> <!-- Changed Span to LI -->
+
+                            <% for(let i=1; i <=daysInMonth; i++) { %>
+                                <li id="<%= i === today ? 'today-column' : '' %>"
+                                    class="<%= i === today ? 'today-cell' : '' %>">
+                                    <%= i < 10 ? '0' + i : i %>
+                                </li>
+                                <% } %>
+                        </ul>
+                    </div>
+
+                    <!-- Students Body -->
+                    <form id="attendance-form" action="/teachers/submit-students-attendance" method="POST">
+                        <input type="hidden" name="month" value="<%= month %>">
+                        <input type="hidden" name="year" value="<%= year %>">
+
+                        <% students.forEach(student=> { %>
+                            <div class="attend_list list student-row" data-name="<%= student.name.toLowerCase() %>">
+                                <ul>
+                                    <li class="students_name sticky-name">
+                                        <%= student.name %>
+                                    </li>
+
+                                    <% for (let i=1; i <=daysInMonth; i++) { %>
+                                        <% let status=(attendanceMap[student._id?.toString()] || {})['day_' + i]; %>
+
+                                            <li class="<%= (sundays.includes(i) || holidays.includes(i)) ? 'holiday-cell' : '' %>"
+                                               data-full-date="<%= `${year}-${String(month).padStart(2,'0')}-${String(i).padStart(2,'0')}` %>"
+                                                data-day="<%= i %>" data-month="<%= month %>" data-year="<%= year %>"
+                                                data-reason="<%= holidayReasons[i] || (sundays.includes(i) ? 'Sunday' : '') %>">
+
+                                                <% if (sundays.includes(i) || holidays.includes(i)) { %>
+                                                    -
+                                                    <% } else { %>
+                                                        <!-- CIRCLE DROPDOWN LOGIC -->
+                                                        <div class="dropdown-wrapper"
+                                                            style="<%= status ? 'display: none;' : '' %>">
+                                                            <select class="attendance_dropdown"
+                                                                name="attendance[<%= student._id %>][<%= 'day_' + i %>]">
+                                                                <option value=""></option>
+                                                                <option value="P" <%=status==="P" ? "selected" : "" %>
+                                                                    >P</option>
+                                                                <option value="A" <%=status==="A" ? "selected" : "" %>>A
+                                                                </option>
+                                                            </select>
+                                                            <!-- FontAwesome Angle Down Arrow -->
+                                                            <i class="fa-solid fa-angle-down custom-arrow"></i>
+                                                        </div>
+
+                                                        <img src="<%= status === 'P' ? '/images/present.jpg' : status === 'A' ? '/images/absent.jpg' : '' %>"
+                                                            class="status-icon"
+                                                            style="display: <%= status ? 'inline-block' : 'none' %>;" />
+                                                        <% } %>
+                                            </li>
+                                            <% } %>
+                                </ul>
+                            </div>
+                            <% }) %>
+                    </form>
+
+                    <div id="holidayPopup" class="holiday-popup">
+                        <div class="holiday-card">
+                            <h3>Holiday</h3>
+                            <p id="holidayReason"></p>
+                            <button id="closePopup">Close</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SAVE BUTTON -->
+                <div style="margin-top: 40px; text-align: center;">
+                    <button type="submit" form="attendance-form" class="attendance-btn">Save Attendance</button>
+                </div>
+
+            </div>
+    </div>
+
+    <script>
+        // Dropdown Logic
+        document.querySelectorAll(".attendance_dropdown").forEach(dropdown => {
+            dropdown.addEventListener("change", function () {
+
+                 const parentli = this.closest("li");
+                const cellDate = parentli.dataset.fullDate;
+
+                const today = new Date();
+                const yyyy = today.getFullYear();
+                const mm = String(today.getMonth() + 1).padStart(2, "0");
+                const ddStr = String(today.getDate()).padStart(2, "0");
+
+                const todayFull = `${yyyy}-${mm}-${ddStr}`;
+                const todayDate = new Date(todayFull);
+                const clickedDate = new Date(cellDate);
+
+                // ❌ BLOCK FUTURE DATES
+                if (clickedDate > todayDate) {
+                    alert("You cannot mark attendance for a FUTURE date.");
+                    this.value = "";   // reset dropdown
+                    return;
+                }
+
+                const value = this.value;
+                const wrapper = this.closest(".dropdown-wrapper");
+                const li = wrapper.parentElement; // Get the LI cell
+                const img = li.querySelector(".status-icon");
+
+                if (value === "P") {
+                    img.src = "/images/present.jpg";
+                    img.alt = "Present";
+                    img.style.display = "inline-block";
+                    wrapper.style.display = "none";
+                }
+                else if (value === "A") {
+                    img.src = "/images/absent.jpg";
+                    img.alt = "Absent";
+                    img.style.display = "inline-block";
+                    wrapper.style.display = "none";
+                }
+            });
+        });
+
+        // ✅ Enable clicking on image to revert to dropdown
+
+        const today = new Date().getDate();
+
+        document.querySelectorAll(".status-icon").forEach(img => {
+            img.addEventListener("click", function () {
+
+                const parentli = this.closest("li");
+                if (!parentli) return;
+
+                const cellDate = parentli.dataset.fullDate;  // This is ISO format: YYYY-MM-DD
+
+                // Today full date (also ISO format)
+                const today = new Date();
+                const yyyy = today.getFullYear();
+                const mm = String(today.getMonth() + 1).padStart(2, "0");
+                const dd = String(today.getDate()).padStart(2, "0");
+                const todayFull = `${yyyy}-${mm}-${dd}`;
+
+                // If not today → stop
+                if (cellDate !== todayFull) {
+                    alert("You can only edit attendance for TODAY.");
+                    return;
+                }
+
+                this.style.display = "none";
+                const li = this.parentElement;
+                const wrapper = li.querySelector(".dropdown-wrapper");
+                const select = wrapper.querySelector("select");
+
+                select.value = "";
+                wrapper.style.display = "flex"; // Must be flex to center arrow
+            });
+        });
+
+        // Scroll to Today
+        window.addEventListener("DOMContentLoaded", () => {
+            const todayElement = document.getElementById("today-column");
+            if (todayElement) {
+                todayElement.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+            }
+        });
+
+        // Search Filter
+        const searchInput = document.getElementById("searchInput");
+        if (searchInput) {
+            searchInput.addEventListener("input", function () {
+                const searchText = this.value.toLowerCase();
+                const studentRows = document.querySelectorAll(".student-row");
+                studentRows.forEach(row => {
+                    const name = row.dataset.name;
+                    if (name) row.style.display = name.includes(searchText) ? "flex" : "none";
+                });
+            });
+        }
+
+        // Holiday Reason
+        document.querySelectorAll(".holiday-cell").forEach(cell => {
+            cell.addEventListener("click", () => {
+                const reason = cell.getAttribute("data-reason");
+                if (reason) {
+                    document.getElementById("holidayReason").innerText = reason;
+                    document.getElementById("holidayPopup").style.display = "flex";
+                }
+            });
+        });
+        document.getElementById("closePopup").addEventListener("click", () => {
+            document.getElementById("holidayPopup").style.display = "none";
+        });
+    </script>
+</body>
+
+</html>

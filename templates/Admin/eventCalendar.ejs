@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Events Calendar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.8/index.global.min.css" />
+
+    <style>
+        /* ---------- Base ---------- */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+
+        }
+
+        /* ---------- Layout ---------- */
+        .card {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: #1e293b;
+            background: #f4f7fb;
+
+        }
+
+
+        .calendar-container {
+            font-family: "Poppins", sans-serif;
+            width: 100%;
+            background: #f4f7fb;
+            padding: 35px 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            overflow-y: auto;
+            height: 100vh;
+        }
+
+
+        /* ---------- Add Event Button Row ---------- */
+        .calendar-header {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .add-event-btn {
+            background: linear-gradient(135deg, #4f46e5, #6366f1);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+            transition: all 0.25s ease;
+        }
+
+        .add-event-btn:hover {
+            background: linear-gradient(135deg, #4338ca, #4f46e5);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(99, 102, 241, 0.4);
+        }
+
+        .add-event-btn span {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        #event {
+            font-size: 20px;
+        }
+
+        /* ---------- Event Card ---------- */
+        .event-card {
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 320px;
+            display: none;
+            /* Initially hidden */
+            flex-direction: column;
+            gap: 12px;
+            z-index: 10;
+        }
+
+        .event-card.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .event-card div {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1e293b;
+        }
+
+        .event-card input {
+            padding: 8px 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .event-card input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+        }
+
+        /* Fade Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .save {
+            margin: 10px 5px;
+            padding: 7px 10px;
+            font-size: 16px;
+            border-radius: 6px;
+            outline: none;
+            border: none;
+            background-color: rgb(66, 154, 242);
+            color: white;
+        }
+
+
+        /* ---------- Calendar + Agenda ---------- */
+        .calendar-box {
+            display: flex;
+            flex-direction: row;
+            gap: 25px;
+            min-height: 500px;
+            overflow-x: auto;
+            overflow-y: visible;
+        }
+
+
+        /* ---------- Calendar ---------- */
+        #calendar {
+            flex: 3.5;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        /* ---------- Agenda ---------- */
+        .agenda {
+            flex: 1;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+            padding: 25px 20px;
+            overflow-y: auto;
+            min-height: 100%;
+        }
+
+        .agenda::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .agenda::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .agenda h2 {
+            font-size: 22px;
+            margin-bottom: 15px;
+            color: #0f172a;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 5px;
+        }
+
+        /* ---------- Agenda Items ---------- */
+        .agenda-item {
+            padding: 12px 14px;
+            margin-bottom: 18px;
+            background: #f8fafc;
+            border-radius: 10px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .agenda-item.yellow {
+            border-color: #facc15;
+        }
+
+        .agenda-item.purple {
+            border-color: #a855f7;
+        }
+
+
+        .agenda-item.green {
+            border-color: #22c55e;
+        }
+
+        .agenda-item.blue {
+            border-color: #3b82f6;
+        }
+
+        .agenda-item.red {
+            border-color: #ef4444;
+        }
+
+        .agenda-item h4 {
+            margin: 0;
+            font-size: 16px;
+            color: #0f172a;
+            font-weight: 600;
+        }
+
+        .agenda-item p {
+            margin: 3px 0 0;
+            font-size: 13px;
+            color: #475569;
+        }
+
+        .agenda-item:hover {
+            transform: translateX(2px);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+        }
+
+        .fc-event {
+            cursor: pointer;
+            text-align: left;
+            border: none !important;
+        }
+
+        .fc-daygrid-event-dot {
+            display: none !important;
+        }
+
+        /* ---------- Responsive ---------- */
+        @media (max-width: 1100px) {
+            .calendar-box {
+                flex-direction: column;
+                height: auto;
+            }
+
+            #calendar,
+            .agenda {
+                width: 100%;
+            }
+
+            .add-event-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /*  🔹 FullCalendar Header RESPONSIVE FIX  🔹 */
+        @media (max-width: 600px) {
+
+            /* Calendar Title (November 2025) */
+            .fc-toolbar-title {
+                font-size: 18px !important;
+            }
+
+            /* TODAY, PREV, NEXT buttons */
+            .fc .fc-button {
+                font-size: 12px !important;
+                padding: 4px 6px !important;
+            }
+
+            /* Month / Week / Day buttons group */
+            .fc-button-group .fc-button {
+                font-size: 11px !important;
+                padding: 4px 6px !important;
+            }
+
+            /* Reduce spacing between buttons */
+            .fc .fc-toolbar.fc-header-toolbar {
+                padding: 0 4px !important;
+                gap: 6px !important;
+            }
+
+            /* Title center aligned */
+            .fc-toolbar-chunk:nth-child(2) {
+                display: flex;
+                justify-content: center;
+                width: 100%;
+            }
+        }
+
+        @media(max-width:400px) {
+            .calendar-container {
+                padding: 30px 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <div class="<%= role === 'admin' ? 'admin_dash' : role === 'teacher' ? 'teacher_dash' : 'student_dash' %>">
+            <% if (role==="teacher" ) { %>
+                <%- include("partials/TeacherPageSidebar") %>
+                    <% } else if (role==="student" ) { %>
+                        <%- include("partials/StudentPageSidebar") %>
+                            <% } else { %>
+                                <%- include("partials/AdminPageSidebar") %>
+                                    <% } %>
+        </div>
+
+        <div class="calendar-container">
+            <!-- Top Right Button -->
+
+            <% if (role==="admin" ) { %>
+
+                <div class="calendar-header">
+                    <button class="add-event-btn">
+                        <span id="event">＋</span> Add Event
+                    </button>
+
+                    <form class="event-card" id="eventForm" action="/add-event" method="POST">
+                        <div class="title">Title <input type="text" name="title" id="title"></div>
+                        <div class="description">Description <input type="text" name="description" id="description">
+                        </div>
+                        <div class="date">Date <input type="date" name="date" id="date"></div>
+                        <div class="time">Time <input type="time" name="time" id="time"></div>
+                        <button type="button" class="save">Save</button>
+                    </form>
+                </div>
+                <% } %>
+
+                    <div class="calendar-box">
+                        <!-- Calendar -->
+                        <div id="calendar"></div>
+
+                        <!-- Agenda Sidebar -->
+                        <div class="agenda"></div>
+                    </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.8/index.global.min.js"></script>
+
+
+    <script id="events-data" type="application/json">
+    <%- JSON.stringify(events) %>
+</script>
+
+    <script>
+        const eventsFromDB = JSON.parse(document.getElementById("events-data").textContent);
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const calendarEl = document.getElementById('calendar');
+
+            const gradients = [
+                "linear-gradient(135deg, #d1e9ff, #3b82f6)",  // cool blue
+                "linear-gradient(135deg, #ffe1e1, #ef4444)",  // modern red
+                "linear-gradient(135deg, #e7ffe6, #22c55e)",  // soft green
+                "linear-gradient(135deg, #f8e7ff, #a855f7)",  // purple
+                "linear-gradient(135deg, #fff4cc, #f59e0b)"   // amber gold
+            ];
+
+            const softColors = [
+                "#3b82f6",
+                "#ef4444",
+                "#22c55e",
+                "#a855f7",
+                "#f59e0b"
+            ];
+            // 🗓️ Format events for calendar
+            const formattedEvents = eventsFromDB.map((event, index) => ({
+                title: event.title,
+                start: event.date,
+                description: event.description,
+                backgroundColor: softColors[index % softColors.length],
+                borderColor: "transparent",
+                textColor: "#1e293b", // dark gray for readability
+                extendedProps: {
+                    gradient: gradients[index % gradients.length]
+                }
+            }));
+
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                events: formattedEvents,
+
+                eventDidMount: function (info) {
+                    // 🌈 Apply gradient background
+                    const gradient = info.event.extendedProps.gradient;
+                    info.el.style.background = gradient;
+                    info.el.style.border = "none";
+                    info.el.style.color = "#1e293b";
+                    info.el.style.borderRadius = "8px";
+                    info.el.style.fontWeight = "500";
+                    info.el.style.fontSize = "13px";
+                    info.el.style.padding = "3px 8px";
+                    info.el.style.whiteSpace = "nowrap";
+                    info.el.style.overflow = "hidden";
+                    info.el.style.textOverflow = "ellipsis";
+                    info.el.style.boxShadow = "0 1px 3px rgba(0,0,0,0.1)";
+
+                    // remove time & dot
+                    const timeEl = info.el.querySelector(".fc-event-time");
+                    if (timeEl) timeEl.style.display = "none";
+                    const dotEl = info.el.querySelector(".fc-daygrid-event-dot");
+                    if (dotEl) dotEl.style.display = "none";
+                }
+            });
+
+            calendar.render();
+
+            // ---------- 🧾 Agenda Sidebar ----------
+            const agendaContainer = document.querySelector(".agenda");
+            agendaContainer.innerHTML = "<h2>Agenda</h2>";
+
+            if (eventsFromDB.length === 0) {
+                agendaContainer.innerHTML += "<p>No events yet!</p>";
+            } else {
+                // ✅ Normalize and sort properly
+                const sortedEvents = [...eventsFromDB].sort((a, b) => {
+                    // Convert both date + time into valid Date objects safely
+                    const parseDateTime = (ev) => {
+                        // if date is "22 Nov 2025", make sure it’s readable by Date
+                        let datePart = ev.date;
+                        let timePart = ev.time || "00:00";
+                        // Replace possible formats to uniform "YYYY-MM-DD"
+                        const parsed = new Date(datePart);
+                        if (isNaN(parsed)) {
+                            // try to rebuild if needed (like "22 Nov 2025" → "2025-11-22")
+                            const [day, mon, year] = datePart.split(" ");
+                            const months = {
+                                Jan: "01", Feb: "02", Mar: "03", Apr: "04", May: "05", Jun: "06",
+                                Jul: "07", Aug: "08", Sep: "09", Oct: "10", Nov: "11", Dec: "12"
+                            };
+                            return new Date(`${year}-${months[mon]}-${day}T${timePart}`);
+                        }
+                        return new Date(`${parsed.toISOString().split("T")[0]}T${timePart}`);
+                    };
+
+                    return parseDateTime(a) - parseDateTime(b);
+                });
+
+                // ✅ Render in sorted order
+                sortedEvents.forEach((ev, index) => {
+                    const color = softColors[index % softColors.length];
+                    const gradient = gradients[index % gradients.length];
+
+                    const item = document.createElement("div");
+                    item.classList.add("agenda-item");
+                    item.style.borderLeft = `6px solid ${color}`;
+                    item.style.background = `linear-gradient(90deg, ${gradient}, #fff 80%)`;
+                    item.style.color = "#1e293b";
+
+                    // ✅ Keep your pretty "22 Nov 2025" format
+                    const formattedDate = new Date(ev.date).toLocaleDateString("en-GB", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                    });
+
+                    item.innerHTML = `
+            <h4>${ev.title}</h4>
+            <p>${ev.description ? ev.description : "No description"}</p>
+            <p>${formattedDate} | ${ev.time}</p>
+        `;
+                    agendaContainer.appendChild(item);
+                });
+            }
+
+
+
+            // ---------- ➕ Add Event Form ----------
+            const addEventBtn = document.querySelector(".add-event-btn");
+            const eventCard = document.querySelector(".event-card");
+            const saveBtn = document.querySelector(".save");
+
+            addEventBtn.addEventListener("click", () => {
+                eventCard.classList.toggle("active");
+            });
+
+            saveBtn.addEventListener("click", async () => {
+                const title = document.getElementById("title").value.trim();
+                const description = document.getElementById("description").value.trim();
+                const date = document.getElementById("date").value;
+                const time = document.getElementById("time").value;
+
+                if (!title || !date || !time) {
+                    alert("Please fill in all required fields!");
+                    return;
+                }
+
+                try {
+                    const res = await fetch("/add-event", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ title, description, date, time })
+                    });
+
+                    const data = await res.json();
+                    if (data.success) {
+                        alert("Event added successfully!");
+                        eventCard.classList.remove("active");
+                        document.getElementById("title").value = "";
+                        document.getElementById("description").value = "";
+                        document.getElementById("date").value = "";
+                        document.getElementById("time").value = "";
+                        location.reload();
+                    } else {
+                        alert("Error: " + data.message);
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert("Something went wrong while saving!");
+                }
+            });
+        });
+    </script>
+
+
+</body>
+
+</html>

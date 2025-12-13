@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Checkout Fees</title>
+</head>
+<style>
+    body {
+        background: #f4f6f9;
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, sans-serif;
+    }
+
+    .student-dash {
+        display: flex;
+    }
+
+    /* MAIN CARD */
+    .container {
+        flex: 1;
+        margin: 30px;
+        padding: 40px 50px;
+        background-color: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        max-width: 1100px;
+        margin-left: auto;
+        margin-right: auto;
+        transition: 0.3s;
+    }
+
+    .container:hover {
+        box-shadow: 0 10px 26px rgba(0, 0, 0, 0.12);
+    }
+
+    .container h1 {
+        text-align: center;
+        color: #2c3e50;
+        margin-bottom: 25px;
+        font-size: 28px;
+        border-bottom: 3px solid #3498db;
+        display: inline-block;
+        padding-bottom: 6px;
+    }
+
+    /* STUDENT DETAILS CARD */
+    .student-details {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 35px;
+    }
+
+    .details {
+        width: 60%;
+        max-width: 600px;
+        border-radius: 12px;
+        overflow: hidden;
+        background: white;
+        border: 2px solid #3498db;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .student-details label {
+        display: flex;
+        justify-content: space-between;
+        padding: 14px 22px;
+        font-size: 17px;
+        color: #2c3e50;
+        font-weight: 600;
+        border-bottom: 1.5px solid #3498db;
+    }
+
+    .student-details label:last-child {
+        border-bottom: none;
+    }
+
+    .student-details span {
+        font-weight: normal;
+        color: #34495e;
+    }
+
+    /* INSTALLMENTS SECTION */
+    .data {
+        margin-top: 20px;
+    }
+
+    .select {
+        font-size: 20px;
+        font-weight: 600;
+        color: #2c3e50;
+        display: block;
+        margin-bottom: 15px;
+    }
+
+    .installments {
+        background: #f8fbff;
+        border: 1px solid #d3e2f7;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 25px;
+    }
+
+    .items {
+        display: flex;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px dashed #d0d8e0;
+    }
+
+    .items:last-child {
+        border-bottom: none;
+    }
+
+    .items input[type="checkbox"] {
+        transform: scale(1.5);
+        margin-right: 16px;
+        cursor: pointer;
+    }
+
+    .items label {
+        font-size: 18px;
+        cursor: pointer;
+        color: #2c3e50;
+    }
+
+    /* TOTAL */
+    .total-amount {
+        margin-top: 25px;
+        font-size: 22px;
+        font-weight: 700;
+        color: #222;
+        text-align: right;
+    }
+
+    /* BUTTON */
+    .btn {
+        text-align: center;
+        margin-top: 30px;
+    }
+
+    .btn button {
+        width: 40%;
+        padding: 14px 0;
+        background: #3498db;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 18px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.25s ease, transform 0.1s;
+    }
+
+    .btn button:hover {
+        background: #2b82c4;
+        transform: translateY(-2px);
+    }
+
+    /* ---------------- RESPONSIVE ---------------- */
+    @media (max-width: 992px) {
+        .details {
+            width: 80%;
+        }
+
+        button {
+            width: 60%;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            padding: 30px 25px;
+            margin: 20px;
+        }
+
+        .details {
+            width: 95%;
+        }
+
+        .items label {
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+        }
+
+        .total-amount {
+            text-align: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .container {
+            padding: 25px 15px;
+            margin: 15px;
+        }
+
+        .student-details label {
+            font-size: 16px;
+        }
+
+        .items label {
+            font-size: 15px;
+        }
+
+        .total-amount {
+            font-size: 20px;
+        }
+    }
+</style>
+
+<body>
+    <div class="student-dash">
+        <%- include("partials/StudentPageSidebar") %>
+
+            <div class="container">
+                <h1>Pay Fees</h1>
+
+                <div class="student-details">
+
+                    <div class="details">
+
+                        <label for="">Name: <span>
+                                <%= student.name %>
+                            </span> </label>
+                        <label for="">Class: <span>
+                                <%= student.class %>
+                            </span> </label>
+                        <label for="">Id:<span>
+                                <%= student.id %>
+                            </span> </label>
+                    </div>
+                </div>
+
+                <form action="/students/checkout-fees" method="POST" class="data">
+
+                    <!-- Hidden input to send studentId from session -->
+                    <input type="hidden" name="studentId" value="<%= student._id %>">
+
+                    <label class="select">Select Installments to Pay:</label>
+                    <div class="installments">
+                        <% let hasPending=false; %>
+
+                            <% student.feeStatus.forEach((fee, index)=> { %>
+                                <% if (fee.status==="Pending" ) { %>
+                                    <% hasPending=true; %>
+
+                                        <div class="items">
+                                            <input type="checkbox" name="installments" value="<%= index %>"
+                                                id="installment_<%= index %>" data-amount="<%= fee.amount %>">
+                                            <label for="installment_<%= index %>">
+                                                <%= fee.feeType %> - <%= fee.installment %> - ₹<%= fee.amount %>
+                                            </label>
+                                        </div>
+
+                                        <% } %>
+                                            <% }) %>
+
+                                                <% if (!hasPending) { %>
+                                                    <p
+                                                        style="padding:10px 0; font-size:18px; color:#444; text-align: center;">
+                                                        No Due is Pending
+                                                    </p>
+                                                    <% } %>
+                    </div>
+
+                    <!-- ✅ Total Amount Section -->
+                    <div class="total-amount">
+                        Total: ₹<span id="totalAmount">0</span>
+                    </div>
+
+                    <div class="btn">
+                        <button type="submit">Pay Now</button>
+                    </div>
+                </form>
+            </div>
+    </div>
+
+    <!-- ✅ JS Logic for Total Calculation -->
+    <script>
+        const checkboxes = document.querySelectorAll('input[name="installments"]');
+        const totalAmountSpan = document.getElementById('totalAmount');
+
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                let total = 0;
+                checkboxes.forEach(cb => {
+                    if (cb.checked) {
+                        total += parseInt(cb.getAttribute('data-amount'));
+                    }
+                });
+                totalAmountSpan.textContent = total;
+            });
+        });
+    </script>
+</body>
+
+</html>

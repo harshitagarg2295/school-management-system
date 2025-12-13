@@ -1,0 +1,16 @@
+Print Receipt : kisi b receipt ko agr print karana h to onclick="window.print()" use krenge
+eg :  <button class="print-btn" onclick="window.print()">Print</button>
+ 
+
+✅ GET Request
+
+Purpose: Page ya form show karne ke liye. use method: "GET"
+
+✅ POST  Request
+
+Purpose: Form ke data ko submit/save karne ke liye (DB me insert/update). use method: "POST"
+
+
+Files uploads : with the help of multer package
+
+initially I upload it and save it in local storage but in future we have to upload it on server so any student can access it

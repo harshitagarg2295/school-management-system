@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<style>
+    .notification {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        margin-right: 50px;
+        margin-top: 20px;
+    }
+
+    .notification i {
+        font-size: 25px;
+    }
+
+    .notification {
+        position: relative;
+        cursor: pointer;
+    }
+
+    .notification .dot {
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        width: 10px;
+        height: 10px;
+        background: red;
+        border-radius: 50%;
+    }
+
+    .notification-dropdown {
+        position: absolute;
+        top: 40px;
+        right: 0;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        width: 340px;
+        max-height: 320px;
+        overflow-y: auto;
+        display: none;
+        z-index: 999;
+        scrollbar-width: thin;
+        scrollbar-color: #bbb #f9f9f9;
+    }
+
+    /* ✅ Custom scrollbar for Chrome/Edge */
+    .notification-dropdown::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .notification-dropdown::-webkit-scrollbar-thumb {
+        background-color: #bbb;
+        border-radius: 10px;
+    }
+
+    .notification-dropdown::-webkit-scrollbar-thumb:hover {
+        background-color: #999;
+    }
+
+    .notification-dropdown .notif {
+        padding: 12px 15px;
+        border-bottom: 1px solid #1b1b1b;
+        font-size: 17px;
+        color: #333;
+        line-height: 1.4;
+    }
+
+    .notification-dropdown .notif.unread {
+        background-color: #f5f9ff;
+        font-weight: 600;
+    }
+
+    .notification-dropdown .notif.read {
+        background-color: #fff;
+    }
+</style>
+
+<body>
+    <div class="notification">
+        <i class="fa-solid fa-bell"></i>
+        <% if (admin && admin.notifications && admin.notifications.some(n=> !n.read)) { %>
+            <span class="dot"></span>
+            <% } %>
+    </div>
+
+    <!-- Notification Dropdown -->
+    <div class="notification-dropdown">
+        <% admin.notifications.forEach(n=> { %>
+            <div class="notif <%= n.read ? 'read' : 'unread' %>">
+                <%= n.message %> - <%= new Date(n.createdAt).toLocaleString() %>
+            </div>
+            <% }) %>
+    </div>
+
+</body>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const bell = document.querySelector(".notification");
+        const dropdown = document.querySelector(".notification-dropdown");
+
+        if (bell && dropdown) {
+            bell.addEventListener("click", async (e) => {
+                e.stopPropagation();
+                dropdown.style.display =
+                    dropdown.style.display === "block" ? "none" : "block";
+
+                // ✅ Mark notifications as read when opened
+                if (dropdown.style.display === "block") {
+                    try {
+                        await fetch("/mark-notifications-read", { method: "POST" });
+                        const dot = bell.querySelector(".dot");
+                        if (dot) dot.remove();
+                    } catch (err) {
+                        console.error("Failed to mark notifications as read:", err);
+                    }
+                }
+            });
+
+            // Close dropdown if clicked outside
+            document.addEventListener("click", (e) => {
+                if (!bell.contains(e.target)) {
+                    dropdown.style.display = "none";
+                }
+            });
+        }
+    });
+</script>
+
+</html>

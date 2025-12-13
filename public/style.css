@@ -1,191 +1,325 @@
+/* ===== Reset & Base ===== */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
 }
 
-/* Name & logo section */
+body {
+    background-color: #f9fafb;
+    color: #222;
+}
+
+/* ===== Logo & School Name ===== */
 .logo_name {
     margin: 20px 40px;
     display: flex;
     align-items: center;
-}
-
-.logo_img {
-    width: 120px;
-}
-
-.school_name {
-    margin: 40px 200px 0px;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
     text-align: center;
 }
 
+.logo_img {
+    width: 110px;
+    height: auto;
+}
+
 .school_name h1 {
-    width: 700px;
-    font-size: 50px;
+    font-size: 2.2rem;
     font-weight: 800;
+    color: #0d47a1;
+    letter-spacing: 1px;
 }
 
 .school_name p {
-    margin-top: 10px;
-    font-size: 27px;
+    margin-top: 5px;
+    font-size: 1.1rem;
+    color: #444;
 }
 
-/* Navbar Section */
+/* ===== Navbar ===== */
 .navbar {
-    margin-top: 15px;
-    background-color: rgb(12, 40, 133);
+    background: linear-gradient(90deg, #0d47a1, #1565c0);
+    position: relative;
+    z-index: 100;
 }
 
 .navbar .nav {
     display: flex;
     align-items: center;
+    justify-content: center;
+    gap: 40px;
+    height: 70px;
+    transition: all 0.3s ease;
 }
 
 .nav li {
-    padding: 12px 45px;
     list-style: none;
-    font-size: 20px;
-    font-weight: 500;
+    position: relative;
 }
 
 .nav a {
     text-decoration: none;
     color: white;
-
-}
-
-/* Styling Dropdowns */
-.dropdown a {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    color: white;
-    text-decoration: none;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 500;
-    transition: all 0.3s ease;
+    transition: color 0.3s ease;
 }
 
-/* Enable transition on the icon */
+.nav a:hover {
+    color: #ffcc00;
+}
+
+/* ===== Dropdown Styling ===== */
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: white;
+    color: black;
+    display: none;
+    flex-direction: column;
+    min-width: 200px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    z-index: 200;
+}
+
+.dropdown-menu li a {
+    color: #333;
+    padding: 12px 15px;
+    display: block;
+    font-size: 16px;
+}
+
+.dropdown-menu li a:hover {
+    background-color: #f3f4f6;
+    color: #0d47a1;
+}
+
+.dropdown:hover .dropdown-menu {
+    display: flex;
+}
+
 .dropdown i {
     font-size: 14px;
     transition: transform 0.3s ease;
 }
 
-/* Rotate the icon on hover */
 .dropdown:hover i {
     transform: rotate(180deg);
 }
 
-.dropdown {
-    position: relative;
-}
-
-.dropdown-menu {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background-color: rgba(15, 15, 15, 0.9);
+/* ===== Hamburger Menu ===== */
+.menu-icon {
     display: none;
-    flex-direction: column;
-    min-width: 200px;
-    z-index: 1000;
-}
-
-.dropdown-menu li {
-    padding: 12px 20px;
-}
-
-.dropdown-menu li a {
+    font-size: 28px;
     color: white;
-    text-decoration: none;
-    display: block;
+    color: black;
+    position: absolute;
+    right: 25px;
+    /* top: 20px; */
+    bottom: 100%;
+    cursor: pointer;
+    z-index: 101;
 }
 
-.dropdown:hover .dropdown-menu {
-    /* display: flex; Can also write this instead of display block */
-    display: block;
-}
-
-/* Contact Section */
-
+/* ===== Contact Section (Modernized) ===== */
 .contact-section {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #131516;
+    background: linear-gradient(120deg, #e3f2fd, #f5f9ff);
+    color: #222;
+    padding: 80px 0;
 }
 
 .card {
-    margin: 100px 0 100px;
-    background-color: #161819;
-    color: white;
-    width: 1092px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    width: 85%;
+    max-width: 1100px;
+    margin: auto;
+    border-radius: 20px;
+    padding: 50px 30px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
     text-align: center;
-    border-radius: 5px;
-    box-shadow: 10px 2px 10px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
 }
 
 .card h1 {
-    margin: 25px 0 40px;
-    color: #A7A49F;
-    font-size: 38px;
+    font-size: 2.2rem;
+    margin-bottom: 50px;
+    color: #0d47a1;
+    letter-spacing: 1px;
 }
 
 .contact {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-around;
-    color: #A7A49F;
+    gap: 50px;
 }
 
 .contact h3 {
-    color: #2982cc;
-    font-size: 25px;
-    margin-bottom: 30px;
+    color: #1565c0;
+    margin-bottom: 15px;
+    font-size: 1.4rem;
 }
 
 .contact p {
-    padding: 10px 0px 14px;
+    color: #444;
+    margin: 6px 0;
+    font-size: 1rem;
 }
 
-/* Footer Section */
+.contact i {
+    color: #1565c0;
+    margin-right: 10px;
+    font-size: 1.1rem;
+}
 
+/* ===== Footer Section ===== */
 .footer-section {
-    background-color: #0E6876;
+    background: #0d47a1;
+    color: white;
+    text-align: center;
+    padding: 40px 20px 15px;
 }
 
 .footer-section .links {
     display: flex;
-    justify-content: space-between;
-    padding: 50px 80px;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 25px;
+    margin-bottom: 20px;
 }
 
-.call {
-    text-align: center;
-}
-
-.call i {
-    margin-bottom: 5px;
-
-}
-
-.links {
-    cursor: pointer;
-}
-
-.links i {
+.footer-section .links i {
     font-size: 28px;
+    transition: all 0.3s ease;
 }
 
-.links a {
-    text-decoration: none;
+.footer-section .links i:hover {
+    transform: scale(1.2);
+    color: #ffeb3b;
+}
+
+.footer-section .call {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: white;
 }
 
 .footer-section .copyright {
-    text-align: center;
-    padding-bottom: 10px;
-    color: white;
-    font-size: 18px;
+    font-size: 0.95rem;
+    margin-top: 10px;
+    color: #e0e0e0;
+}
+
+/* ===== Responsive Navbar ===== */
+@media (max-width: 950px) {
+    .menu-icon {
+        display: block;
+    }
+
+    .navbar .nav {
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        right: -100%;
+        height: 100vh;
+        width: 75%;
+        background: rgba(13, 71, 161, 0.95);
+        backdrop-filter: blur(10px);
+        justify-content: flex-start;
+        align-items: flex-start;
+        gap: 20px;
+        padding: 100px 30px;
+        overflow-y: auto;
+        transition: right 0.4s ease;
+    }
+
+    .navbar .nav.active {
+        right: 0;
+    }
+
+    .nav li {
+        width: 100%;
+    }
+
+    .nav a {
+        display: block;
+        width: 100%;
+        padding: 10px 0;
+        font-size: 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .dropdown-menu {
+        position: static;
+        background: transparent;
+        box-shadow: none;
+        border-radius: 0;
+        padding-left: 10px;
+    }
+
+    .dropdown-menu li a {
+        color: #eee;
+        font-size: 17px;
+        border: none;
+    }
+
+    .dropdown:hover .dropdown-menu {
+        display: none;
+    }
+
+    .dropdown.active .dropdown-menu {
+        display: flex;
+    }
+}
+
+
+
+/* ===== Responsive Contact & Footer ===== */
+@media (max-width: 768px) {
+    .contact {
+        flex-direction: column;
+        align-items: center;
+        gap: 35px;
+    }
+
+    .card h1 {
+        font-size: 1.8rem;
+    }
+
+    .school_name h1 {
+        font-size: 1.6rem;
+        width: auto;
+    }
+
+    .school_name p {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .logo_img {
+        width: 80px;
+    }
+
+    .footer-section .links i {
+        font-size: 24px;
+    }
+
+    .footer-section {
+        padding: 30px 10px;
+    }
 }

@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin: Staff Attendance</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background-color: #f1f1f1;
+            overflow-x: hidden;
+        }
+
+        /* --- LAYOUT --- */
+        .admin_dash {
+            display: flex;
+            width: 100%;
+        }
+
+        .attendance_card {
+            font-family: sans-serif;
+            flex: 1;
+            /* Sidebar ke baad bachi hui jagah */
+            margin: 20px;
+            border-radius: 8px;
+            background-color: white;
+            padding: 30px 25px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+            width: auto;
+            overflow: hidden;
+        }
+
+        /* --- HEADERS --- */
+        .headers {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .headers h1 {
+            margin: 0;
+            font-size: 26px;
+        }
+
+        .search-teach {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .search-teach i {
+            position: absolute;
+            left: 10px;
+            color: gray;
+        }
+
+        .search-teach input {
+            padding: 10px 10px 10px 35px;
+            border-radius: 20px;
+            border: 1px solid grey;
+            font-size: 15px;
+            outline: none;
+        }
+
+        /* --- DATE & HOLIDAY --- */
+        .date_month_year {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .btn,
+        .select-box {
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid #cfd6dd;
+            font-size: 14px;
+        }
+
+        .save_month_year {
+            padding: 7px 18px;
+            background: #4fa3f7;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .save_month_year:hover {
+            background: #2f8ae2;
+        }
+
+        /* --- TABLE STYLING --- */
+        .attendance_table {
+            overflow-x: auto;
+            margin-top: 30px;
+            padding-bottom: 20px;
+            width: 100%;
+            scrollbar-width: thin;
+            scrollbar-color: #b4b4b4 #f1f1f1;
+        }
+
+        /* Fix for Background Cutting */
+        .attend_list_header,
+        .attend_list {
+            min-width: 100%;
+            width: max-content;
+            /* Content ke hisab se stretch karega */
+            display: flex;
+            align-items: center;
+        }
+
+        .list ul {
+            list-style: none;
+            display: flex;
+            padding: 0;
+            margin: 0;
+            align-items: center;
+        }
+
+        /* HEADER ROW */
+        .attend_list_header {
+            background-color: #b1e6f4;
+            border-radius: 7px 7px 0 0;
+            border: 1px solid rgb(186, 185, 185);
+            border-bottom: none;
+            height: 60px;
+        }
+
+        /* DATA ROW */
+        .attend_list {
+            border: 1px solid rgb(186, 185, 185);
+            border-top: none;
+            background: white;
+            height: 70px;
+        }
+
+        .attend_list:last-child {
+            border-radius: 0 0 7px 7px;
+        }
+
+        /* --- STICKY NAME COLUMN --- */
+        .staffs_name {
+            position: sticky;
+            left: 0;
+            width: 200px;
+            min-width: 200px;
+            z-index: 10;
+            border-right: 1px solid #ddd;
+            padding: 0 10px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            height: 100%;
+        }
+
+        .attend_list_header .staffs_name {
+            background-color: #b1e6f4;
+            z-index: 20;
+            border-radius: 7px 0 0 0;
+            padding: 10px;
+        }
+
+        .attend_list .staffs_name {
+            background-color: white;
+            padding: 10px;
+        }
+
+        /* --- CELLS (Increased Width to 65px) --- */
+        .list ul li:not(.staffs_name) {
+            width: 65px;
+            min-width: 65px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        /* --- DROPDOWN WRAPPER --- */
+        .dropdown-wrapper {
+            position: relative;
+            width: 28px;
+            height: 28px;
+            display: inline-block;
+        }
+
+        .dropdown-wrapper:hover {
+            border-color: #429af2;
+        }
+
+        .attendance_dropdown {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            appearance: none;
+            text-align: center;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+
+        .custom-arrow {
+            font-size: 12px;
+            color: rgb(34, 33, 33);
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+
+        /* --- ICONS --- */
+        img.status-icon {
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+
+        .holiday-cell {
+            background-color: #b1e6f4;
+            border-radius: 5px;
+            width: 35px !important;
+            height: 25px !important;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto;
+        }
+
+        .today-cell {
+            background-color: rgb(89, 165, 240);
+            border-radius: 5px;
+            color: white;
+            padding: 5px 0;
+        }
+
+        /* --- EXTRA COLUMNS (Salary, etc) --- */
+        .extra-col {
+            width: 110px !important;
+            min-width: 110px !important;
+            font-size: 14px;
+            text-align: center;
+            border-left: 1px solid #eee;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+
+        .header-extra {
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        /* Payment Status Badges */
+        .status {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .status.paid {
+            background: #e0f8f1;
+            color: #1aaa55;
+        }
+
+        .status.pending {
+            background: #fff1e5;
+            color: #e67817;
+        }
+
+        .status .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .payment_dropdown {
+            padding: 2px;
+            margin-top: 5px;
+        }
+
+        /* --- POPUP --- */
+        .holiday-popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .holiday-card {
+            background: #fff;
+            padding: 20px 30px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+            max-width: 350px;
+            width: 90%;
+        }
+
+        .holiday-card h3 {
+            margin-bottom: 10px;
+            color: #429af2;
+        }
+
+        .holiday-card p {
+            margin-bottom: 15px;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .holiday-card button {
+            background: #429af2;
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .holiday-card button:hover {
+            background: #2f7bdc;
+        }
+
+        /* BACKDROP */
+        .bio-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        /* POPUP BOX */
+        .bio-modal-content {
+            width: 380px;
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            animation: popupShow 0.25s ease;
+        }
+
+        @keyframes popupShow {
+            from {
+                transform: scale(0.85);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Title */
+        .bio-modal-content h2 {
+            margin: 0 0 15px 0;
+            font-size: 20px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        /* File Input */
+        .bio-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            background: #f9fafb;
+        }
+
+        /* Button Row */
+        .bio-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        /* Upload Button */
+        .bio-upload-btn {
+            background: #2563eb;
+            padding: 8px 18px;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .bio-upload-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Cancel */
+        .bio-cancel-btn {
+            background: #d1d5db;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .bio-cancel-btn:hover {
+            background: #b9c0cc;
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 992px) {
+            .attendance_card {
+                margin: 10px;
+                padding: 15px;
+            }
+
+            .staffs_name {
+                width: 150px;
+                min-width: 150px;
+                font-size: 14px;
+            }
+
+            .headers {
+                padding: 25px 30px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .admin_dash {
+                flex-direction: column;
+            }
+
+            .attendance_card {
+                width: 100%;
+                margin: 0;
+                border-radius: 0;
+            }
+
+            .date_month_year {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .extra-col {
+                width: 90px !important;
+                min-width: 90px !important;
+                font-size: 12px;
+            }
+        }
+
+         .print-btn {
+            padding: 10px 30px;
+            border-radius: 6px;
+            border: none;
+            font-size: 18px;
+            background-color: rgb(66, 154, 242);
+            color: white;
+            cursor: pointer;
+        }
+
+        .print-btn:hover {
+            background-color: #2f8ae2;
+        }
+
+
+    @media print {
+        /* @page {
+            size: A4 landscape; Page Landscape
+            margin: 5mm;        Margin kam
+        } */
+
+        body {
+            background: white !important;
+            -webkit-print-color-adjust: exact !important;
+            font-size: 10px !important;
+            font-family: sans-serif;
+        }
+
+        /* 1. HIDE EVERYTHING UNNECESSARY */
+         .menu-section,.hamburger, .headers, .date_month_year, .bio-modal, .holiday-popup, .button-container, .search-staff, .payment_dropdown {
+            display: none !important;
+        }
+        
+        /* 2. RESET LAYOUT CONTAINERS */
+        .attendance_card, .attendance_table {
+            display: block !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+            overflow: visible !important;
+            border: none !important;
+        }
+
+        /* 3. TABLE GRID STRUCTURE (Excel Style) */
+        .attend_list_header, .attend_list {
+            display: flex !important;
+            width: 100% !important;
+            min-width: 100% !important;
+            justify-content: flex-start;
+            border: none !important; /* Outer borders hataye, internal cells me lagayenge */
+        }
+
+        /* Header Specifics */
+        .attend_list_header {
+            height: 60px !important; /* Header thoda lamba taaki dates fit aaye */
+            background-color: #ddd !important; /* Grey Background */
+            border-bottom: 2px solid #000 !important; /* Header ke neeche dark line */
+        }
+        
+        /* Data Row Specifics */
+        .attend_list {
+            height: 25px !important; /* Row height compact */
+            border-bottom: 1px solid #ccc !important;
+        }
+
+        /* 4. COMMON CELL STYLES (Borders & Alignment) */
+        .attend_list ul, .attend_list_header ul {
+            display: flex !important;
+            width: 100% !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        .list ul li {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            border-right: 1px solid #999 !important; /* Right border grid ke liye */
+            border-left: 1px solid #999 !important;  /* Left border */
+            height: 100% !important;
+            padding: 0 2px !important;
+            box-sizing: border-box !important;
+        }
+
+        /* 5. NAME COLUMN (Fixed Width) */
+        .staffs_name {
+            position: static !important;
+            width: 180px !important;
+            min-width: 180px !important;
+            justify-content: flex-start !important; /* Name Left Align */
+            padding-left: 8px !important;
+            font-weight: bold !important;
+            text-align: left !important;
+            background: white !important;
+            color: black !important;
+            border-right: 2px solid #000 !important; /* Name ke baad dark line */
+        }
+        
+        .attend_list_header .staffs_name {
+            background-color: #ddd !important;
+        }
+
+        /* 6. DATE COLUMNS (1-31) - FIXED ROTATION HERE */
+        .list ul li:not(.staffs_name):not(.extra-col) {
+            width: 20px !important; /* Column width fix */
+            min-width: 20px !important;
+            flex-grow: 1; /* Space barabar baato */
+            font-size: 9px !important;
+        }
+
+        /* HEADER DATE ROTATION (The Main Fix) */
+        .attend_list_header ul li:not(.staffs_name):not(.extra-col) {
+            writing-mode: horizontal-tb !important; /* Reset any weird mode */
+            height: 100% !important;
+            white-space: nowrap;
+            border: none !important;
+        }
+        
+        /* Date Header ke liye ek chota wrapper taaki border dikhe (Optional hack) */
+        /* Humne upar .list ul li me border diya hai, wo sambhal lega */
+
+        /* 7. ICONS & BADGES FIX */
+        img.status-icon {
+            width: 14px !important;
+            height: 14px !important;
+        }
+
+        .holiday-cell {
+            background-color: #eee !important;
+            width: 100% !important;
+            height: 100% !important;
+        }
+        
+        /* Dropdowns chupana */
+        .dropdown-wrapper, .custom-arrow { display: none !important; }
+
+        /* 8. EXTRA COLUMNS (Salary etc) */
+        .extra-col {
+            width: 65px !important;
+            min-width: 65px !important;
+            font-size: 9px !important;
+            flex-direction: column;
+            line-height: 1.1;
+        }
+
+        /* Page Break Prevention */
+        .staff-row {
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+        .status {
+            padding: 5px 5px;
+            border-radius: 7px;
+            font-size: 10px;
+            font-weight: 400;
+        }
+
+        .status .dot {
+            width: 5px;
+            height: 5px;
+        }
+    }
+    </style>
+</head>
+
+<body>
+
+    <div class="admin_dash">
+
+        <%- include("partials/AdminPageSidebar") %>
+
+            <div class="attendance_card">
+
+                <div class="headers">
+                    <h1>Staff Attendance</h1>
+                    <div class="search-teach">
+                        <i class="fa fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search by Name">
+                    </div>
+                </div>
+
+                <div class="date_month_year">
+
+                    <!-- Holiday Form -->
+                    <form method="POST" action="/mark-staff-holiday"
+                        style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                        <label style="font-size: 14px;">Declare Holiday:</label>
+                        <input type="date" name="date" required class="btn">
+                        <input type="text" name="reason" placeholder="Reason" class="btn">
+                        <button type="submit" class="save_month_year" style="padding: 6px 15px;">Mark</button>
+                    </form>
+
+                    <!-- Month/Year Form -->
+                    <form method="GET" action="/view-attendance-staffs"
+                        style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <select name="month" class="select-box">
+                            <% for(let m=1; m <=12; m++) { %>
+                                <option value="<%= m %>" <%=parseInt(month)===m ? "selected" : "" %>>
+                                    <%= moment().month(m - 1).format("MMMM") %>
+                                </option>
+                                <% } %>
+                        </select>
+                        <select name="year" class="select-box">
+                            <% for(let y=2022; y <=2030; y++) { %>
+                                <option value="<%= y %>" <%=parseInt(year)===y ? "selected" : "" %>>
+                                    <%= y %>
+                                </option>
+                                <% } %>
+                        </select>
+                        <button class="save_month_year" type="submit">Go</button>
+                    </form>
+
+                    <!-- ⭐ Add Upload Button HERE -->
+                    <button id="uploadBioBtn" data-origin="staff" class="save_month_year"
+                        style="padding: 7px 20px; height: 38px; background:#2563eb;">
+                        Upload Biometric File
+                    </button>
+
+                </div>
+
+                <div class="attendance_table">
+
+                    <!-- HEADER -->
+                    <div class="attend_list_header list">
+                        <ul>
+                            <li class="staffs_name">Name</li>
+
+                            <% for(let i=1; i <=daysInMonth; i++) { %>
+                                <li id="<%= i === today ? 'today-column' : '' %>"
+                                    class="<%= i === today ? 'today-cell' : '' %>">
+                                    <%= i < 10 ? '0' + i : i %>
+                                </li>
+                                <% } %>
+
+                                    <li class="extra-col header-extra">Absent<br>Days</li>
+                                    <li class="extra-col header-extra">Per day<br>Salary</li>
+                                    <li class="extra-col header-extra">Total<br>Payable</li>
+                                    <li class="extra-col header-extra">Status</li>
+                        </ul>
+                    </div>
+
+                    <!-- BODY -->
+                    <form id="attendance-form" action="/submit-attendance-staffs" method="POST">
+                        <input type="hidden" name="month" value="<%= month %>">
+                        <input type="hidden" name="year" value="<%= year %>">
+
+                        <% staffs.forEach(staff=> { %>
+                            <div class="attend_list list staff-row" data-name="<%= staff.name.toLowerCase() %>">
+                                <ul>
+                                    <li class="staffs_name">
+                                        <%= staff.name %>
+                                    </li>
+
+                                    <% for (let i=1; i <=daysInMonth; i++) { %>
+                                        <% let status=(attendanceMap[staff._id?.toString()] || {})['day_' + i]; %>
+
+                                            <li class="<%= (sundays.includes(i) || holidays.includes(i)) ? 'holiday-cell' : '' %>"
+                                                data-full-date="<%= `${year}-${String(month).padStart(2,'0')}-${String(i).padStart(2,'0')}` %>"
+                                                data-day="<%= i %>" data-month="<%= month %>" data-year="<%= year %>"
+                                                data-reason="<%= holidayReasons[i] || (sundays.includes(i) ? 'Sunday' : '') %>">
+
+                                                <% if (sundays.includes(i) || holidays.includes(i)) { %>
+                                                    -
+                                                    <% } else { %>
+                                                        <!-- EXACT DROPDOWN STRUCTURE -->
+                                                        <div class="dropdown-wrapper"
+                                                            style="<%= status ? 'display: none;' : '' %>">
+                                                            <select class="attendance_dropdown"
+                                                                name="attendance[<%= staff._id %>][<%= 'day_' + i %>]">
+                                                                <option value=""></option>
+                                                                <option value="P" <%=status==="P" ? "selected" : "" %>
+                                                                    >P
+                                                                </option>
+                                                                <option value="A" <%=status==="A" ? "selected" : "" %>
+                                                                    >A
+                                                                </option>
+                                                                <option value="L" <%=status==="L" ? "selected" : "" %>
+                                                                    >L
+                                                                </option>
+                                                            </select>
+                                                            <i class="fa-solid fa-angle-down custom-arrow"></i>
+                                                        </div>
+
+                                                        <img src="<%= status === 'P' ? '/images/present.jpg' : status === 'A' ? '/images/absent.jpg' : status === 'L' ? '/images/late-image.png' : '' %>"
+                                                            class="status-icon"
+                                                            style="display: <%= status ? 'inline-block' : 'none' %>;" />
+                                                        <% } %>
+                                            </li>
+                                            <% } %>
+
+                                                <li class="extra-col" style="color:#e67817; font-weight:bold;">
+                                                    <%= salaryData[staff._id.toString()].totalAbsent %>
+                                                </li>
+                                                <li class="extra-col">
+                                                    ₹ <%=
+                                                        salaryData[staff._id.toString()].dailySalary.toLocaleString('en-IN')
+                                                        %>
+                                                </li>
+                                                <li class="extra-col" style="color:#1aaa55; font-weight:bold;">
+                                                    ₹ <%=
+                                                        salaryData[staff._id.toString()].payableSalary.toLocaleString('en-IN')
+                                                        %>
+                                                </li>
+
+                                                <li class="extra-col payment-status">
+                                                    <input type="hidden" name="paymentStatus[<%= staff._id %>]"
+                                                        value="<%= salaryData[staff._id].status %>"
+                                                        class="payment-status-input" />
+
+                                                    <% if (salaryData[staff._id].status==="paid" ) { %>
+                                                        <span class="status paid"><span class="dot"></span> Paid</span>
+                                                        <% } else { %>
+                                                            <span class="status pending"><span class="dot"></span>
+                                                                Pending</span>
+                                                            <% } %>
+
+                                                                <select class="payment_dropdown" style="display:none;">
+                                                                    <option value="pending">Pending</option>
+                                                                    <option value="paid">Paid</option>
+                                                                </select>
+                                                </li>
+                                </ul>
+                            </div>
+                            <% }) %>
+                    </form>
+                </div>
+
+                <div class="button-container"
+                    style="margin-top: 40px; text-align: center; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+
+                    <button type="submit" form="attendance-form" class="save_month_year"
+                        style="font-size: 18px; padding: 10px 30px;">Save Attendance</button>
+
+                    <button onclick="window.print()" class="print-btn no-print">
+                        Download PDF
+                    </button>
+
+                </div>
+
+            </div>
+    </div>
+
+    <!-- Pop up for holiday reason -->
+    <div id="holidayPopup" class="holiday-popup">
+        <div class="holiday-card">
+            <h3>Holiday</h3>
+            <p id="holidayReason"></p>
+            <button id="closePopup">Close</button>
+        </div>
+    </div>
+
+    <!-- Popup for biometric button -->
+
+    <div id="uploadModal" class="bio-modal">
+
+        <div class="bio-modal-content">
+
+            <h2>Upload Biometric Attendance</h2>
+
+            <form action="/upload-biometric" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="origin" id="originInput">
+
+                <input type="file" name="bioFile" accept=".csv, .xlsx" required class="bio-input">
+
+                <div class="bio-buttons">
+                    <button type="submit" class="bio-upload-btn">Upload</button>
+                    <button type="button" class="bio-cancel-btn" id="closeModal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <script>
+        // Scroll to Today
+        window.addEventListener("DOMContentLoaded", () => {
+            const todayElement = document.getElementById("today-column");
+            if (todayElement) {
+                todayElement.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+            }
+        });
+
+        // Search Staff
+        document.getElementById("searchInput").addEventListener("input", function () {
+            const val = this.value.toLowerCase();
+            document.querySelectorAll(".staff-row").forEach(row => {
+                row.style.display = row.dataset.name.includes(val) ? "flex" : "none";
+            });
+        });
+
+        // Dropdown -> Icon (only for past and today dates not open for future dates)
+
+        document.querySelectorAll(".attendance_dropdown").forEach(dd => {
+
+            dd.addEventListener("change", function () {
+
+                const li = this.closest("li");
+                const cellDate = li.dataset.fullDate;
+
+                const today = new Date();
+                const yyyy = today.getFullYear();
+                const mm = String(today.getMonth() + 1).padStart(2, "0");
+                const ddStr = String(today.getDate()).padStart(2, "0");
+
+                const todayFull = `${yyyy}-${mm}-${ddStr}`;
+                const todayDate = new Date(todayFull);
+                const clickedDate = new Date(cellDate);
+
+                // ❌ BLOCK FUTURE DATES
+                if (clickedDate > todayDate) {
+                    alert("You cannot mark attendance for a FUTURE date.");
+                    this.value = "";   // reset dropdown
+                    return;
+                }
+
+                // ✔ existing logic (icon show etc.)
+                const wrapper = this.parentElement;
+                const img = wrapper.nextElementSibling;
+                const val = this.value;
+
+                if (val === 'P') { img.src = '/images/present.jpg'; img.style.display = 'inline-block'; wrapper.style.display = 'none'; }
+                else if (val === 'A') { img.src = '/images/absent.jpg'; img.style.display = 'inline-block'; wrapper.style.display = 'none'; }
+                else if (val === 'L') { img.src = '/images/late-image.png'; img.style.display = 'inline-block'; wrapper.style.display = 'none'; }
+            });
+        });
+
+
+        // Icon -> Dropdown
+        const today = new Date().getDate();
+
+        document.querySelectorAll(".status-icon").forEach(img => {
+
+            img.addEventListener("click", function () {
+
+                const li = this.closest("li");
+                if (!li) return;
+
+                const cellDate = li.dataset.fullDate;  // This is ISO format: YYYY-MM-DD
+
+                // Today full date (also ISO format)
+                const today = new Date();
+                const yyyy = today.getFullYear();
+                const mm = String(today.getMonth() + 1).padStart(2, "0");
+                const dd = String(today.getDate()).padStart(2, "0");
+                const todayFull = `${yyyy}-${mm}-${dd}`;
+
+                // If not today → stop
+                if (cellDate !== todayFull) {
+                    alert("You can only edit attendance for TODAY.");
+                    return;
+                }
+
+                this.style.display = 'none';
+                const wrapper = this.previousElementSibling; // .dropdown-wrapper
+                wrapper.style.display = 'inline-block';
+                wrapper.querySelector("select").value = "";
+            });
+
+        });
+
+        // Payment Status Logic
+        document.querySelectorAll(".payment-status").forEach(cell => {
+            const badge = cell.querySelector(".status");
+            const select = cell.querySelector("select");
+            const input = cell.querySelector("input");
+
+            badge.addEventListener("click", () => { badge.style.display = 'none'; select.style.display = 'block'; });
+
+            select.addEventListener("change", function () {
+                input.value = this.value;
+                select.style.display = 'none';
+                badge.className = `status ${this.value}`;
+                badge.innerHTML = `<span class="dot"></span> ${this.value.charAt(0).toUpperCase() + this.value.slice(1)}`;
+                badge.style.display = 'inline-flex';
+            });
+        });
+
+        // Holiday Popup
+        document.querySelectorAll(".holiday-cell").forEach(c => {
+            c.addEventListener("click", () => {
+                const r = c.dataset.reason;
+                if (r) { document.getElementById("holidayReason").innerText = r; document.getElementById("holidayPopup").style.display = 'flex'; }
+            });
+        });
+        document.getElementById("closePopup").addEventListener("click", () => document.getElementById("holidayPopup").style.display = 'none');
+
+
+        // Js for open / close biometric popup
+        document.getElementById("uploadBioBtn").addEventListener("click", (e) => {
+            const origin = e.target.dataset.origin;
+            document.getElementById("originInput").value = origin;
+            document.getElementById("uploadModal").style.display = "flex";
+        });
+
+
+        document.getElementById("closeModal").addEventListener("click", () => {
+            document.getElementById("uploadModal").style.display = "none";
+        });
+
+    </script>
+</body>
+
+</html>

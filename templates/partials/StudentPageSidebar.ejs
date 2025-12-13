@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+</head>
+
+<style>
+     * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .sidebar {
+            width: 280px; /* Fixed width for large screens */
+            background: #2c3e50;
+            min-height: 100vh;
+            max-height: auto;
+            top: 0;
+            left: 0;
+            padding: 20px;
+            color: white;
+            font-family: Arial, sans-serif;
+            transition: transform 0.3s ease-in-out;
+            z-index: 1000;
+            flex-shrink: 0; 
+        }
+
+        /* Hamburger Menu Icon */
+        .hamburger {
+            display: none;
+            font-size: 28px;
+            color: #2c3e50;
+            cursor: pointer;
+            padding: 15px;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 1100;
+        }
+
+        .sidebar.active {
+            transform: translateX(0%);
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 22px;
+            color: #ecf0f1;
+            white-space: nowrap;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        /* Normal Links + Dropdown Buttons */
+        .sidebar ul li a,
+        .sidebar ul li .menu__btn {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 16px;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            text-align: left;
+            gap: 10px;
+            white-space: nowrap; 
+        }
+
+        .sidebar ul li a:hover,
+        .sidebar ul li .menu__btn:hover {
+            background: #34495e;
+            border-radius: 8px;
+        }
+
+        .menu__group span {
+            margin-left: 10px;
+        }
+
+        /* Submenu */
+        .submenu {
+            display: none;
+            padding-left: 15px;
+            margin: 5px 0;
+        }
+
+        .submenu li a {
+            padding: 12px 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #34495e;
+            border-radius: 6px;
+            margin: 3px 0;
+            white-space: nowrap; 
+        }
+
+        .submenu li a:hover {
+            background: #3d566e;
+        }
+
+        /* Caret Rotation */
+        .menu__btn .caret {
+            transition: transform 0.3s;
+        }
+
+        .menu__btn.active .caret {
+            transform: rotate(180deg);
+        }
+
+        .fa-times {
+            color: white !important;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                height: 100%;
+                transform: translateX(-100%);
+                box-shadow: 2px 0 5px rgba(0,0,0,0.5);
+                overflow-y: auto; 
+            }
+
+            .sidebar.active {
+                transform: translateX(0%);
+            }
+
+            .hamburger {
+                display: block; 
+            }
+            .sidebar.active + .hamburger { 
+                color: white; 
+            }
+        }
+        @media (max-width: 480px) {
+            .hamburger {
+                font-size: 24px;
+                top: 5px;
+                left: 5px;
+            }
+        }
+</style>
+
+<body>
+ <!-- Hamburger Menu Icon -->
+    <div class="hamburger" id="hamburgerMenu">
+        <i class="fa-solid fa-bars"></i>
+    </div>
+
+    <!-- Students Page Sidebar -->
+
+    <div class="sidebar" id="studentSidebar">
+        <h2>Student Panel</h2>
+        <ul>
+            <li><a href="/studentDashboard"><i class="fa-solid fa-house"></i> Dashboard</a></li>
+            <li><a href="/students/view-attendance"><i class="fa-solid fa-calendar-check"></i> View Attendance</a></li>
+            <li><a href="/students/view-result"><i class="fa-solid fa-graduation-cap"></i> View Results</a></li>
+            <li><a href="/students/fees-status"><i class="fa-solid fa-money-check-alt"></i> Fees Status</a></li>
+            <li><a href="/students/checkout-fees"><i class="fa-solid fa-credit-card"></i> Pay Fees Online</a></li>
+            <li><a href="/students/view-announcement"><i class="fa-solid fa-bullhorn"></i>View Announcements</a></li>
+            <li><a href="/students/view-study-material"><i class="fa-solid fa-file-alt"></i>View Study Materials</a>
+            </li>
+
+            <!-- Timetable -->
+            <li class="menu__group">
+                <button class="menu__btn" data-target="timetableSub">
+                    <div><i class="fa-solid fa-calendar-alt"></i><span>Timetable</span></div>
+                    <i class="fa-solid fa-chevron-down caret"></i>
+                </button>
+                <ul id="timetableSub" class="submenu">
+                    <li><a href="/students/view-monthly-test/timetable"><span>📝</span> Monthly Test</a>
+                    </li>
+                    <li><a href="/students/view-exams/timetable"><span>📅</span> Exams</a></li>
+                </ul>
+            </li>
+
+            <!-- Syllabus -->
+            <li class="menu__group">
+                <button class="menu__btn" data-target="syllabusSub">
+                    <div><i class="fa-solid fa-book-open"></i><span>Syllabus</span></div>
+                    <i class="fa-solid fa-chevron-down caret"></i>
+                </button>
+                <ul id="syllabusSub" class="submenu">
+                    <li><a href="/students/view-monthly-test/syllabus"><span>📝</span> Monthly Test</a></li>
+                    <li><a href="/students/view-exams/syllabus"><span>📘</span> Exams</a></li>
+                </ul>
+            </li>
+
+            <li><a href="/calen-menu?role=student"><i class="fa-solid fa-calendar"></i>Calendar</a></li>
+            <li><a href="/setting"> <i class="fa-solid fa-gear"></i>Settings</a></li>
+           
+        </ul>
+    </div>
+
+</body>
+
+<script>
+    document.querySelectorAll(".menu__btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            let target = document.getElementById(btn.dataset.target);
+            btn.classList.toggle("active");
+            if (target.style.display === "block") {
+                target.style.display = "none";
+            } else {
+                target.style.display = "block";
+            }
+        });
+    });
+
+
+   // Hamburger menu functionality
+    const hamburgerMenu = document.getElementById("hamburgerMenu");
+    const studentSidebar = document.getElementById("studentSidebar");
+    const hamburgerIcon = hamburgerMenu.querySelector('i'); // Get the icon element
+
+    hamburgerMenu.addEventListener("click", () => {
+        studentSidebar.classList.toggle("active");
+        // Immediately change icon when clicked
+        if (window.innerWidth <= 768) {
+            if (studentSidebar.classList.contains('active')) {
+                hamburgerIcon.classList.remove('fa-bars');
+                hamburgerIcon.classList.add('fa-times');
+            } else {
+                hamburgerIcon.classList.remove('fa-times');
+                hamburgerIcon.classList.add('fa-bars');
+            }
+        }
+    });
+
+    // Close sidebar if clicked outside (only for mobile)
+    document.addEventListener("click", (event) => {
+        if (window.innerWidth <= 768 && studentSidebar.classList.contains("active") &&
+            !studentSidebar.contains(event.target) && !hamburgerMenu.contains(event.target)) {
+            studentSidebar.classList.remove("active");
+            hamburgerIcon.classList.remove('fa-times');
+            hamburgerIcon.classList.add('fa-bars');
+        }
+    });
+
+    // Handle initial state and window resize for hamburger icon
+    const handleHamburgerIconState = () => {
+        if (window.innerWidth <= 768) {
+            if (studentSidebar.classList.contains('active')) {
+                hamburgerIcon.classList.remove('fa-bars');
+                hamburgerIcon.classList.add('fa-times');
+            } else {
+                hamburgerIcon.classList.remove('fa-times');
+                hamburgerIcon.classList.add('fa-bars');
+            }
+        } else {
+            // Ensure bars icon is shown on larger screens if it was 'times'
+            hamburgerIcon.classList.remove('fa-times');
+            hamburgerIcon.classList.add('fa-bars');
+        }
+    };
+
+    window.addEventListener('resize', handleHamburgerIconState);
+    window.addEventListener('DOMContentLoaded', handleHamburgerIconState); // For initial load
+
+</script>
+
+</html>

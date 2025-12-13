@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+</head>
+<style>
+    .student-dash {
+        display: flex;
+    }
+
+    .main-section {
+        width: 60%;
+        padding: 30px 20px 30px 100px;
+    }
+
+    .name {
+        padding: 30px 0px 0px 20px;
+        color: #002244;
+    }
+
+    .student-data {
+        margin-top: 30px;
+    }
+
+
+    .data {
+        display: flex;
+        align-items: center;
+        gap: 180px;
+    }
+
+    .data h3 {
+        width: 250px;
+        padding: 20px;
+        font-size: 22px;
+        color: rgb(46, 46, 46);
+    }
+
+    .data p {
+        display: inline-block;
+        font-size: 18px;
+        font-weight: 500;
+        padding: 8px 18px;
+        min-width: 250px;
+        text-align: center;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        background-color: #ffffff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+        transition: all 0.2s ease-in-out;
+        /* hover पर smooth effect */
+    }
+
+    .data p:hover {
+        border-color: #bbb;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+    }
+
+    .flex {
+        display: flex;
+        gap: 60px;
+    }
+
+    .data p:hover {
+        transform: scale(1.01);
+        transition: 0.25s ease;
+        border-color: rgba(0, 105, 255, 0.45);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+    }
+
+    @media (max-width:1200px) {
+
+        .main-section {
+            width: 65%;
+            padding: 30px 20px 30px 60px;
+        }
+
+        .data {
+            gap: 100px;
+        }
+
+        .data h3 {
+            width: 200px;
+            font-size: 20px;
+        }
+
+        .data p {
+            min-width: 200px;
+        }
+    }
+
+    @media (max-width:992px) {
+
+        .main-section {
+            width: 100%;
+            padding: 25px 30px;
+        }
+
+        .data {
+            gap: 60px;
+        }
+
+        .data h3 {
+            width: 170px;
+            font-size: 19px;
+        }
+
+        .data p {
+            min-width: 170px;
+            font-size: 17px;
+            padding: 7px 12px;
+        }
+    }
+
+
+    @media (max-width:820px) {
+
+        .main-section {
+            width: 100%;
+            padding: 25px 40px;
+        }
+
+        .data {
+            gap: 40px;
+        }
+
+        .data h3 {
+            width: 300px;
+            font-size: 18px;
+        }
+
+        .data p {
+            width: 100%;
+            font-size: 16px;
+        }
+
+        .flex {
+            flex-direction: column;
+            gap: 30px;
+        }
+    }
+
+
+    @media (max-width:480px) {
+
+        .data {
+            flex-direction: column;
+            gap: 6px;
+            align-items: flex-start;
+        }
+
+        .data h3 {
+            padding: 0;
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .data p {
+            width: 100%;
+            text-align: center;
+            padding: 8px;
+            font-size: 15px;
+            margin: 10px 0px 15px;
+        }
+
+        .name {
+            padding-left: 5px;
+            font-size: 24px;
+        }
+    }
+</style>
+
+<body>
+
+    <div class="student-dash">
+
+        <!-- Sidebar (menu section) -->
+        <%- include("partials/StudentPageSidebar") %>
+
+            <!-- Main Section -->
+
+            <div class="flex">
+
+                <div class="main-section">
+
+                    <h1 class="name">
+                        <%= student.name %>
+                    </h1>
+
+                    <div class="student-data">
+                        <div class="data">
+                            <h3>ID</h3>
+                            <p>
+                                <%= student.id%>
+                            </p>
+                        </div>
+
+                        <div class="data">
+                            <h3>Class</h3>
+                            <p>
+                                <%= student.class%>
+                            </p>
+                        </div>
+
+                        <div class="data">
+                            <h3>Date Of Birth</h3>
+                            <p>
+                                <%= student.DOB.getDate().toString().padStart(2,'0') %> -
+                                    <%= (student.DOB.getMonth()+1).toString().padStart(2,'0') %> -
+                                        <%= student.DOB.getFullYear() %>
+                            </p>
+                        </div>
+
+                        <div class="data">
+                            <h3>Fees</h3>
+                            <p>
+                                <%= student.fees %>
+                            </p>
+                        </div>
+
+                        <div class="data">
+                            <h3>Address</h3>
+                            <p>
+                                <%= student.address %>
+                            </p>
+                        </div>
+
+                        <div class="data">
+                            <h3>Phone Number</h3>
+                            <p>
+                                <%= student.phone %>
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+                <%- include("partials/attendanceCalendar", { size: "small" , type: "attendance-student" , attendance:
+                    attendance }) %>
+            </div>
+    </div>
+
+</body>
+
+</html>

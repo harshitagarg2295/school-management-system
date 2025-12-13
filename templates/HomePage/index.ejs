@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Management</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+
+<style>
+    .hero img {
+        width: 100%;
+        height: auto;
+        display: block;
+        object-fit: cover;
+    }
+
+    .about-info {
+        display: flex;
+        justify-content: center;
+        align-items: stretch;
+        gap: 40px;
+        flex-wrap: wrap;
+        padding: 80px 10%;
+        background: linear-gradient(135deg, #f0f5ff, #ffffff);
+    }
+
+    .box {
+        flex: 1 1 40%;
+        background: #ffffff;
+        padding: 40px 35px;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        transition: all 0.4s ease;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .box:hover {
+        transform: translateY(8px);
+        box-shadow: 0 15px 30px rgba(0, 120, 255, 0.2);
+    }
+
+    .box h1 {
+        font-size: 1.8rem;
+        color: #004aad;
+        margin-bottom: 15px;
+        border-left: 5px solid #004aad;
+        padding-left: 10px;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .box p {
+        font-size: 1rem;
+        color: #333;
+        line-height: 1.6;
+        text-align: justify;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .box ul {
+        list-style: none;
+        padding: 0;
+        margin-top: 15px;
+    }
+
+    .box ul li {
+        font-size: 1rem;
+        color: #333;
+        margin: 8px 0;
+        display: flex;
+        align-items: center;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .box ul li::before {
+        content: '✔️';
+        color: #007bff;
+        margin-right: 10px;
+        font-size: 1.1rem;
+    }
+
+    /* === Responsive === */
+    @media (max-width: 900px) {
+        .about-info {
+            flex-direction: column;
+            align-items: center;
+            padding: 60px 5%;
+        }
+
+        .box {
+            width: 90%;
+            margin-bottom: 30px;
+        }
+    }
+</style>
+
+
+<body>
+
+    <%- include("partials/HomePageSchoolName") %>
+
+        <%- include("partials/HomePageNavbar") %>
+
+            <section class="hero">
+                <img src="images/img2.png" alt="" width="100%">
+                <!-- <img src="images/img3.jpg" alt=""  width="100%">
+            <img src="images/img4.jpg" alt=""  width="100%"> -->
+            </section>
+
+            <section class="about-info">
+
+                <div class="box box1">
+                    <h1>About School</h1>
+                    <p>Rishikulam School Morena aims to provide holistic education focusing on both academics and moral
+                        values. Our mission is to nurture responsible, creative, and confident individuals.</p>
+                </div>
+
+                <div class="box box2">
+                    <h1>🎓 Our Facilities</h1>
+                    <ul>
+                        <li>Smart Classes</li>
+                        <li> Experienced Faculty</li>
+                        <li> Library & Labs</li>
+                        <li> Sports & Extracurriculars</li>
+                        <li> Transport Facility</li>
+                    </ul>
+                </div>
+            </section>
+
+
+            <%- include("partials/HomePageContact") %>
+
+                <%- include("partials/HomePageFooter") %>
+
+</body>
+
+</html>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Announcement</title>
+
+    <style>
+        :root {
+            --primary: #2196f3;
+            --text-dark: #2c3e50;
+            --bg-light: #f4f7fb;
+            --border: #e0e0e0;
+            --card-bg: #ffffff;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg-light);
+            color: var(--text-dark);
+        }
+
+        .teacher-dash {
+            display: flex;
+        }
+
+        /* ---------- Announcement Container ---------- */
+        .announcement {
+            font-family: "Poppins", sans-serif;
+            flex: 1;
+            padding: 40px 60px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            margin: 40px;
+            box-shadow: var(--shadow);
+            transition: 0.3s ease;
+        }
+
+        .announcement h2 {
+            font-size: 28px;
+            margin-bottom: 25px;
+            text-align: center;
+            color: var(--primary);
+            color: #2c3e50;
+            font-weight: 600;
+            border-bottom: 3px solid var(--primary);
+            display: inline-block;
+            padding-bottom: 5px;
+        }
+
+        /* ---------- Form Styling ---------- */
+        .form {
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        .form label {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .form input[type="text"],
+        .form input[type="date"],
+        .form select,
+        .form textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 15px;
+            background: #f9fbfe;
+            transition: all 0.3s ease;
+        }
+
+        .form input:focus,
+        .form textarea:focus,
+        .form select:focus {
+            border-color: var(--primary);
+            background: #fff;
+            outline: none;
+            box-shadow: 0 0 5px rgba(33, 150, 243, 0.3);
+        }
+
+        .form textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        /* ---------- Buttons ---------- */
+        .btn {
+            text-align: right;
+        }
+
+        .btn button {
+            padding: 12px 26px;
+            background: var(--primary);
+            color: #fff;
+            font-size: 17px;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(33, 150, 243, 0.25);
+        }
+
+        .btn button:hover {
+            background: #1976d2;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+        }
+
+        .announcement-btn {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+
+        .view-btn {
+            padding: 10px 20px;
+            background: var(--primary);
+            color: #fff;
+            font-size: 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(33, 150, 243, 0.25);
+        }
+
+        .view-btn:hover {
+            background: #1976d2;
+            transform: translateY(-1px);
+        }
+
+        /* ---------- Responsive ---------- */
+        @media (max-width: 992px) {
+            .announcement {
+                margin: 25px;
+                padding: 30px;
+            }
+
+            .announcement h2 {
+                font-size: 24px;
+            }
+
+            .form input,
+            .form textarea,
+            .form select {
+                font-size: 14px;
+            }
+
+            .btn button {
+                font-size: 15px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .announcement {
+                margin: 20px;
+                padding: 20px;
+            }
+
+            .announcement h2 {
+                font-size: 22px;
+            }
+
+            .announcement-btn {
+                justify-content: center;
+            }
+
+            .form {
+                gap: 18px;
+            }
+
+            .btn {
+                text-align: center;
+            }
+
+            .btn button,
+            .view-btn {
+                width: 100%;
+                text-align: center;
+                padding: 12px 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .announcement {
+                margin: 15px;
+                padding: 18px;
+            }
+
+            .announcement h2 {
+                font-size: 20px;
+            }
+
+            .form label {
+                font-size: 14px;
+            }
+
+            .btn button,
+            .view-btn {
+                font-size: 14px;
+                padding: 10px 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="teacher-dash">
+        <% if (role==="teacher" ) { %>
+            <%- include("partials/TeacherPageSidebar") %>
+                <% } else if (role==="admin" ) { %>
+                    <%- include("partials/AdminPageSidebar") %>
+                        <% } %>
+
+                            <div class="announcement">
+                                <h2>Add Announcement</h2>
+
+                                <% if (role==="admin" ){ %>
+                                    <div class="announcement-btn">
+                                        <a href="/admin/view-announcement" class="view-btn">View Announcement</a>
+                                    </div>
+                                    <% } %>
+
+                                        <form class="form" method="POST"
+                                            action="<%= role === 'teacher' ? '/teachers/add-announcement' : '/admin/add-announcement' %>">
+                                            <label for="title">Title</label>
+                                            <input type="text" id="title" name="title" required>
+
+                                            <label for="description">Description</label>
+                                            <textarea id="description" name="description" required></textarea>
+
+                                            <label for="date">Date</label>
+                                            <input type="date" id="date" name="date" required>
+
+                                            <label for="class">For Class</label>
+                                            <select name="class" id="class">
+                                                <option value="All">All Classes</option>
+                                                <% if (role==="admin" ) { %>
+                                                    <option value="Teachers">For Teachers</option>
+                                                    <% } %>
+                                                        <% classList.forEach(c=> { %>
+                                                            <option value="<%= c %>">
+                                                                <%= c %>
+                                                            </option>
+                                                            <% }) %>
+                                            </select>
+
+                                            <div class="btn">
+                                                <button type="submit">Add</button>
+                                            </div>
+                                        </form>
+                            </div>
+    </div>
+</body>
+
+</html>

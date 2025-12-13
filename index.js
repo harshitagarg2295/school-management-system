@@ -1,24 +1,53 @@
+// This file handle all the routes related to our website
+
+require("dotenv").config(); // for mongoDB atlas connection string
+
 
 const express = require('express');
 const path = require('path');
-const { title } = require('process');
+const bodyParser = require("body-parser");
 
 
 const mongoose = require('mongoose')
 
-const Teacher = require('./models/Teacher') //imported schema
-
 const app = express();
 const port = 3005;
+
+const session = require("express-session");
+
+app.use(session({
+  secret: "secretKey",
+  resave: false,
+  saveUninitialized: true
+}));
 
 // Set view engine to EJS
 app.set("view engine", "ejs");
 
 // Set views directory
-app.set("views", path.join(__dirname, "templates"));
+app.set("views", [
+  path.join(__dirname, "templates"),
+  path.join(__dirname, "templates/Homepage"),
+  path.join(__dirname, "templates/Admin"),
+  path.join(__dirname, "templates/Teachers"),
+  path.join(__dirname, "templates/Students")
+]);
 
 //Serve static files (CSS, images, JS, etc.) from public folder
 app.use(express.static("public"));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Yeh middleware Express ko allow karta hai HTML form ke data ko req.body me read karne ke liye.
+app.use(express.urlencoded({ limit: "10mb", extended: true }));
+
+app.use(express.json({ limit: "10mb" }));
+
+
+app.use((req, res, next) => {
+    res.set("Cache-Control", "no-store");
+    next();
+});
+
 
 // Serve index.html from templates
 // app.get('/', (req, res) => {
@@ -28,87 +57,206 @@ app.use(express.static("public"));
 
 // // Route to render index.ejs
 app.get("/", (req, res) => {
-    res.render("index");  // This will render templates/index.ejs
+  res.render("index");  // This will render templates/index.ejs
 });
 
 // Route to render school.ejs
 app.get("/school.html", (req, res) => {
-    res.render("school");
+  res.render("school");
 });
 
 // Route to render mission.ejs
 app.get("/mission.html", (req, res) => {
-    res.render("mission");
+  res.render("mission");
 });
 
 // Route to render management.ejs
 app.get("/management.html", (req, res) => {
-    res.render("management");
+  res.render("management");
 });
 
 // Route to render rules.ejs
 app.get("/rules.html", (req, res) => {
-    res.render("rules");
+  res.render("rules");
 });
 
 app.get("/academics.html", (req, res) => {
-    res.render("academics");
+  res.render("academics");
 });
 
 app.get("/non-academics.html", (req, res) => {
-    res.render("non-academics");
+  res.render("non-academics");
 });
 
 app.get("/admission.html", (req, res) => {
-    res.render("admission");
-});
-
-app.get("/admin.html", (req, res) => {
-    res.render("admin",{title : 'Login : Admin',login:'Admin Login'});
-});
-
-app.get("/teacher.html", (req, res) => {
-    res.render("admin",{title : 'Login : Teacher',login:'Teacher Login'});
-});
-
-app.get("/student.html", (req, res) => {
-    res.render("admin",{title : 'Login : Student',login:'Student Login'});
+  res.render("admission");
 });
 
 app.get("/contactUs.html", (req, res) => {
-    res.render("contactUs");
+  res.render("contactUs");
 });
 
-app.get("/adminDashboard.html", (req, res) => {
-    res.render("adminDashboard");
-});
+// Login for all (student, teacher & admin)
+
+const Teacher = require("./models/TeacherSchema");
+const Student = require("./models/StudentSchema"); 
+
+app.set("Teacher", Teacher);
+app.set("Student", Student);
+
+const loginRoutes = require("./routes/loginRoutes");
+app.use("/", loginRoutes);
+
+
+const settingRoutes = require("./routes/settingsRoutes");
+app.use("/", settingRoutes);
 
 
 // MongoDB connect
 
-mongoose.connect('mongodb://localhost:27017/schoolDB', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-}).then(() => console.log("MongoDB connected")).catch(err => console.log(err));
+// mongoose.connect('mongodb://localhost:27017/schoolDB', {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true,
+// }).then(() => console.log("MongoDB connected")).catch(err => console.log(err));
 
-app.get("/teach-menu", async (req, res) => {
-  const teachers = await Teacher.find(); // all teachers
-  res.render("teachers", { teachers });
+
+// MongoDB connection
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log("MongoDB Atlas connected"))
+  .catch(err => console.log(err));
+
+const PORT = process.env.PORT || 3005;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
 
-app.post("/add-teacher", async (req, res) => { //add teacher
-  const teacher = new Teacher({
-    name: req.body.name,
-    subject: req.body.subject,
-    class: req.body.class,
-    address: req.body.address,
-    phone: req.body.phone
-  });
-  await teacher.save();
-  res.redirect("/teach-menu"); // ya jaha dikhana hai
-});
+// ✅ Import cleanup scheduler
+require("./cleanupNotifications");  // <- important line
 
 
-app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`);
-});
+//  <---- Admin Dashboard related routes ---->
+
+// Route for upload Biometric
+const uploadBiometricRoute = require("./routes/AdminRoutes/uploadBiometricRoutes");
+app.use(uploadBiometricRoute);
+
+// Routes for Admin Dashboard
+const adminDashboardRoute = require("./routes/AdminRoutes/adminDashBoardRoutes");
+app.use(adminDashboardRoute);
+
+// Routes for teachers 
+const teacherRoutes = require("./routes/AdminRoutes/teacherRoutes");
+app.use(teacherRoutes);
+
+// Routes for Staffs
+const staffRoutes = require("./routes/AdminRoutes/staffRoutes");
+app.use(staffRoutes);
+
+// Routes for Student
+const studentRoutes = require("./routes/AdminRoutes/studentRoutes");
+app.use(studentRoutes);
+
+// Route for students fees page :
+const studentFeesRoute = require("./routes/AdminRoutes/studentFeesRoutes");
+app.use(studentFeesRoute);
+
+// Route for fees collection :
+const feesCollectionRoute = require("./routes/AdminRoutes/feesCollectionRoutes");
+app.use(feesCollectionRoute);
+
+// Route for fees collection :
+const schoolExpensesRoute = require("./routes/AdminRoutes/schoolExpensesRoutes");
+app.use(schoolExpensesRoute);
+
+// Route for add timetable:
+const timetableRoute = require("./routes/AdminRoutes/timetableRoutes");
+app.use(timetableRoute);
+
+// Route for calendar:
+const calendarRoute = require("./routes/AdminRoutes/calendarRoutes");
+app.use(calendarRoute);
+
+// Route for profile
+const profileRoute = require("./routes/AdminRoutes/profileRoutes");
+app.use(profileRoute);
+
+//  <---- Teaacher Dashboard related routes ---->
+
+
+// Routes for Teacher Dashboard
+const teacherDashboardRoute = require("./routes/TeacherRoutes/teacherDashboardRoutes");
+app.use(teacherDashboardRoute);
+
+// Route for mark Student Attendance
+const markAttendanceRoute = require("./routes/TeacherRoutes/markAttendanceRoutes");
+app.use(markAttendanceRoute);
+
+
+// Route for view own Attendance (Teachers)
+const viewOwnAttendanceRoute = require("./routes/TeacherRoutes/viewOwnAttendanceRoutes");
+app.use(viewOwnAttendanceRoute);
+
+
+// Route for submit students result
+const { router: submitResultRoute } = require("./routes/TeacherRoutes/submitResultRoutes");
+app.use(submitResultRoute); // this is passedd in a different way because we also export a function in this file
+
+// Route for view salary status (Teachers)
+const salaryStatusRoute = require("./routes/TeacherRoutes/salaryStatusRoutes");
+app.use(salaryStatusRoute);
+
+// Route for add announcement 
+const announcementRoute = require("./routes/TeacherRoutes/announcementRoutes");
+app.use(announcementRoute);
+
+// Route for add syllabus
+const syllabusRoute = require("./routes/TeacherRoutes/syllabusRoutes");
+app.use(syllabusRoute);
+
+// Route for upload study material
+const studyMaterialRoute = require("./routes/TeacherRoutes/studyMaterialRoutes");
+app.use(studyMaterialRoute);
+
+
+//  <---- Student Dashboard related routes ---->
+
+
+// Routes for Student Dashboard
+const studentDashboardRoute = require("./routes/StudentRoutes/studentDashboardRoutes");
+app.use(studentDashboardRoute);
+
+// Route for view own Attendance (Students)
+const studentAttendanceRoute = require("./routes/StudentRoutes/studentAttendanceRoutes");
+app.use(studentAttendanceRoute);
+
+// Route for view Result
+const viewResultRoute = require("./routes/StudentRoutes/viewResultRoutes");
+app.use(viewResultRoute)
+
+// Route for view own Fee Status(Students)
+const feeStatusRoute = require("./routes/StudentRoutes/feeStatusRoutes");
+app.use(feeStatusRoute);
+
+// Route for view announcement
+const viewAnnouncementRoute = require("./routes/StudentRoutes/viewAnnouncementRoutes");
+app.use(viewAnnouncementRoute);
+
+// Route for view study material
+const studentViewMaterialRoute = require("./routes/StudentRoutes/studentViewMaterialRoutes");
+app.use(studentViewMaterialRoute);
+
+// Route for view timetable
+const viewTimetableRoute = require("./routes/StudentRoutes/viewTimetableRoutes");
+app.use(viewTimetableRoute);
+
+// Route for view syllabus
+const viewSyllabusRoute = require("./routes/StudentRoutes/viewSyllabusRoutes");
+app.use(viewSyllabusRoute);
+
+// Route for payFees
+const checkOutFeesRoute = require("./routes/StudentRoutes/checkOutFeesRoutes");
+app.use(checkOutFeesRoute);
+
+// Route for Actual payment
+const paymentRoute = require("./routes/StudentRoutes/paymentRoutes");
+app.use(paymentRoute);
