@@ -12,15 +12,15 @@ const Student = require("../models/StudentSchema");
 // GET routes to render the login form for each role
 
 router.get("/admin.html", (req, res) => {
-  res.render("loginForm", { title: "Admin Login", loginTitle: "Admin Login", role: "admin" });
+  res.render("HomePage/loginForm", { title: "Admin Login", loginTitle: "Admin Login", role: "admin" });
 });
 
 router.get("/teacher.html", (req, res) => {
-  res.render("loginForm", { title: "Teacher Login", loginTitle: "Teacher Login", role: "teacher" });
+  res.render("HomePage/loginForm", { title: "Teacher Login", loginTitle: "Teacher Login", role: "teacher" });
 });
 
 router.get("/student.html", (req, res) => {
-  res.render("loginForm", { title: "Student Login", loginTitle: "Student Login", role: "student" });
+  res.render("HomePage/loginForm", { title: "Student Login", loginTitle: "Student Login", role: "student" });
 });
 
 
@@ -121,7 +121,7 @@ router.post("/login", async (req, res) => {
 
 router.get("/forgot-password", (req, res) => {
   const role = req.query.role || "student"; // default student
-  res.render("forgotPassword", { role });
+  res.render("HomePage/forgotPassword", { role });
 });
 
 

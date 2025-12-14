@@ -36,7 +36,7 @@ router.get("/setting", async (req, res) => {
         return res.redirect("/login");
     }
 
-    res.render("setting", {
+    res.render("Admin/setting", {
         userType,
         user
     });

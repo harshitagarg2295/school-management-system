@@ -15,7 +15,7 @@ router.get("/calen-menu", async (req, res) => {
   const allEvents = await Events.find();
 
   const role = req.query.role || "student"; // default role
-  res.render("eventCalendar", { events: allEvents, role });
+  res.render("Admin/eventCalendar", { events: allEvents, role });
 });
 
 module.exports = router

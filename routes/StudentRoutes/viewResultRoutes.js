@@ -40,7 +40,7 @@ router.get("/students/view-result", studentAuth,async (req, res) => {
     }
   }
 
-  res.render("ViewResult", { student, exams, selectedResult, marksPlain , role:"student"});
+  res.render("Students/ViewResult", { student, exams, selectedResult, marksPlain , role:"student"});
 });
 
 // This route is to render student result page on admin dashboard
@@ -69,7 +69,7 @@ router.get("/admin/view-result/:studentId", adminAuth,async (req, res) => {
     }
   }
 
-  res.render("ViewResult", { student, exams, selectedResult, marksPlain, role: "admin" });
+  res.render("Students/ViewResult", { student, exams, selectedResult, marksPlain, role: "admin" });
 });
 
 

@@ -5,13 +5,10 @@ require("dotenv").config(); // for mongoDB atlas connection string
 
 const express = require('express');
 const path = require('path');
-const bodyParser = require("body-parser");
-
 
 const mongoose = require('mongoose')
 
 const app = express();
-const port = 3005;
 
 const session = require("express-session");
 
@@ -27,14 +24,15 @@ app.set("view engine", "ejs");
 // Set views directory
 app.set("views", [
   path.join(__dirname, "templates"),
-  path.join(__dirname, "templates/Homepage"),
-  path.join(__dirname, "templates/Admin"),
-  path.join(__dirname, "templates/Teachers"),
-  path.join(__dirname, "templates/Students")
+  // path.join(__dirname, "templates/HomePage"),
+  // path.join(__dirname, "templates/Admin"),
+  // path.join(__dirname, "templates/Teachers"),
+  // path.join(__dirname, "templates/Students")
 ]);
 
 //Serve static files (CSS, images, JS, etc.) from public folder
-app.use(express.static("public"));
+app.use(express.static(path.join(__dirname, "public")));
+
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Yeh middleware Express ko allow karta hai HTML form ke data ko req.body me read karne ke liye.
@@ -57,43 +55,43 @@ app.use((req, res, next) => {
 
 // // Route to render index.ejs
 app.get("/", (req, res) => {
-  res.render("index");  // This will render templates/index.ejs
+  res.render("HomePage/index");  // This will render templates/index.ejs
 });
 
 // Route to render school.ejs
 app.get("/school.html", (req, res) => {
-  res.render("school");
+  res.render("HomePage/school");
 });
 
 // Route to render mission.ejs
 app.get("/mission.html", (req, res) => {
-  res.render("mission");
+  res.render("HomePage/mission");
 });
 
 // Route to render management.ejs
 app.get("/management.html", (req, res) => {
-  res.render("management");
+  res.render("HomePage/management");
 });
 
 // Route to render rules.ejs
 app.get("/rules.html", (req, res) => {
-  res.render("rules");
+  res.render("HomePage/rules");
 });
 
 app.get("/academics.html", (req, res) => {
-  res.render("academics");
+  res.render("HomePage/academics");
 });
 
 app.get("/non-academics.html", (req, res) => {
-  res.render("non-academics");
+  res.render("HomePage/non-academics");
 });
 
 app.get("/admission.html", (req, res) => {
-  res.render("admission");
+  res.render("HomePage/admission");
 });
 
 app.get("/contactUs.html", (req, res) => {
-  res.render("contactUs");
+  res.render("HomePage/contactUs");
 });
 
 // Login for all (student, teacher & admin)

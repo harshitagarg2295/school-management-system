@@ -8,7 +8,7 @@ router.get("/students/checkout-fees",studentAuth, async (req, res) => {
     if (!studentId) return res.redirect("/student.html");
 
     const student = await Student.findById(studentId);
-    res.render("checkoutFees", { student });
+    res.render("Students/checkoutFees", { student });
 });
 
 
@@ -25,7 +25,7 @@ router.post("/students/checkout-fees", async (req, res) => {
         const student = await Student.findById(studentId);
         if (!student) return res.send("Student not found");
 
-        res.render("paymentOptions", {
+        res.render("Students/paymentOptions", {
             student,
             selectedIndexes,
         });

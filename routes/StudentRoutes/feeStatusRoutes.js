@@ -17,7 +17,7 @@ router.get("/students/fees-status",studentAuth, async (req, res) => {
       return res.status(404).send("Student not found");
     }
 
-    res.render("feeStatus", { student });
+    res.render("Students/feeStatus", { student });
   } catch (err) {
     console.error("Error fetching student fee status:", err);
     res.status(500).send("Server Error");

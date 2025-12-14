@@ -39,7 +39,7 @@ router.get("/teachers/salary",teacherAuth, async (req, res) => {
     };
   });
 
-  res.render("salaryStatus", { salaryData, teacher });
+  res.render("Teachers/salaryStatus", { salaryData, teacher });
 
 });
 
@@ -60,7 +60,7 @@ router.get("/teachers/download-receipt/:month/:year",teacherAuth, async (req, re
     }
 
 
-    res.render("salaryReceipt", {
+    res.render("Teachers/salaryReceipt", {
       teacher: record.teacherId,
       month,
       year,

@@ -15,7 +15,7 @@ router.get("/students/view-study-material", studentAuth,async(req, res) => {
 
     const materials = await StudyMaterial.find({ class: studentClass }).sort({ uploadedAt: -1 }); // नए अपलोड किए गए मटेरियल को पहले दिखाएं
 
-    res.render("studentViewMaterial", {
+    res.render("Students/studentViewMaterial", {
         materials: materials,
         studentClass: studentClass,
         // अन्य आवश्यक variables, जैसे studentName, आदि

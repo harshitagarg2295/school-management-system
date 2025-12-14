@@ -23,7 +23,7 @@ router.get("/teachers/add-announcement",teacherAuth, async (req, res) => {
         // Jo classOrder me na ho, unko end me push kar do
         return (idxA === -1 ? Infinity : idxA) - (idxB === -1 ? Infinity : idxB);
     });
-    res.render("addAnnouncement", { classList, role: "teacher" });
+    res.render("Teachers/addAnnouncement", { classList, role: "teacher" });
 });
 
 
@@ -56,7 +56,7 @@ router.get("/teachers/view-announcement", teacherAuth,async (req, res) => {
         ]
     }).sort({ date: -1 });
 
-    res.render("viewAnnouncement", { announcements, role: "teacher" });
+    res.render("Students/viewAnnouncement", { announcements, role: "teacher" });
 });
 
 
@@ -76,7 +76,7 @@ router.get("/admin/add-announcement",adminAuth, async (req, res) => {
         return (idxA === -1 ? Infinity : idxA) - (idxB === -1 ? Infinity : idxB);
     });
 
-    res.render("addAnnouncement", { classList, role: "admin" });
+    res.render("Teachers/addAnnouncement", { classList, role: "admin" });
 });
 
 
@@ -109,7 +109,7 @@ router.post("/admin/add-announcement", async (req, res) => {
 router.get("/admin/view-announcement",adminAuth, async (req, res) => {
     const announcements = await announcement.find({ by: "Principal" }).sort({ date: -1 });
 
-    res.render("viewAnnouncement", { announcements, role: "admin" });
+    res.render("Students/viewAnnouncement", { announcements, role: "admin" });
 });
 
 

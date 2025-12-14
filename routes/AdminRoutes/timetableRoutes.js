@@ -31,7 +31,7 @@ router.get("/get-timetable-view/:type/:className/:period",adminAuth, async (req,
     const selectedClass = className === 'null' ? "" : className;
     const selectedPeriod = period === 'null' ? "" : period;
 
-    res.render("timetable", {
+    res.render("Admin/timetable", {
         type,
         classList,
         selectedClass,

@@ -13,7 +13,7 @@ router.get("/students/view-announcement",studentAuth, async (req, res) => {
         ]
     }).sort({ date: -1 });
 
-    res.render("viewAnnouncement", { announcements , role: "student"});
+    res.render("Students/viewAnnouncement", { announcements , role: "student"});
 });
 
 

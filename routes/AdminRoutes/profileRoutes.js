@@ -10,7 +10,7 @@ const fs = require("fs");
 router.get("/profile-menu",adminAuth, async (req, res) => {
 
     const admin = await profile.findOne();
-    res.render("profile", { admin });
+    res.render("Admin/profile", { admin });
 })
 
 // Post route for saving admin profile details

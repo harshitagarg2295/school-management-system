@@ -15,7 +15,7 @@ router.get("/studentDashboard", studentAuth,  async (req, res) => {
   const attendance = await StudentAttendance.find({ studentId: student._id });
 
   // render student dashboard aur student ka data bhejo
-  res.render("studentDashboard", { student, attendance });
+  res.render("Students/studentDashboard", { student, attendance });
 });
 
 module.exports = router

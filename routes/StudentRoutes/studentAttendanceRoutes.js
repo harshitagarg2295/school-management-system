@@ -77,7 +77,7 @@ router.get("/students/view-attendance",studentAuth, async (req, res) => {
 
   const today = parseInt(moment().format("D"));
 
-  res.render("studentAttendance", {
+  res.render("Students/studentAttendance", {
     student,
     moment,
     month,

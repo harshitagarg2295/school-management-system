@@ -70,7 +70,7 @@ router.get("/payment-success", studentAuth,async (req, res) => {
     await admin.save();
 
 
-    res.render("paymentStatus", {
+    res.render("Students/paymentStatus", {
       success: true,
       amount,
       orderId: payment_id,
@@ -81,13 +81,13 @@ router.get("/payment-success", studentAuth,async (req, res) => {
 
   } catch (err) {
     console.error("Payment success route error:", err);
-    res.render("paymentStatus", { success: false });
+    res.render("Students/paymentStatus", { success: false });
   }
 });
 
 // ✅ Failure Route
 router.get("/payment-failure", studentAuth,(req, res) => {
-  res.render("paymentStatus", { success: false });
+  res.render("Students/paymentStatus", { success: false });
 });
 
 

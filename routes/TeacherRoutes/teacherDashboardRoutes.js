@@ -22,7 +22,7 @@ router.get("/teacherDashboard", teacherAuth, async (req, res) => {
   const classList = await Student.distinct("class");
   const sortedClasses = ["Select Class", ...classList.sort()];
 
-  res.render("teacherDashboard", { teacher, sortedClasses, attendance});
+  res.render("Teachers/teacherDashboard", { teacher, sortedClasses, attendance});
 });
 
 

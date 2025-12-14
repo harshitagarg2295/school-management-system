@@ -22,7 +22,7 @@ router.get("/students/view-monthly-test/timetable", studentAuth,async (req, res)
         subjects = savedTimetable ? savedTimetable.subjects.map(s => s.name) : [];
     }
 
-    res.render("viewTimetable", {
+    res.render("Students/viewTimetable", {
         type: "monthly",
         selectedPeriod: period,
         subjects,
@@ -48,7 +48,7 @@ router.get("/students/view-exams/timetable",studentAuth, async (req, res) => {
         subjects = savedTimetable ? savedTimetable.subjects.map(s => s.name) : [];
     }
 
-    res.render("viewTimetable", {
+    res.render("Students/viewTimetable", {
         type: "exams",
         selectedPeriod: period,
         subjects,

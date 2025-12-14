@@ -49,7 +49,7 @@ const prepareClassList = async () => {
 router.get("/teachers/upload-material",teacherAuth, async (req, res) => {
     // ✅ classList is fetched and passed correctly here
     const classList = await prepareClassList();
-    res.render("uploadStudyMaterial", {
+    res.render("Teachers/uploadStudyMaterial", {
         classList,
         selectedClass: req.query.class || "",
         // Query parameter se status/error message uthana
@@ -126,7 +126,7 @@ router.get("/teachers/view-material",teacherAuth, async (req, res) => {
     const classList = await prepareClassList();
 
 
-    res.render("viewStudyMaterial", {
+    res.render("Teachers/viewStudyMaterial", {
         materials: materials,
         currentTeacherName: teacherName,
         classList: classList,

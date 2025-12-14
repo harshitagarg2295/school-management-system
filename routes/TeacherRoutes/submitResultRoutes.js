@@ -87,7 +87,7 @@ router.get("/teachers/submit-result",teacherAuth, async (req, res) => {
 
     }
 
-    res.render("submitResult", {
+    res.render("Teachers/submitResult", {
       classList,
       classFilter,
       examType,

@@ -37,7 +37,7 @@ router.get("/stud-menu",adminAuth, async (req, res) => {
     const admin = await AdminNotification.findOne() || { notifications: [] };
 
 
-    res.render("students_list", {
+    res.render("Admin/students_list", {
         students,
         classFilter,
         allClasses: classList.sort(),
@@ -214,7 +214,7 @@ router.get("/view-attendance-students", adminAuth, async (req, res) => {
 
     const today = parseInt(moment().format("D"));
 
-    res.render("view_student_attendance", {
+    res.render("Admin/view_student_attendance", {
         students,
         classFilter,
         allClasses: allClasses.sort(),

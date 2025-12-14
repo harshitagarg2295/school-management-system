@@ -7,7 +7,7 @@ const { adminAuth } =  require("../../middlewares/auth");
 router.get("/fee-status/:id", adminAuth , async (req, res) => {
   try {
     const student = await Student.findById(req.params.id);
-    res.render("students_fees_page", { student });
+    res.render("Admin/students_fees_page", { student });
   } catch (err) {
     res.status(500).send("Student not found");
   }

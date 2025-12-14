@@ -118,7 +118,7 @@ router.get("/school_expenses", adminAuth, async (req, res) => {
 
     const admin = await AdminNotification.findOne() || { notifications: [] };
 
-    res.render("school_expenses", {
+    res.render("Admin/school_expenses", {
         // table
         expenses: filteredExpenses,
         search,

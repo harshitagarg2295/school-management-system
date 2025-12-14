@@ -99,7 +99,7 @@ router.get("/school_fees_collection", adminAuth, async (req, res) => {
 
    const admin = await AdminNotification.findOne() || { notifications: [] };
 
-  res.render("school_fees_collection", {
+  res.render("Admin/school_fees_collection", {
     students: processedStudents,
     classFilter,
     statusFilter,

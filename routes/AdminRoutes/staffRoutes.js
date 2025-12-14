@@ -17,7 +17,7 @@ router.get("/staff-menu", adminAuth, async (req, res) => {
 
     const admin = await AdminNotification.findOne() || { notifications: [] };
     const staffs = await Staff.find().sort({ name: 1 });
-    res.render("staffs_list", { staffs, admin });
+    res.render("Admin/staffs_list", { staffs, admin });
 });
 
 // Add staff
@@ -188,7 +188,7 @@ router.get("/view-attendance-staffs", adminAuth, async (req, res) => {
 
         const today = parseInt(moment().format("D"));
 
-        res.render("view_staff_attendance", {
+        res.render("Admin/view_staff_attendance", {
             staffs,
             month,
             year,

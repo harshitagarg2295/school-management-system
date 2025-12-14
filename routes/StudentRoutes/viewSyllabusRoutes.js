@@ -21,7 +21,7 @@ router.get("/students/view-monthly-test/syllabus",studentAuth,async (req, res) =
         subjects = savedSyllabus ? savedSyllabus.subjects.map(s => s.name) : [];
     }
 
-    res.render("viewSyllabus", {
+    res.render("Students/viewSyllabus", {
         type: "monthly",
         selectedPeriod: period,
         subjects,
@@ -46,7 +46,7 @@ router.get("/students/view-exams/syllabus",studentAuth, async (req, res) => {
         subjects = savedSyllabus ? savedSyllabus.subjects.map(s => s.name) : [];
     }
 
-    res.render("viewSyllabus", {
+    res.render("Students/viewSyllabus", {
         type: "exams",
         selectedPeriod: period,
         subjects,

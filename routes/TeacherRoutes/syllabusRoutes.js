@@ -24,7 +24,7 @@ router.get("/teachers/get-syllabus-view/:type/:className/:period",teacherAuth, a
     const selectedClass = className === 'null' ? "" : className;
     const selectedPeriod = period === 'null' ? "" : period;
 
-    res.render("syllabus", { 
+    res.render("Teachers/syllabus", { 
         type, 
         classList, 
         selectedClass,    // For selection state
