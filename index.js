@@ -1,5 +1,9 @@
 // This file handle all the routes related to our website
 
+
+// https://school-management-system-trft.onrender.com  my website live link :
+
+
 require("dotenv").config(); // for mongoDB atlas connection string
 
 
@@ -23,11 +27,7 @@ app.set("view engine", "ejs");
 
 // Set views directory
 app.set("views", [
-  path.join(__dirname, "templates"),
-  // path.join(__dirname, "templates/HomePage"),
-  // path.join(__dirname, "templates/Admin"),
-  // path.join(__dirname, "templates/Teachers"),
-  // path.join(__dirname, "templates/Students")
+  path.join(__dirname, "templates")
 ]);
 
 //Serve static files (CSS, images, JS, etc.) from public folder

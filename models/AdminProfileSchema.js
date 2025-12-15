@@ -13,4 +13,4 @@ const profileSchema = new mongoose.Schema({
 
 })
 
-module.exports = mongoose.model("adminProfileSchem", profileSchema);
+module.exports = mongoose.model("adminProfileSchema", profileSchema);

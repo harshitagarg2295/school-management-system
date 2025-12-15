@@ -138,7 +138,7 @@
 
     .students-header ul {
         background-color: #b1e6f4;
-        border-radius: 7px;
+        border-radius: 7px 7px 0px 0px;
         font-size: 20px;
         color: rgb(70, 66, 66);
     }
@@ -384,6 +384,15 @@
             width: 100% !important;
             height: 300px !important;
         }
+
+        .status {
+            gap: 2px;
+        }
+
+        .status .dot {
+            width: 6px;
+            height: 6px;
+        }
     }
 
     @media (max-width: 380px) {
@@ -404,7 +413,8 @@
         display: block;
         box-sizing: border-box;
     }
-     .pdf-btn {
+
+    .pdf-btn {
         display: flex;
         justify-content: center;
         align-items: center;
@@ -421,6 +431,7 @@
         color: white;
 
     }
+
     @media print {
         body {
             background: white !important;
@@ -430,12 +441,12 @@
         }
 
         /* 1. Hide Unwanted Elements */
-  .menu-section,
+        .menu-section,
         .hamburger,
         .no-print,
-        .fees-card,      
-        .fees-header,  
-        .pdf-btn,      
+        .fees-card,
+        .fees-header,
+        .pdf-btn,
         .notification {
             display: none !important;
         }
@@ -484,9 +495,10 @@
             page-break-inside: avoid;
             page-break-after: auto;
         }
-        
+
         .student-list ul li {
-            white-space: nowrap; /* Prevent text wrapping if needed */
+            white-space: nowrap;
+            /* Prevent text wrapping if needed */
         }
     }
 </style>
@@ -524,7 +536,7 @@
                                 <p>Total Amount</p>
                             </div>
                             <div class="box box2">
-                                <h1>57,600</h1>
+                                <h1>₹<%= totalProfit.toLocaleString('en-IN') %></h1>
                                 <p>Total Profit</p>
                             </div>
                             <div class="box box3">

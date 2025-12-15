@@ -2,8 +2,9 @@
 const express = require("express");
 const router = express.Router();
 const Student = require("../../models/StudentSchema");
+const Expense = require('../../models/Expense');
 const AdminNotification = require("../../models/AdminNotificationSchema");
-const { adminAuth } =  require("../../middlewares/auth");
+const { adminAuth } = require("../../middlewares/auth");
 
 
 router.get("/school_fees_collection", adminAuth, async (req, res) => {
@@ -46,16 +47,31 @@ router.get("/school_fees_collection", adminAuth, async (req, res) => {
   let processedStudents = allStudents.map((student) => {
     let paidFees = 0;
 
+    // Calculate paid fees for current fianancial year
     student.feeStatus.forEach((fee) => {
-      if (fee.status === "Paid" && fee.feeType !== "Admission Fee") {
-        paidFees += fee.amount;
+      // if (fee.status === "Paid" && fee.feeType !== "Admission Fee") {
+      //   paidFees += fee.amount;
+      // }
+      if (
+        fee.status === "Paid" && fee.paymentDate) {
+        const d = new Date(fee.paymentDate);
+        const fy = d.getMonth() >= 3 ? d.getFullYear() : d.getFullYear() - 1;
+
+        if (fy === selectedYear) {
+          paidFees += fee.amount;
+        }
       }
     });
 
     const remainingFees = student.fees - paidFees;
-    const allPaid = student.feeStatus
-      .filter(fee => fee.feeType !== "Admission Fee")
-      .every(fee => fee.status === "Paid");
+    // const allPaid = student.feeStatus
+    //   .filter(fee => fee.feeType !== "Admission Fee")
+    //   .every(fee => fee.status === "Paid");
+
+    const allPaid = student.feeStatus.every(
+      fee => fee.status === "Paid"
+    );
+
 
     totalAmount += student.fees;
     totalReceived += paidFees;
@@ -94,10 +110,28 @@ router.get("/school_fees_collection", adminAuth, async (req, res) => {
 
   const totalPending = totalAmount - totalReceived;
 
+  // const expenses = await Expense.find();
+
+  const expenses = await Expense.find({
+    date: {
+      $gte: new Date(`${selectedYear}-04-01`),
+      $lte: new Date(`${selectedYear + 1}-03-31`)
+    }
+  });
+
+  let totalExpense = 0;
+
+  expenses.forEach(exp => {
+    totalExpense += exp.amount;
+  })
+
+
+  const totalProfit = totalReceived - totalExpense;
+
   const classList = await Student.distinct("class");
   const sortedClasses = ["All Classes", ...classList.sort()];
 
-   const admin = await AdminNotification.findOne() || { notifications: [] };
+  const admin = await AdminNotification.findOne() || { notifications: [] };
 
   res.render("Admin/school_fees_collection", {
     students: processedStudents,
@@ -107,6 +141,7 @@ router.get("/school_fees_collection", adminAuth, async (req, res) => {
     totalAmount,
     totalReceived,
     totalPending,
+    totalProfit,
     monthlyCollection,
     selectedYear,
     availableYears,
