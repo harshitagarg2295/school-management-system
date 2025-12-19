@@ -9,217 +9,221 @@
 </head>
 
 <style>
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #f5f7fa;
-    margin: 0;
-}
-
-.teacher-dash {
-    display: flex;
-}
-
-/* ------------------- Main Card ------------------- */
-.material-card {
-    flex: 1;
-    max-width: 1200px;
-    margin: 40px auto;
-    padding: 40px 50px;
-    background: #ffffff;
-    border-radius: 16px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-    box-sizing: border-box;
-}
-
-/* Heading */
-.material-card h2 {
-    font-size: 28px;
-    margin-bottom: 25px;
-    text-align: left;
-    color: #2c3e50;
-    border-bottom: 2px solid #dfe6ee;
-    padding-bottom: 8px;
-    font-weight: 600;
-}
-
-/* ------------------- Search + Filter ------------------- */
-.search-stud {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin-bottom: 30px;
-}
-
-/* Search Box */
-.search-container {
-    position: relative;
-    flex-grow: 1;
-    min-width: 260px;
-    max-width: 400px;
-}
-
-.search-container i {
-    position: absolute;
-    left: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #7f8c8d;
-}
-
-.search-container input {
-    width: 100%;
-    padding: 12px 15px 12px 42px;
-    border-radius: 30px;
-    border: 1px solid #cdd6dd;
-    font-size: 15px;
-    transition: 0.3s;
-    background: white;
-}
-
-.search-container input:focus {
-    border-color: #3498db;
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(52,152,219,0.2);
-}
-
-/* Filter Dropdown */
-.select_class {
-    padding: 10px 15px;
-    border-radius: 10px;
-    background: #f2f3f6;
-    font-size: 15px;
-    border: 1px solid #d0d7de;
-    min-width: 180px;
-}
-
-/* ------------------- Material Grid ------------------- */
-.material-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px,1fr));
-    gap: 25px;
-    margin-top: 10px;
-}
-
-/* ------------------- Material Box ------------------- */
-.material-box {
-    background: #ffffff;
-    border: 1px solid #e2e6ea;
-    border-radius: 12px;
-    padding: 20px 18px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    transition: 0.3s ease;
-}
-
-.material-box:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
-}
-
-/* Title */
-.title {
-    font-size: 1.15rem;
-    font-weight: 600;
-    color: #2c3e50;
-    margin-bottom: 8px;
-    padding-bottom: 5px;
-    border-bottom: 1px solid #e6ecf1;
-}
-
-/* Description */
-.description {
-    font-size: 0.95rem;
-    color: #7f8c8d;
-    line-height: 1.5;
-    margin-bottom: 15px;
-}
-
-/* Footer with date + teacher + download */
-.material-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-top: 1px solid #e6ecf1;
-    padding-top: 12px;
-    margin-top: auto;
-}
-
-.meta-info {
-    display: flex;
-    gap: 12px;
-    font-size: 0.85em;
-    color: #95a5a6;
-}
-
-.meta-item i {
-    margin-right: 5px;
-    color: #3498db;
-}
-
-/* Download Button */
-.download-btn {
-    background-color: #3498db;
-    padding: 8px 15px;
-    color: white;
-    border: none;
-    border-radius: 25px;
-    cursor: pointer;
-    font-size: 0.9em;
-    font-weight: 600;
-    transition: 0.3s ease;
-}
-
-.download-btn:hover {
-    background-color: #217dbb;
-}
-
-/* ------------------- RESPONSIVE ------------------- */
-
-/* Tablets */
-@media (max-width: 992px) {
-    .material-card {
-        margin: 30px;
-        padding: 30px;
-    }
-}
-
-/* Mobile Screens */
-@media (max-width: 768px) {
-    .material-card {
-        margin: 20px;
-        padding: 25px;
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: #f5f7fa;
+        margin: 0;
     }
 
+    .teacher-dash {
+        display: flex;
+    }
+
+    /* ------------------- Main Card ------------------- */
+    .material-card {
+        flex: 1;
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 40px 50px;
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        box-sizing: border-box;
+    }
+
+    /* Heading */
+    .material-card h2 {
+        font-size: 28px;
+        margin-bottom: 25px;
+        text-align: left;
+        color: #2c3e50;
+        border-bottom: 2px solid #dfe6ee;
+        padding-bottom: 8px;
+        font-weight: 600;
+    }
+
+    /* ------------------- Search + Filter ------------------- */
     .search-stud {
-        flex-direction: column;
-        align-items: stretch;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 30px;
     }
 
+    /* Search Box */
+    .search-container {
+        position: relative;
+        flex-grow: 1;
+        min-width: 260px;
+        max-width: 400px;
+    }
+
+    .search-container i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #7f8c8d;
+    }
+
+    .search-container input {
+        width: 100%;
+        padding: 12px 15px 12px 42px;
+        border-radius: 30px;
+        border: 1px solid #cdd6dd;
+        font-size: 15px;
+        transition: 0.3s;
+        background: white;
+    }
+
+    .search-container input:focus {
+        border-color: #3498db;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
+
+    /* Filter Dropdown */
     .select_class {
-        width: 100%;
+        padding: 10px 15px;
+        border-radius: 10px;
+        background: #f2f3f6;
+        font-size: 15px;
+        border: 1px solid #d0d7de;
+        min-width: 180px;
     }
 
-    .download-btn {
-        padding: 10px;
-        width: 100%;
-    }
-}
-
-/* Extra Small */
-@media (max-width: 480px) {
-    .material-card {
-        padding: 20px;
-        margin: 12px;
+    /* ------------------- Material Grid ------------------- */
+    .material-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 25px;
+        margin-top: 10px;
     }
 
+    /* ------------------- Material Box ------------------- */
+    .material-box {
+        background: #ffffff;
+        border: 1px solid #e2e6ea;
+        border-radius: 12px;
+        padding: 20px 18px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: 0.3s ease;
+    }
+
+    .material-box:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Title */
     .title {
-        font-size: 1.05rem;
+        font-size: 1.15rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 8px;
+        padding-bottom: 5px;
+        border-bottom: 1px solid #e6ecf1;
     }
-}
 
+    /* Description */
+    .description {
+        font-size: 0.95rem;
+        color: #7f8c8d;
+        line-height: 1.5;
+        margin-bottom: 15px;
+    }
+
+    /* Footer with date + teacher + download */
+    .material-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid #e6ecf1;
+        padding-top: 12px;
+        margin-top: auto;
+    }
+
+    .meta-info {
+        display: flex;
+        gap: 12px;
+        font-size: 0.85em;
+        color: #95a5a6;
+    }
+
+    .meta-item i {
+        margin-right: 5px;
+        color: #3498db;
+    }
+
+    /* Download Button */
+    .download-btn {
+        background-color: #3498db;
+        padding: 8px 15px;
+        color: white;
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        font-size: 0.9em;
+        font-weight: 600;
+        transition: 0.3s ease;
+    }
+
+    .download-btn:hover {
+        background-color: #217dbb;
+    }
+
+    /* ------------------- RESPONSIVE ------------------- */
+
+    /* Tablets */
+    @media (max-width: 992px) {
+        .material-card {
+            margin: 30px;
+            padding: 30px;
+        }
+    }
+
+    /* Mobile Screens */
+    @media (max-width: 768px) {
+        .material-card {
+            margin: 20px;
+            padding: 25px;
+        }
+
+        .material-card h2 {
+            margin-left: 28px;
+            text-align: center;
+        }
+
+        .search-stud {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .select_class {
+            width: 100%;
+        }
+
+        .download-btn {
+            padding: 10px;
+            width: 100%;
+        }
+    }
+
+    /* Extra Small */
+    @media (max-width: 480px) {
+        .material-card {
+            padding: 20px;
+            margin: 12px;
+        }
+
+        .title {
+            font-size: 1.05rem;
+        }
+    }
 </style>
 
 <body>
@@ -322,10 +326,10 @@
         });
     });
 
-// ✅ Class Filter Logic
+    // ✅ Class Filter Logic
     const classSelect = document.getElementById('classSelect');
 
-    classSelect.addEventListener('change', function() {
+    classSelect.addEventListener('change', function () {
         const selectedClass = this.value;
         let redirectUrl = '/teachers/view-material';
 
@@ -333,7 +337,7 @@
         if (selectedClass) {
             redirectUrl += '?class=' + selectedClass;
         }
-        
+
         window.location.href = redirectUrl;
     });
 

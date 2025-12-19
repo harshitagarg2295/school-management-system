@@ -693,8 +693,10 @@
 
     // logout example
     document.getElementById('logoutBtn').addEventListener('click', () => {
+
+      const confirmLogout = confirm("Are you sure you want to logout?");
+      if (!confirmLogout) return;
       window.location = '/admin.html';
-      alert("Are You Sure. You want to logout")
     });
 
   </script>

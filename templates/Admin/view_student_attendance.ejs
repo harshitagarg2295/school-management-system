@@ -27,7 +27,6 @@
         .attendance_card {
             font-family: sans-serif;
             flex: 1;
-            /* Sidebar ke baad bachi hui jagah */
             margin: 20px;
             border-radius: 8px;
             background-color: white;
@@ -555,7 +554,7 @@
                     <form method="POST" action="/mark-student-holiday"
                         style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
                         <label style="font-size: 14px;">Declare Holiday:</label>
-                        <input type="date" name="date" required class="btn">
+                        <input type="text" onfocus="(this.type='date')"  name="date" placeholder="Select Date" required class="btn">
                         <input type="text" name="reason" placeholder="Reason" class="btn">
                         <button type="submit" class="save_month_year" style="padding: 6px 15px;">Mark</button>
                     </form>

@@ -168,7 +168,7 @@
         .students_name {
             padding: 0 15px;
             font-weight: 600;
-            font-size: 18px;
+            font-size: 17px;
             color: #2c3e50;
             width: 220px;
             min-width: 220px;
@@ -190,7 +190,7 @@
         }
 
         .attend_list .students_name {
-            padding: 15px 45px;
+            padding: 15px 15px 15px 25px;
             background-color: white !important;
             z-index: 90;
         }
@@ -429,7 +429,7 @@
                     <form method="POST" action="/teachers/mark-holiday"
                         style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
                         <label style="font-size: 14px; color: #555;">Declare Holiday:</label>
-                        <input type="date" name="date" required class="btn">
+                         <input type="text" onfocus="(this.type='date')"  name="date" placeholder="Select Date" required class="btn">
                         <input type="text" name="reason" placeholder="Reason" class="btn"
                             style="flex: 1; min-width: 100px;">
                         <button type="submit" class="btn"

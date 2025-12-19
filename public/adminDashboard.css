@@ -44,8 +44,8 @@
     border-radius: 12px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
     margin: 20px auto;
-     width: 95%;    
-      min-height: 400px; 
+    width: 95%;
+    min-height: 400px;
 }
 
 .earnings-header {
@@ -117,8 +117,14 @@
 .expense-chart,
 .revenue-chart {
     margin-top: 20px;
-    width: 300px;
-    height: 300px;
+    width: 250px;
+    height: 250px;
+}
+
+.expense-chart {
+    margin-top: 40px;
+    width: 300px !important;
+    height: 300px !important;
 }
 
 .expense,
@@ -131,17 +137,20 @@
 .fund-form {
     margin-top: 12px;
 }
-.fund-form label{
+
+.fund-form label {
     font-size: 18px;
 }
-.fund-form input{
-   border: 1px solid gray;
+
+.fund-form input {
+    border: 1px solid gray;
     border-radius: 7px;
     outline: none;
     padding: 5px 0px 5px 14px;
     width: 132px;
 
 }
+
 .no-record {
     text-align: center;
     font-size: 22px;
@@ -162,14 +171,8 @@
 
 @media(max-width:1100px) {
 
-    .main-section {
-        margin-left: 30px;
-    }
-
     .earnings-chart {
         width: 100%;
-        margin-left: 15px;
-
     }
 
 }
@@ -185,7 +188,7 @@
 @media(max-width:900px) {
 
     .main-section {
-        margin-left: 30px;
+        margin-left: 10px;
         width: 100%;
     }
 
@@ -203,25 +206,18 @@
         width: 250px;
         height: 250px;
     }
- .earnings-chart {
-        margin-left: 0px;
 
+    .expense-chart {
+        width: 280px !important;
+        height: 280px !important;
     }
-}
 
-@media(max-width:770px) {
-
-    .expense-chart,
-    .revenue-chart {
-        width: 230px;
-        height: 230px;
-    }
 }
 
 /* ============ 700px ============ */
 @media(max-width:700px) {
     .earnings-chart {
-        margin: 15px 0px;
+        margin: 15px 10px;
         padding: 15px;
     }
 
@@ -262,11 +258,6 @@
         align-items: center;
     }
 
-    .expense-chart,
-    .revenue-chart {
-        width: 250px;
-        height: 250px;
-    }
 }
 
 /* ============ 500px ============ */
@@ -282,16 +273,19 @@
     }
 
     .pie-chart {
-        overflow-x: auto;
-        display: block;
-        white-space: nowrap;
-        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 
     .expense-chart,
     .revenue-chart {
         display: inline-block;
-        margin: 50px;
+    }
+
+    .expense-chart {
+        width: 270px !important;
+        height: 270px !important;
     }
 }
 
@@ -303,11 +297,13 @@
         height: 220px;
         margin: 20px;
     }
-    .earnings-chart{
-        padding-left: 0 !important;
-        padding-right: 0 !important;
+
+    .main-section {
+        margin-left: 0px;
+    }
+
+    .earnings-chart {
         margin-left: 0 !important;
-        width: 100% !important;
     }
 }
 

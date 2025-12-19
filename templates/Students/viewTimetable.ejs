@@ -80,18 +80,19 @@
         }
 
         /* Date input style */
-        .timetable-grid input[type="date"] {
+        .timetable-grid input[type="text"] {
             padding: 12px 14px;
             width: 100%;
             border: 1px solid #d0d7de;
             border-radius: 10px;
             background: #fafafa;
-            font-size: 15px;
+            font-size: 16px;
             text-align: center;
             transition: 0.3s;
+            color: black;
         }
 
-        .timetable-grid input[type="date"]:focus {
+        .timetable-grid input[type="text"]:focus {
             border-color: #3498db;
             background: #fff;
             outline: none;
@@ -144,6 +145,10 @@
                 padding: 25px 20px;
             }
 
+            .timetable-card h2 {
+                margin-left: 28px;
+            }
+
             select {
                 width: 100%;
             }
@@ -152,7 +157,7 @@
                 font-size: 22px;
             }
 
-            .timetable-grid input[type="date"] {
+            .timetable-grid input[type="text"] {
                 font-size: 14px;
             }
         }
@@ -168,8 +173,7 @@
                 font-size: 14px;
             }
 
-            .timetable-grid input[type="date"] {
-                font-size: 13px;
+            .timetable-grid input[type="text"] {
                 padding: 10px;
             }
         }
@@ -230,7 +234,7 @@
                                     const dateValue = savedSub ? moment(savedSub.date).format('YYYY-MM-DD') : '';
                                     %>
 
-                                    <input type="date" value="<%= dateValue %>" readonly>
+                                    <input type="text" value="<%= dateValue %>" readonly>
                                     <div class="subject-cell">
                                         <%= sub %>
                                     </div>

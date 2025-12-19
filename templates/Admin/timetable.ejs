@@ -169,6 +169,10 @@
                 padding: 24px;
             }
 
+            .timetable-card h2 {
+                margin-top: 18px;
+            }
+
             select {
                 width: 100%;
             }
@@ -242,17 +246,17 @@
                             </div>
                             <% } else { %>
                                 <% subjects.forEach(sub=> { %>
-                                    <% <!-- Saved timetable से content ढूंढना -->
-                                        const savedSubject = savedTimetable ?.subjects.find(s => s.name === sub);%>
 
-                                        <input type="date" name="<%= sub %>"
-                                            value="<%= savedSubject ? moment(savedSubject.date).format('YYYY-MM-DD') : '' %>">
-                                        <div class="subject-cell">
-                                            <%= sub %>
-                                        </div>
+                                    <%# Saved timetable se content dhundna %>
+                                        <% const savedSubject=savedTimetable ?.subjects.find(s=> s.name === sub);%>
+                                            <input type="date" name="<%= sub %>"
+                                                value="<%= savedSubject ? moment(savedSubject.date).format('YYYY-MM-DD') : '' %>">
+                                            <div class="subject-cell">
+                                                <%= sub %>
+                                            </div>
 
-                                        <% }) %>
-                                            <% } %>
+                                            <% }) %>
+                                                <% } %>
                     </div>
 
                     <% if (subjects.length===0) { %>
@@ -264,6 +268,7 @@
                                 <button type="submit">Save</button>
                             </div>
                             <% } %>
+                </div>
             </form>
     </div>
 

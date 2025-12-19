@@ -8,7 +8,7 @@ router.get("/students/checkout-fees",studentAuth, async (req, res) => {
     if (!studentId) return res.redirect("/student.html");
 
     const student = await Student.findById(studentId);
-    res.render("Students/checkoutFees", { student });
+    res.render("Students/checkOutFees", { student });
 });
 
 

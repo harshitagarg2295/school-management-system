@@ -57,17 +57,14 @@
         background-color: #b1e6f4;
         border-radius: 7px;
         margin-top: 15px;
-        min-width: max-content;
+        min-width: 980px;
     }
 
     .students-header ul {
-        display: grid;
-        grid-template-columns: 0.2fr 1fr 0.5fr 0.7fr 0.8fr 1fr 0.9fr 0.6fr 0.6fr;
         list-style: none;
         font-size: 20px;
         color: rgb(70, 66, 66);
         padding: 10px 6px 13px 5px;
-        gap: 10px;
     }
 
     .students-header ul li {
@@ -75,15 +72,23 @@
     }
 
     .list {
-        display: grid;
-        grid-template-columns: 0.2fr 1fr 0.5fr 0.7fr 0.8fr 1fr 0.9fr 0.6fr 0.6fr;
         font-size: 18px;
         padding: 20px 10px;
         align-items: center;
         word-break: break-word;
         border-bottom: 1px solid black;
-
     }
+
+
+    .students-header ul,
+    .list {
+        display: grid;
+        grid-template-columns: 0.2fr 2fr 1fr 1fr 1.5fr 2fr 1.8fr 1.2fr 1fr;
+        min-width: 980px;
+        gap: 10px;
+        align-items: center;
+    }
+
 
     .list:hover {
         background-color: rgb(231, 194, 219);
@@ -438,7 +443,8 @@
                                         style="text-transform: capitalize;">
                                     <input type="text" name="class" placeholder="Class + Section" required
                                         style="text-transform: uppercase;">
-                                    <input type="date" name="DOB" placeholder="DOB" required>
+                                    <input type="text" onfocus="(this.type='date')" name="DOB" placeholder="DOB"
+                                        required>
                                     <input type="text" name="address" placeholder="Address" required
                                         style="text-transform: capitalize;">
                                     <input type="text" name="phone" placeholder="Phone Number" required>
