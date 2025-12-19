@@ -16,16 +16,17 @@ const app = express();
 
 // Store cookie store sessionId in browser while connect-mongo store sessionId in mongoDB Atlas
 const session = require("express-session");
-const MongoStore = require("connect-mongo");
+const MongoStore = require("connect-mongo").default;
+
 
 app.use(session({
   name: "school.sid",
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
-    store: MongoStore.create({
+  store: new MongoStore({
     mongoUrl: process.env.MONGO_URI,
-    collectionName: "sessions"
+    collectionName: "sessions",
   }),
   cookie: {
     secure: process.env.NODE_ENV === "production",
