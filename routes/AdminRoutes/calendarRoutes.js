@@ -5,7 +5,7 @@ const { adminAuth } =  require("../../middlewares/auth");
 
 
 // For Add Event 
-router.post("/add-event", async (req, res) => {
+router.post("/add-event", adminAuth, async (req, res) => {
     const { title, description, date, time } = req.body;
     await Events.create({ title, description, date, time });
     res.json({ success: true, message: "Event saved successfully!" });

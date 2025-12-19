@@ -22,7 +22,7 @@ router.get("/teach-menu", adminAuth, async (req, res) => {
 });
 
 // Add teacher
-router.post("/add-teacher", async (req, res) => {
+router.post("/add-teacher", adminAuth, async (req, res) => {
   const toTitleCase = str => str.replace(/\w\S*/g, txt =>
     txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase()
   );
@@ -55,13 +55,13 @@ router.post("/add-teacher", async (req, res) => {
 });
 
 // Delete teacher
-router.post("/delete-teacher/:id", async (req, res) => {
+router.post("/delete-teacher/:id",adminAuth, async (req, res) => {
   await Teacher.findByIdAndDelete(req.params.id);
   res.redirect("/teach-menu");
 });
 
 // Edit teacher
-router.post("/edit-teacher/:id", async (req, res) => {
+router.post("/edit-teacher/:id", adminAuth,async (req, res) => {
   const toTitleCase = str => str.replace(/\w\S*/g, txt =>
     txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase()
   );
@@ -83,7 +83,7 @@ router.post("/edit-teacher/:id", async (req, res) => {
 
 
 // 👉 Declare Holiday (for teachers)
-router.post("/mark-teacher-holiday", async (req, res) => {
+router.post("/mark-teacher-holiday", adminAuth,async (req, res) => {
   const { date, reason } = req.body;
   let holidayDate = moment.utc(date, "YYYY-MM-DD").startOf("day").toDate();
 
@@ -248,7 +248,7 @@ router.get("/view-attendance-teachers", adminAuth, async (req, res) => {
 
 
 // 👉 Submit Attendance
-router.post("/submit-attendance-teachers", async (req, res) => {
+router.post("/submit-attendance-teachers", adminAuth, async (req, res) => {
   let { attendance = {}, paymentStatus = {}, month, year } = req.body;
 
   // 1. Server ka Time nikal lo (India Timezone handle karke)
@@ -341,7 +341,7 @@ router.post("/submit-attendance-teachers", async (req, res) => {
 });
 
 // 👉 Update Salary Status (Paid/Pending)
-router.post("/update-salary-status/:teacherId", async (req, res) => {
+router.post("/update-salary-status/:teacherId", adminAuth, async (req, res) => {
   try {
     const { teacherId } = req.params;
     const { month, year, status } = req.body;

@@ -62,7 +62,7 @@ router.get("/teachers/upload-material",teacherAuth, async (req, res) => {
 // ----------------------------------------
 // POST Route: Handles upload and DB save
 // ----------------------------------------
-router.post("/teachers/upload-material", upload.array("material", 10), async (req, res) => {
+router.post("/teachers/upload-material", upload.array("material", 10),teacherAuth, async (req, res) => {
     const { title, description, className } = req.body;
     const uploadedFiles = req.files;
 

@@ -57,7 +57,7 @@ router.get("/add-timetable/exams",adminAuth, async (req, res) => {
 
 // --- 3. POST Route (Save Timetable) Update ---
 
-router.post("/save-timetable", async (req, res) => {
+router.post("/save-timetable",adminAuth, async (req, res) => {
     const { className, type, period } = req.body;
 
     // Frontend validation hone ke karan, yahan className aur period available honge.

@@ -14,7 +14,7 @@ router.get("/fee-status/:id", adminAuth , async (req, res) => {
 
 });
 
-router.post("/update-fee-status/:studentId", async (req, res) => {
+router.post("/update-fee-status/:studentId", adminAuth,async (req, res) => {
   const { studentId } = req.params;
   const feeStatus = req.body.feeStatus;
 

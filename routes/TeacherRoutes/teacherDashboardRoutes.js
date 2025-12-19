@@ -26,7 +26,7 @@ router.get("/teacherDashboard", teacherAuth, async (req, res) => {
 });
 
 
-router.post("/update-class-teacher", async (req, res) => {
+router.post("/update-class-teacher",teacherAuth, async (req, res) => {
   const Teacher = req.app.get("Teacher");
 
   if (!req.session.teacherId) {

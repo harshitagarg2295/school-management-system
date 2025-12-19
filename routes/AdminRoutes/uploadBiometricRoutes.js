@@ -12,11 +12,12 @@ const Teacher = require("../../models/TeacherSchema");
 const Staff = require("../../models/StaffSchema");
 const TeacherAttendance = require("../../models/TeacherAttendance");
 const StaffAttendance = require("../../models/StaffAttendance");
+const { adminAuth } =  require("../../middlewares/auth");
 
 // MULTER STORAGE
 const upload = multer({ dest: "uploads/" });
 
-router.post("/upload-biometric", upload.single("bioFile"), async (req, res) => {
+router.post("/upload-biometric", upload.single("bioFile"),adminAuth, async (req, res) => {
     try {
         if (!req.file) return res.send("No file uploaded!");
 

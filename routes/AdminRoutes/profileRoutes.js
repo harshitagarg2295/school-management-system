@@ -15,7 +15,7 @@ router.get("/profile-menu",adminAuth, async (req, res) => {
 
 // Post route for saving admin profile details
 
-router.post("/edit-details", async (req, res) => {
+router.post("/edit-details", adminAuth, async (req, res) => {
 
     const { name, email, mobile, address, bio } = req.body;
 
@@ -39,7 +39,7 @@ if (!fs.existsSync(uploadPath)) {
 
 // --- IMAGE UPLOAD ROUTE ---
 
-router.post("/upload-profile-image", async (req, res) => {
+router.post("/upload-profile-image",adminAuth, async (req, res) => {
     const base64Data = req.body.croppedImage;
 
     if (!base64Data || base64Data.trim() === "") {

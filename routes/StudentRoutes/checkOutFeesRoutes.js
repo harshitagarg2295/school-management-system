@@ -13,7 +13,7 @@ router.get("/students/checkout-fees",studentAuth, async (req, res) => {
 
 
 // POST - Pay selected installments
-router.post("/students/checkout-fees", async (req, res) => {
+router.post("/students/checkout-fees", studentAuth,async (req, res) => {
     try {
         const { studentId } = req.body;
         let selectedIndexes = req.body.installments;

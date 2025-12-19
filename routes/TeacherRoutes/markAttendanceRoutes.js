@@ -10,7 +10,7 @@ const {teacherAuth} =  require("../../middlewares/auth");
 
 
 // POST - Mark Holiday for Students
-router.post("/teachers/mark-holiday", async (req, res) => {
+router.post("/teachers/mark-holiday",teacherAuth, async (req, res) => {
 
     const { date, reason } = req.body;
 
@@ -106,7 +106,7 @@ router.get("/teachers/mark-attendance", teacherAuth,async (req, res) => {
 
 // POST - Save Attendance for Teacher’s class
 // 👉 Teacher Submit Student Attendance (SECURE VERSION)
-router.post("/teachers/submit-students-attendance", async (req, res) => {
+router.post("/teachers/submit-students-attendance", teacherAuth,async (req, res) => {
     const teacherId = req.session.teacherId;
     const teacher = await Teacher.findById(teacherId);
 

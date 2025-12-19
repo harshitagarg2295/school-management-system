@@ -28,7 +28,7 @@ router.get("/teachers/add-announcement",teacherAuth, async (req, res) => {
 
 
 // Save the form (POST request)
-router.post("/teachers/add-announcement", async (req, res) => {
+router.post("/teachers/add-announcement", teacherAuth,async (req, res) => {
 
     const { title, description, date, class: className } = req.body;
 
@@ -80,7 +80,7 @@ router.get("/admin/add-announcement",adminAuth, async (req, res) => {
 });
 
 
-router.post("/admin/add-announcement", async (req, res) => {
+router.post("/admin/add-announcement",adminAuth, async (req, res) => {
     const { title, description, date, class: className } = req.body;
 
     let target = "student";

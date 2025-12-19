@@ -141,7 +141,7 @@ router.get("/school_expenses", adminAuth, async (req, res) => {
 
 
 // POST route to add new expense
-router.post("/add-expense", async (req, res) => {
+router.post("/add-expense",adminAuth, async (req, res) => {
 
     const { category, title, quantity, amount, paymentDate } = req.body;
 
@@ -160,7 +160,7 @@ router.post("/add-expense", async (req, res) => {
 });
 
 // Route for Edit particular expense
-router.post("/edit-expense/:id", async (req, res) => {
+router.post("/edit-expense/:id", adminAuth,async (req, res) => {
 
     const { category, title, quantity, amount, paymentDate } = req.body;
 
@@ -178,7 +178,7 @@ router.post("/edit-expense/:id", async (req, res) => {
 });
 
 // Route for delete particular expense
-router.post("/delete-expense/:id", async (req, res) => {
+router.post("/delete-expense/:id", adminAuth,async (req, res) => {
     await Expense.findByIdAndDelete(req.params.id);
     res.redirect("/school_expenses");
 })

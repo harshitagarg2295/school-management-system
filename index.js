@@ -14,12 +14,24 @@ const mongoose = require('mongoose')
 
 const app = express();
 
+// Store cookie store sessionId in browser while connect-mongo store sessionId in mongoDB Atlas
 const session = require("express-session");
+const MongoStore = require("connect-mongo");
 
 app.use(session({
-  secret: "secretKey",
+  name: "school.sid",
+  secret: process.env.SESSION_SECRET,
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: false,
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGO_URI
+  }),
+  cookie: {
+    secure: process.env.NODE_ENV === "production",
+    httpOnly: true,
+    sameSite: "lax",
+    maxAge: 1000 * 60 * 60 * 24
+  }
 }));
 
 // Set view engine to EJS
@@ -42,8 +54,8 @@ app.use(express.json({ limit: "10mb" }));
 
 
 app.use((req, res, next) => {
-    res.set("Cache-Control", "no-store");
-    next();
+  res.set("Cache-Control", "no-store");
+  next();
 });
 
 
@@ -97,7 +109,7 @@ app.get("/contactUs.html", (req, res) => {
 // Login for all (student, teacher & admin)
 
 const Teacher = require("./models/TeacherSchema");
-const Student = require("./models/StudentSchema"); 
+const Student = require("./models/StudentSchema");
 
 app.set("Teacher", Teacher);
 app.set("Student", Student);

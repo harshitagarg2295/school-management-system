@@ -6,7 +6,7 @@ const { adminAuth } =  require("../../middlewares/auth");
 const bcrypt = require("bcrypt")
 
 // POST - Mark Holiday for Students
-router.post("/mark-student-holiday", async (req, res) => {
+router.post("/mark-student-holiday",adminAuth, async (req, res) => {
 
     const { date, reason } = req.body;
 
@@ -45,7 +45,7 @@ router.get("/stud-menu",adminAuth, async (req, res) => {
     });
 });
 
-router.post("/add-student", async (req, res) => { //add student
+router.post("/add-student",adminAuth, async (req, res) => { //add student
 
     function toTitleCase(str) {
         return str.replace(/\w\S*/g, (txt) => {
@@ -125,7 +125,7 @@ router.post("/add-student", async (req, res) => { //add student
 });
 
 // Delete student route
-router.post("/delete-student/:id", async (req, res) => {
+router.post("/delete-student/:id",adminAuth, async (req, res) => {
     const studentId = req.params.id;
     await Student.findByIdAndDelete(studentId);
     res.redirect("/stud-menu");
@@ -140,7 +140,7 @@ function toTitleCase(str) {
     });
 }
 
-router.post("/edit-student/:id", async (req, res) => {
+router.post("/edit-student/:id", adminAuth,async (req, res) => {
     const { name, id, class: className, DOB, fees, address, phone } = req.body;
 
     const dobDate = new Date(DOB);
@@ -234,7 +234,7 @@ router.get("/view-attendance-students", adminAuth, async (req, res) => {
 // saving attendance data in DB
 
 // 👉 Submit Attendance Students (SECURE VERSION)
-router.post("/submit-attendance-students", async (req, res) => {
+router.post("/submit-attendance-students", adminAuth,async (req, res) => {
     // Default value {} di hai taaki crash na ho agar empty aaye
     let { attendance = {}, month, year } = req.body;
 

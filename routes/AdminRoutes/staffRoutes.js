@@ -21,7 +21,7 @@ router.get("/staff-menu", adminAuth, async (req, res) => {
 });
 
 // Add staff
-router.post("/add-staff", async (req, res) => {
+router.post("/add-staff", adminAuth,async (req, res) => {
     const toTitleCase = str => str.replace(/\w\S*/g, txt =>
         txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase()
     );
@@ -42,13 +42,13 @@ router.post("/add-staff", async (req, res) => {
 });
 
 // Delete staff
-router.post("/delete-staff/:id", async (req, res) => {
+router.post("/delete-staff/:id",adminAuth, async (req, res) => {
     await Staff.findByIdAndDelete(req.params.id);
     res.redirect("/staff-menu");
 });
 
 // Edit staff
-router.post("/edit-staff/:id", async (req, res) => {
+router.post("/edit-staff/:id",adminAuth, async (req, res) => {
     const toTitleCase = str => str.replace(/\w\S*/g, txt =>
         txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase()
     );
@@ -69,7 +69,7 @@ router.post("/edit-staff/:id", async (req, res) => {
 
 
 // 👉 Declare Holiday (for tseaff)
-router.post("/mark-staff-holiday", async (req, res) => {
+router.post("/mark-staff-holiday", adminAuth,async (req, res) => {
     const { date, reason } = req.body;
     let holidayDate = moment.utc(date, "YYYY-MM-DD").startOf("day").toDate();
 
@@ -209,7 +209,7 @@ router.get("/view-attendance-staffs", adminAuth, async (req, res) => {
 
 
 // 👉 Submit Attendance
-router.post("/submit-attendance-staffs", async (req, res) => {
+router.post("/submit-attendance-staffs", adminAuth,async (req, res) => {
     let { attendance = {}, paymentStatus = {}, month, year } = req.body;
 
     // 1. Server Time (India) - Cheating rokne ke liye
@@ -320,7 +320,7 @@ router.post("/submit-attendance-staffs", async (req, res) => {
 
 
 // 👉 Update Staff Salary Status (NO delete/add here)
-router.post("/update-staff-salary/:staffId", async (req, res) => {
+router.post("/update-staff-salary/:staffId", adminAuth,async (req, res) => {
     const { staffId } = req.params;
     const { month, year, status } = req.body;
 

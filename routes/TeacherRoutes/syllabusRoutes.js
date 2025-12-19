@@ -48,7 +48,7 @@ router.get("/teachers/exams-syllabus",teacherAuth, async (req, res) => {
 
 // --- 3. POST Route (Save Syllabus) Update ---
 
-router.post("/teachers/save-syllabus", async (req, res) => {
+router.post("/teachers/save-syllabus",teacherAuth, async (req, res) => {
     const { className, type, period } = req.body; 
 
     // Frontend validation hone ke karan, yahan className aur period available honge.

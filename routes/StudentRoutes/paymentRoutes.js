@@ -3,7 +3,7 @@ const router = express.Router();
 const Razorpay = require("razorpay"); // for payment integration
 const Student = require("../../models/StudentSchema");
 const AdminNotificationSchema = require("../../models/AdminNotificationSchema");
-const {studentAuth} =  require("../../middlewares/auth");
+const {studentAuth, adminAuth} =  require("../../middlewares/auth");
 
 const razorpay = new Razorpay({
   key_id: "rzp_test_RSEpP4AhOamoYZ",
@@ -11,7 +11,7 @@ const razorpay = new Razorpay({
 });
 
 // ✅ Create Order Route
-router.post("/create-order", async (req, res) => {
+router.post("/create-order",studentAuth, async (req, res) => {
   const { amount } = req.body;
 
   try {
@@ -93,7 +93,7 @@ router.get("/payment-failure", studentAuth,(req, res) => {
 
 // This mark all notifications as read
 
-router.post("/mark-notifications-read", async (req, res) => {
+router.post("/mark-notifications-read",adminAuth, async (req, res) => {
   try {
     const admin = await AdminNotificationSchema.findOne();
     if (admin) {

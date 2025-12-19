@@ -7,8 +7,15 @@ const Teacher = require("../models/TeacherSchema")
 const Student = require("../models/StudentSchema")
 const bcrypt = require("bcrypt");
 
+const anyAuth = (req, res, next) => {
+    if (req.session.adminId || req.session.teacherId || req.session.studentId) {
+        return next();
+    }
+    return res.redirect("/login");
+};
 
-router.get("/setting", async (req, res) => {
+
+router.get("/setting", anyAuth, async (req, res) => {
 
     let userType = "";
     let user = null;
@@ -44,7 +51,7 @@ router.get("/setting", async (req, res) => {
 
 
 // ---------------- CHANGE PASSWORD ROUTE ----------------
-router.post("/change-password", async (req, res) => {
+router.post("/change-password", anyAuth, async (req, res) => {
 
     const { currentPassword, newPassword, confirmPassword } = req.body;
 
@@ -93,7 +100,7 @@ router.post("/change-password", async (req, res) => {
     //  Save hashed password
     await model.findByIdAndUpdate(id, { password: hashedPass });
 
-  return res.send(`
+    return res.send(`
          <script>
             alert('Password updated successfully');
             window.location='/setting';
@@ -103,7 +110,7 @@ router.post("/change-password", async (req, res) => {
 });
 
 
-router.get("/logout", (req, res) => {
+router.get("/logout", anyAuth, (req, res) => {
 
     let redirectPage = "/admin.html"; // default
 
@@ -114,7 +121,9 @@ router.get("/logout", (req, res) => {
         redirectPage = "/student.html";
     }
 
+    // Destroy cookies
     req.session.destroy(() => {
+        res.clearCookie("connect.sid"); 
         res.redirect(redirectPage);
     });
 
