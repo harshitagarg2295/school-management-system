@@ -14,27 +14,37 @@ const mongoose = require('mongoose')
 
 const app = express();
 
+app.set("trust proxy", 1);
+
 // Store cookie store sessionId in browser while connect-mongo store sessionId in mongoDB Atlas
 const session = require("express-session");
 const MongoStore = require("connect-mongo").default;
 
 
-app.use(session({
-  name: "school.sid",
-  secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false,
-  store: new MongoStore({
-    mongoUrl: process.env.MONGO_URI,
-    collectionName: "sessions",
-  }),
-  cookie: {
-    secure: process.env.NODE_ENV === "production",
-    httpOnly: true,
-    sameSite: "lax",
-    maxAge: 1000 * 60 * 60 * 24
-  }
-}));
+const isProduction = process.env.NODE_ENV === "production";
+
+app.use(
+  session({
+    name: "school.sid",
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+
+    store: new MongoStore({
+      mongoUrl: process.env.MONGO_URI,
+      collectionName: "sessions",
+    }),
+
+    cookie: {
+      secure: isProduction,          // true only on live (https)
+      httpOnly: true,
+      sameSite: isProduction ? "none" : "lax",
+      maxAge: 1000 * 60 * 60 * 24,
+    },
+  })
+);
+
+console.log("NODE_ENV =", process.env.NODE_ENV);
 
 // Set view engine to EJS
 app.set("view engine", "ejs");

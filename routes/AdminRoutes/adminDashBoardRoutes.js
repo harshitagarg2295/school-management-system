@@ -171,10 +171,6 @@ router.get("/adminDashboard", adminAuth, async (req, res) => {
 
 
     const admin = await AdminNotification.findOne() || { notifications: [] };
-    res.render("Admin/adminDashboard", {
-        admin
-    });
-
     // ---------- Render ----------
     res.render("Admin/adminDashboard", {
         totalStudents,
