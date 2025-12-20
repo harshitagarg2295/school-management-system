@@ -211,8 +211,8 @@ router.get("/view-attendance-staffs", adminAuth, async (req, res) => {
 router.post("/submit-attendance-staffs", adminAuth, async (req, res) => {
     let { attendance = {}, paymentStatus = {}, month, year } = req.body;
 
-    // 1. Server Time (India) - Cheating rokne ke liye
-       const serverToday = moment.tz("Asia/Kolkata").startOf("day");
+    // 1. Server Time (India)
+    const serverToday = moment.tz("Asia/Kolkata").startOf("day");
 
     try {
         // --- ATTENDANCE LOGIC START (Updated) ---
@@ -230,11 +230,11 @@ router.post("/submit-attendance-staffs", adminAuth, async (req, res) => {
                 // Date Creation (Safe Format)
                 const dateString = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 
-                // Create attendance date in IST
+                // IST date for logic
                 const checkDate = moment.tz(dateString, "YYYY-MM-DD", "Asia/Kolkata");
 
-                // Store SAME day in DB (IST midnight)
-                const dateForDb = checkDate.toDate();
+                // SAME calendar day ko UTC midnight me convert karo (DB ke liye)
+                const dateForDb = moment.utc(checkDate.format("YYYY-MM-DD"), "YYYY-MM-DD").toDate();
 
                 // Check kro ki pehle se attendance entry h ya ni
                 const existing = await Attendance.findOne({ staffId: staffId, date: dateForDb });

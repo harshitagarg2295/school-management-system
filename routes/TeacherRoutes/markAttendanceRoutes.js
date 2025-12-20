@@ -5,12 +5,12 @@ const Teacher = require('../../models/TeacherSchema');
 const Student = require('../../models/StudentSchema');
 const Holiday = require("../../models/Holiday");
 const Attendance = require("../../models/StudentAttendance");
-const moment = require("moment");
-const {teacherAuth} =  require("../../middlewares/auth");
+const moment = require("moment-timezone");
+const { teacherAuth } = require("../../middlewares/auth");
 
 
 // POST - Mark Holiday for Students
-router.post("/teachers/mark-holiday",teacherAuth, async (req, res) => {
+router.post("/teachers/mark-holiday", teacherAuth, async (req, res) => {
 
     const { date, reason } = req.body;
 
@@ -26,7 +26,7 @@ router.post("/teachers/mark-holiday",teacherAuth, async (req, res) => {
 });
 
 // GET - Teacher mark attendance page
-router.get("/teachers/mark-attendance", teacherAuth,async (req, res) => {
+router.get("/teachers/mark-attendance", teacherAuth, async (req, res) => {
     try {
         const teacherId = req.session.teacherId;
         if (!teacherId) return res.redirect("/teacher.html");
@@ -106,7 +106,7 @@ router.get("/teachers/mark-attendance", teacherAuth,async (req, res) => {
 
 // POST - Save Attendance for Teacher’s class
 // 👉 Teacher Submit Student Attendance (SECURE VERSION)
-router.post("/teachers/submit-students-attendance", teacherAuth,async (req, res) => {
+router.post("/teachers/submit-students-attendance", teacherAuth, async (req, res) => {
     const teacherId = req.session.teacherId;
     const teacher = await Teacher.findById(teacherId);
 
@@ -119,7 +119,7 @@ router.post("/teachers/submit-students-attendance", teacherAuth,async (req, res)
     const { attendance = {}, month, year } = req.body;
 
     // 1. Server Time (India)
-    const serverToday = moment().utcOffset("+05:30").startOf('day');
+    const serverToday = moment.tz("Asia/Kolkata").startOf("day");
 
     try {
         for (let studentId in attendance) {
@@ -127,26 +127,26 @@ router.post("/teachers/submit-students-attendance", teacherAuth,async (req, res)
 
             for (let dayKey in daily) {
                 const status = daily[dayKey];
-                
+
                 // Sirf Valid Status (P ya A) hi process karo
                 if (status !== "P" && status !== "A") continue;
 
                 const day = parseInt(dayKey.replace("day_", ""), 10);
-                
+
                 // Safe Date String Creation (Ensure String type for padStart)
                 const dateString = `${String(year).padStart(4, "0")}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-                
-                // DB ke liye Date Object
-                const dateForDb = moment.utc(dateString, "YYYY-MM-DD").toDate();
-                
-                // Comparison ke liye Moment Object
-                const checkDate = moment(dateString, "YYYY-MM-DD");
+
+                // IST date for logic
+                const checkDate = moment.tz(dateString, "YYYY-MM-DD", "Asia/Kolkata");
+
+                // SAME calendar day ko UTC midnight me convert karo (DB ke liye)
+                const dateForDb = moment.utc(checkDate.format("YYYY-MM-DD"), "YYYY-MM-DD").toDate();
 
                 // --- 🛑 STRICT CHECKS ---
 
                 // CASE 1: FUTURE DATE -> Ignore
                 if (checkDate.isAfter(serverToday, 'day')) {
-                    continue; 
+                    continue;
                 }
 
                 // CASE 2: PAST EDIT -> Ignore (Agar pehle se marked hai)

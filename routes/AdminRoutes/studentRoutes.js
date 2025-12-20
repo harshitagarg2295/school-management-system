@@ -255,12 +255,11 @@ router.post("/submit-attendance-students", adminAuth, async (req, res) => {
                 // Date format string: "YYYY-MM-DD"
                 // String(year) ensure karta hai ki agar number ho to bhi string bane
                 const dateString = `${String(year).padStart(4, '0')}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-
-                // Create attendance date in IST
+                // IST date for logic
                 const checkDate = moment.tz(dateString, "YYYY-MM-DD", "Asia/Kolkata");
 
-                // Store SAME day in DB (IST midnight)
-                const dateForDb = checkDate.toDate();
+                // SAME calendar day ko UTC midnight me convert karo (DB ke liye)
+                const dateForDb = moment.utc(checkDate.format("YYYY-MM-DD"), "YYYY-MM-DD").toDate();
                 // --- STRICT CHECKS
 
                 // CASE 1: FUTURE DATE -> Ignore
