@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const moment = require("moment");
+const moment = require("moment-timezone");
 
 const Teacher = require("../../models/TeacherSchema");
 const Attendance = require("../../models/TeacherAttendance");
@@ -55,13 +55,13 @@ router.post("/add-teacher", adminAuth, async (req, res) => {
 });
 
 // Delete teacher
-router.post("/delete-teacher/:id",adminAuth, async (req, res) => {
+router.post("/delete-teacher/:id", adminAuth, async (req, res) => {
   await Teacher.findByIdAndDelete(req.params.id);
   res.redirect("/teach-menu");
 });
 
 // Edit teacher
-router.post("/edit-teacher/:id", adminAuth,async (req, res) => {
+router.post("/edit-teacher/:id", adminAuth, async (req, res) => {
   const toTitleCase = str => str.replace(/\w\S*/g, txt =>
     txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase()
   );
@@ -83,7 +83,7 @@ router.post("/edit-teacher/:id", adminAuth,async (req, res) => {
 
 
 // 👉 Declare Holiday (for teachers)
-router.post("/mark-teacher-holiday", adminAuth,async (req, res) => {
+router.post("/mark-teacher-holiday", adminAuth, async (req, res) => {
   const { date, reason } = req.body;
   let holidayDate = moment.utc(date, "YYYY-MM-DD").startOf("day").toDate();
 
@@ -251,9 +251,8 @@ router.get("/view-attendance-teachers", adminAuth, async (req, res) => {
 router.post("/submit-attendance-teachers", adminAuth, async (req, res) => {
   let { attendance = {}, paymentStatus = {}, month, year } = req.body;
 
-  // 1. Server ka Time nikal lo (India Timezone handle karke)
-  // Isse device ki date change karne se koi fark nahi padega
-  const serverToday = moment().utcOffset("+05:30").startOf('day'); // India ka Aaj ka 12:00 AM
+  // Always work in IST
+  const serverToday = moment.tz("Asia/Kolkata").startOf("day");
 
   try {
     for (const teacherId in attendance) {
@@ -267,11 +266,13 @@ router.post("/submit-attendance-teachers", adminAuth, async (req, res) => {
 
         // Date create karo
         const dateString = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-        const dateForDb = moment.utc(dateString, "YYYY-MM-DD").toDate();
 
-        // Moment object for comparison
-        const checkDate = moment(dateString, "YYYY-MM-DD");
+        // Create attendance date in IST
+        const checkDate = moment.tz(dateString, "YYYY-MM-DD", "Asia/Kolkata");
 
+        // Store SAME day in DB (IST midnight)
+        const dateForDb = checkDate.toDate();
+        
         // Check kro ki pehle se attendance entry h ya ni
         const existing = await Attendance.findOne({ teacherId, date: dateForDb });
 

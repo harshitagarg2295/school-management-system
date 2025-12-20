@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const moment = require("moment");
+const moment = require("moment-timezone");
 
 const Staff = require("../../models/StaffSchema");
 const Attendance = require("../../models/StaffAttendance");
@@ -9,7 +9,6 @@ const AdminNotification = require("../../models/AdminNotificationSchema");
 const Expense = require("../../models/Expense");
 const createSalaryExpense = require("../../utils/createSalaryExpense");
 const { adminAuth } = require("../../middlewares/auth");
-
 
 
 // List all staffs
@@ -21,7 +20,7 @@ router.get("/staff-menu", adminAuth, async (req, res) => {
 });
 
 // Add staff
-router.post("/add-staff", adminAuth,async (req, res) => {
+router.post("/add-staff", adminAuth, async (req, res) => {
     const toTitleCase = str => str.replace(/\w\S*/g, txt =>
         txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase()
     );
@@ -42,13 +41,13 @@ router.post("/add-staff", adminAuth,async (req, res) => {
 });
 
 // Delete staff
-router.post("/delete-staff/:id",adminAuth, async (req, res) => {
+router.post("/delete-staff/:id", adminAuth, async (req, res) => {
     await Staff.findByIdAndDelete(req.params.id);
     res.redirect("/staff-menu");
 });
 
 // Edit staff
-router.post("/edit-staff/:id",adminAuth, async (req, res) => {
+router.post("/edit-staff/:id", adminAuth, async (req, res) => {
     const toTitleCase = str => str.replace(/\w\S*/g, txt =>
         txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase()
     );
@@ -69,7 +68,7 @@ router.post("/edit-staff/:id",adminAuth, async (req, res) => {
 
 
 // 👉 Declare Holiday (for tseaff)
-router.post("/mark-staff-holiday", adminAuth,async (req, res) => {
+router.post("/mark-staff-holiday", adminAuth, async (req, res) => {
     const { date, reason } = req.body;
     let holidayDate = moment.utc(date, "YYYY-MM-DD").startOf("day").toDate();
 
@@ -209,11 +208,11 @@ router.get("/view-attendance-staffs", adminAuth, async (req, res) => {
 
 
 // 👉 Submit Attendance
-router.post("/submit-attendance-staffs", adminAuth,async (req, res) => {
+router.post("/submit-attendance-staffs", adminAuth, async (req, res) => {
     let { attendance = {}, paymentStatus = {}, month, year } = req.body;
 
     // 1. Server Time (India) - Cheating rokne ke liye
-    const serverToday = moment().utcOffset("+05:30").startOf('day');
+       const serverToday = moment.tz("Asia/Kolkata").startOf("day");
 
     try {
         // --- ATTENDANCE LOGIC START (Updated) ---
@@ -231,11 +230,11 @@ router.post("/submit-attendance-staffs", adminAuth,async (req, res) => {
                 // Date Creation (Safe Format)
                 const dateString = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 
-                // DB ke liye Date Object
-                const dateForDb = moment.utc(dateString, "YYYY-MM-DD").toDate();
+                // Create attendance date in IST
+                const checkDate = moment.tz(dateString, "YYYY-MM-DD", "Asia/Kolkata");
 
-                // Comparison ke liye Moment Object
-                const checkDate = moment(dateString, "YYYY-MM-DD");
+                // Store SAME day in DB (IST midnight)
+                const dateForDb = checkDate.toDate();
 
                 // Check kro ki pehle se attendance entry h ya ni
                 const existing = await Attendance.findOne({ staffId: staffId, date: dateForDb });
@@ -320,7 +319,7 @@ router.post("/submit-attendance-staffs", adminAuth,async (req, res) => {
 
 
 // 👉 Update Staff Salary Status (NO delete/add here)
-router.post("/update-staff-salary/:staffId", adminAuth,async (req, res) => {
+router.post("/update-staff-salary/:staffId", adminAuth, async (req, res) => {
     const { staffId } = req.params;
     const { month, year, status } = req.body;
 

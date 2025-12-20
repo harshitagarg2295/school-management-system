@@ -2,11 +2,13 @@ const express = require("express");
 const router = express.Router();
 const Student = require("../../models/StudentSchema");
 const AdminNotification = require("../../models/AdminNotificationSchema");
-const { adminAuth } =  require("../../middlewares/auth");
+const { adminAuth } = require("../../middlewares/auth");
 const bcrypt = require("bcrypt")
+const moment = require("moment-timezone");
+
 
 // POST - Mark Holiday for Students
-router.post("/mark-student-holiday",adminAuth, async (req, res) => {
+router.post("/mark-student-holiday", adminAuth, async (req, res) => {
 
     const { date, reason } = req.body;
 
@@ -21,7 +23,7 @@ router.post("/mark-student-holiday",adminAuth, async (req, res) => {
     res.redirect("/view-attendance-students");
 });
 
-router.get("/stud-menu",adminAuth, async (req, res) => {
+router.get("/stud-menu", adminAuth, async (req, res) => {
     const classFilter = req.query.classFilter;
 
     let filter = {};
@@ -45,7 +47,7 @@ router.get("/stud-menu",adminAuth, async (req, res) => {
     });
 });
 
-router.post("/add-student",adminAuth, async (req, res) => { //add student
+router.post("/add-student", adminAuth, async (req, res) => { //add student
 
     function toTitleCase(str) {
         return str.replace(/\w\S*/g, (txt) => {
@@ -66,8 +68,8 @@ router.post("/add-student",adminAuth, async (req, res) => { //add student
 
     const rawPassword = DOB.replace(/-/g, "") + "@" + id.toString();
 
-      // 🔐 HASH PASSWORD (IMPORTANT) store password in secure form
-      const hashedPassword = await bcrypt.hash(rawPassword, 10);
+    // 🔐 HASH PASSWORD (IMPORTANT) store password in secure form
+    const hashedPassword = await bcrypt.hash(rawPassword, 10);
 
     const totalFees = parseInt(req.body.fees);
     const installmentAmount = Math.round(totalFees / 4);
@@ -115,7 +117,7 @@ router.post("/add-student",adminAuth, async (req, res) => { //add student
         phone: phone,
         feeStatus: feeStatusArray,
         username,
-        password : hashedPassword 
+        password: hashedPassword
     });
 
 
@@ -125,7 +127,7 @@ router.post("/add-student",adminAuth, async (req, res) => { //add student
 });
 
 // Delete student route
-router.post("/delete-student/:id",adminAuth, async (req, res) => {
+router.post("/delete-student/:id", adminAuth, async (req, res) => {
     const studentId = req.params.id;
     await Student.findByIdAndDelete(studentId);
     res.redirect("/stud-menu");
@@ -140,7 +142,7 @@ function toTitleCase(str) {
     });
 }
 
-router.post("/edit-student/:id", adminAuth,async (req, res) => {
+router.post("/edit-student/:id", adminAuth, async (req, res) => {
     const { name, id, class: className, DOB, fees, address, phone } = req.body;
 
     const dobDate = new Date(DOB);
@@ -158,8 +160,6 @@ router.post("/edit-student/:id", adminAuth,async (req, res) => {
 });
 
 // Attandance for students + holidays
-
-const moment = require("moment"); //JavaScript date/time library 
 
 const Holiday = require("../../models/Holiday");
 const Attendance = require("../../models/StudentAttendance");
@@ -234,40 +234,38 @@ router.get("/view-attendance-students", adminAuth, async (req, res) => {
 // saving attendance data in DB
 
 // 👉 Submit Attendance Students (SECURE VERSION)
-router.post("/submit-attendance-students", adminAuth,async (req, res) => {
+router.post("/submit-attendance-students", adminAuth, async (req, res) => {
     // Default value {} di hai taaki crash na ho agar empty aaye
     let { attendance = {}, month, year } = req.body;
 
-    // 1. Server Time (India) - Cheating rokne ke liye
-    const serverToday = moment().utcOffset("+05:30").startOf('day'); 
+    const serverToday = moment.tz("Asia/Kolkata").startOf("day");
 
     try {
         for (let studentId in attendance) {
-            const daily = attendance[studentId]; 
+            const daily = attendance[studentId];
 
             for (let dayKey in daily) {
                 const status = daily[dayKey];
-                
+
                 // Sirf Valid Status (P ya A) hi process karo
                 if (status !== "P" && status !== "A") continue;
 
                 const day = parseInt(dayKey.replace('day_', ''), 10);
-                
+
                 // Date format string: "YYYY-MM-DD"
                 // String(year) ensure karta hai ki agar number ho to bhi string bane
                 const dateString = `${String(year).padStart(4, '0')}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                
-                // DB ke liye Date Object
-                const dateForDb = moment.utc(dateString, "YYYY-MM-DD").toDate();
-                
-                // Comparison ke liye Moment Object
-                const checkDate = moment(dateString, "YYYY-MM-DD");
 
+                // Create attendance date in IST
+                const checkDate = moment.tz(dateString, "YYYY-MM-DD", "Asia/Kolkata");
+
+                // Store SAME day in DB (IST midnight)
+                const dateForDb = checkDate.toDate();
                 // --- STRICT CHECKS
 
                 // CASE 1: FUTURE DATE -> Ignore
                 if (checkDate.isAfter(serverToday, 'day')) {
-                    continue; 
+                    continue;
                 }
 
                 // CASE 2: PAST EDIT -> Ignore (Agar pehle se marked hai)
