@@ -4,7 +4,7 @@ const Announcement = require("../../models/Announcement");
 const {studentAuth} =  require("../../middlewares/auth");
 
 router.get("/students/view-announcement",studentAuth, async (req, res) => {
-    const studentClass = req.session.studentId.class;  // ya jaha se class mil rahi ho
+    const studentClass = req.session.studentId.class;  
 
     const announcements = await Announcement.find({
         $or: [

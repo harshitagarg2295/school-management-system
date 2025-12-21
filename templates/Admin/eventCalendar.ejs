@@ -86,6 +86,7 @@
 
         /* ---------- Event Card ---------- */
         .event-card {
+            margin: 15px;
             position: absolute;
             top: 60px;
             right: 0;
@@ -260,6 +261,46 @@
             display: none !important;
         }
 
+        /* ===== Agenda Edit Mode ===== */
+        .agenda-edit input {
+            width: 100%;
+            padding: 6px 8px;
+            margin-top: 4px;
+            font-size: 13px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            outline: none;
+        }
+
+        .agenda-edit input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+
+        .agenda-edit-actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .agenda-edit-actions button {
+            padding: 5px 12px;
+            font-size: 13px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .agenda-save {
+            background: #2563eb;
+            color: white;
+        }
+
+        .agenda-cancel {
+            background: #e5e7eb;
+            color: #111827;
+        }
+
         /* ---------- Responsive ---------- */
         @media (max-width: 1100px) {
             .calendar-box {
@@ -371,6 +412,9 @@
     <%- JSON.stringify(events) %>
 </script>
 
+    <script> const role = "<%= role %>"; </script>
+
+
     <script>
         const eventsFromDB = JSON.parse(document.getElementById("events-data").textContent);
 
@@ -477,6 +521,7 @@
 
                     const item = document.createElement("div");
                     item.classList.add("agenda-item");
+                    item.setAttribute("data-id", ev._id);
                     item.style.borderLeft = `6px solid ${color}`;
                     item.style.background = `linear-gradient(90deg, ${gradient}, #fff 80%)`;
                     item.style.color = "#1e293b";
@@ -489,16 +534,33 @@
                     });
 
                     item.innerHTML = `
-            <h4>${ev.title}</h4>
-            <p>${ev.description ? ev.description : "No description"}</p>
-            <p>${formattedDate} | ${ev.time}</p>
-        `;
+        <h4 class="ag-title">${ev.title}</h4>
+        <p class="ag-desc">${ev.description || ""}</p>
+        <p>
+  <span class="ag-date" data-rawdate="${ev.date}"> ${formattedDate}</span>
+ |
+  <span class="ag-time">${ev.time}</span>
+</p>
+        ${role === "admin"
+                            ? `
+          <div style="margin-top:8px; display:flex; gap:12px;">
+            <i class="fa-solid fa-pen-to-square"
+               style="cursor:pointer;color:#2563eb"
+               onclick="enableAgendaEdit('${ev._id}')"></i>
+
+            <i class="fa-solid fa-trash"
+               style="cursor:pointer;color:red"
+               onclick="deleteEvent('${ev._id}')"></i>
+          </div>
+        `
+                            : ""
+                        }
+      `;
+
+
                     agendaContainer.appendChild(item);
                 });
             }
-
-
-
             // ---------- ➕ Add Event Form ----------
             const addEventBtn = document.querySelector(".add-event-btn");
             const eventCard = document.querySelector(".event-card");
@@ -542,8 +604,82 @@
                     console.error(err);
                     alert("Something went wrong while saving!");
                 }
+
             });
         });
+
+
+        /* ================= GLOBAL FUNCTIONS ================= */
+
+        function enableAgendaEdit(id) {
+            const card = document.querySelector(`[data-id="${id}"]`);
+            if (!card || card.classList.contains("agenda-edit")) return;
+
+            card.classList.add("agenda-edit");
+
+            const titleEl = card.querySelector(".ag-title");
+            const descEl = card.querySelector(".ag-desc");
+            const timeEl = card.querySelector(".ag-time");
+            const dateEl = card.querySelector(".ag-date");
+
+            const oldTitle = titleEl.innerText;
+            const oldDesc = descEl.innerText;
+            const oldTime = timeEl.innerText;
+            const rawDate = dateEl.dataset.rawdate;
+            const oldDate = rawDate.split("T")[0]; // YYYY-MM-DD
+            
+            titleEl.innerHTML = `<input class="edit-title" value="${oldTitle}">`;
+            descEl.innerHTML = `<input class="edit-desc" value="${oldDesc}">`;
+            timeEl.innerHTML = `<input class="edit-time" type="time" value="${oldTime}">`;
+            dateEl.innerHTML = `<input class="edit-date" type="date" value="${oldDate}">`;
+
+            card.insertAdjacentHTML(
+                "beforeend",
+                `
+    <div class="agenda-edit-actions">
+      <button class="agenda-save" onclick="saveAgendaEdit('${id}')">Save</button>
+      <button class="agenda-cancel" onclick="location.reload()">Cancel</button>
+    </div>
+  `
+            );
+        }
+
+        async function saveAgendaEdit(id) {
+            const card = document.querySelector(`[data-id="${id}"]`);
+
+            const title = card.querySelector(".edit-title").value.trim();
+            const description = card.querySelector(".edit-desc").value.trim();
+            const time = card.querySelector(".edit-time").value;
+            const date = card.querySelector(".edit-date").value;
+
+            if (!title || !date || !time) {
+                alert("Title, date and time are required");
+                return;
+            }
+
+            const res = await fetch(`/update-event/${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ title, description, time, date })
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                location.reload();
+            } else {
+                alert("Update failed");
+            }
+        }
+
+        async function deleteEvent(id) {
+            if (!confirm("Delete this event?")) return;
+
+            const res = await fetch(`/delete-event/${id}`, { method: "DELETE" });
+            const data = await res.json();
+
+            if (data.success) location.reload();
+            else alert("Delete failed");
+        }
     </script>
 
 

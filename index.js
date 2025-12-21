@@ -44,8 +44,6 @@ app.use(
   })
 );
 
-console.log("NODE_ENV =", process.env.NODE_ENV);
-
 // Set view engine to EJS
 app.set("view engine", "ejs");
 

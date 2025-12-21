@@ -70,50 +70,73 @@ async function checkLogin(role, username, password, TeacherSchema, StudentSchema
 // The main POST route for handling login form submissions
 
 router.post("/login", async (req, res) => {
-
   const { role, username, password } = req.body;
 
-  // Get the Mongoose Models from the app object
   const Teacher = req.app.get("Teacher");
   const Student = req.app.get("Student");
 
-  // Call the updated checkLogin function
   const isValid = await checkLogin(role, username, password, Teacher, Student);
 
-  if (isValid) {
+  if (!isValid) {
+    return res.redirect(`/${role}.html?error=1`);
+  }
 
-    // Redirect to the appropriate dashboard on successful login
+  // 🔥 VERY IMPORTANT: regenerate session
+  req.session.regenerate(async (err) => {
+    if (err) {
+      console.error("Session regenerate error:", err);
+      return res.redirect(`/${role}.html?error=1`);
+    }
+
+    // 🔒 COMMON ROLE FLAG
+    req.session.userRole = role;
+
+    // ================= ADMIN =================
     if (role === "admin") {
       const admin = await profile.findOne({ username });
+
       req.session.adminId = admin._id;
       req.session.adminName = admin.name;
+
+      // ❌ clear others
+      req.session.teacherId = null;
+      req.session.studentId = null;
+
       return res.redirect("/adminDashboard");
     }
 
-
+    // ================= TEACHER =================
     if (role === "teacher") {
       const teacher = await Teacher.findOne({ username });
-      req.session.teacherId = teacher._id,  // save logged in teacher id
-        req.session.teacherName = teacher.name;
+
+      req.session.teacherId = teacher._id;
+      req.session.teacherName = teacher.name;
+
+      // ❌ clear others
+      req.session.adminId = null;
+      req.session.studentId = null;
 
       return res.redirect("/teacherDashboard");
     }
 
+    // ================= STUDENT =================
     if (role === "student") {
       const student = await Student.findOne({ username });
+
       req.session.studentId = {
-        id: student._id, // save logged in student id
+        id: student._id,
         class: student.class,
-      }
+      };
+
+      // ❌ clear others
+      req.session.adminId = null;
+      req.session.teacherId = null;
 
       return res.redirect("/studentDashboard");
     }
-  }
-  else {
-    // Display an error message on failed login
-    return res.redirect(`/${role}.html?error=1`);
-  }
+  });
 });
+
 
 
 // Forget Password Routes: 
