@@ -1,2 +1,11 @@
+# Folders to ignore
+node_modules/
+/uploads/*
+
+# Preserve the uploads folder structure but not the files
+!/uploads/.gitkeep
+
+# Security: Ignore environment variables
 .env
-node_modules
+
+password of mongo uri
