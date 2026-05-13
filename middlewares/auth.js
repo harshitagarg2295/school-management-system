@@ -3,17 +3,17 @@ const School = require("../models/AllSchools");
 module.exports = {
 
   adminAuth: async (req, res, next) => {
-  if (req.session.adminId && req.session.schoolCode && req.session.userRole === "admin") {
-        const school = await School.findOne({ code: req.session.schoolCode });
-        
-        // Check if school is Inactive or Expired
-        const isBlocked = !school || school.status === 'Inactive' || (school.subscriptionEnd && new Date() > school.subscriptionEnd);
+    if (req.session.adminId && req.session.schoolCode && req.session.userRole === "admin") {
+      const school = await School.findOne({ code: req.session.schoolCode });
 
-        if (isBlocked) {
-            // Admin ko dashboard bhi mat dikhao, seedha block page!
-            return res.render("Admin/subscriptionBlocked", { role: 'Admin',status: school.status });
-        }
-        return next();
+      // Check if school is Inactive or Expired
+      const isBlocked = !school || school.status === 'Inactive' || (school.subscriptionEnd && new Date() > school.subscriptionEnd);
+
+      if (isBlocked) {
+        // Admin ko dashboard bhi mat dikhao, seedha block page!
+        return res.render("Admin/subscriptionBlocked", { role: 'Admin', status: school.status });
+      }
+      return next();
     }
     return res.redirect("/login");
   },
@@ -26,7 +26,7 @@ module.exports = {
       if (isExpired) {
         // Teachers ko dashboard se bhi block kar sakte hain ya login page par bhej sakte hain
         if (isExpired) {
-          return res.render("Admin/subscriptionBlocked", { role: 'Teacher',status: school.status });
+          return res.render("Admin/subscriptionBlocked", { role: 'Teacher', status: school.status });
         }
       }
       return next();
@@ -41,9 +41,10 @@ module.exports = {
       const isExpired = !school || school.status === 'Inactive' || (school.subscriptionEnd && new Date() > school.subscriptionEnd);
 
       if (isExpired) {
-        return res.render("Admin/subscriptionBlocked", { role: 'Student',status: school.status
-          
-         });
+        return res.render("Admin/subscriptionBlocked", {
+          role: 'Student', status: school.status
+
+        });
       }
       return next();
     }

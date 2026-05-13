@@ -78,7 +78,7 @@ router.post("/login", async (req, res) => {
    if (isExpired) {
     // Agar status 'Inactive' hai toh Admin ho ya Student, sab blocked!
     if (school.status === 'Inactive') {
-        return res.render("Admin/subscriptionBlocked", { role: role.charAt(0).toUpperCase() + role.slice(1) });
+        return res.render("Admin/subscriptionBlocked", { role: role.charAt(0).toUpperCase() + role.slice(1),status: school.status });
     }
     
     // Agar status Active hai par sirf DATE expire hui hai, toh Admin ko Dashboard jane do (taaki wo renew kar sake)
