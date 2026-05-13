@@ -148,10 +148,10 @@ window.onload = function () {
 };
 
 // Toggle menu Section
-const menuBtn = document.querySelector('.menu-btn');
-const menuSection = document.querySelector('.menu-section');
+// const menuBtn = document.querySelector('.menu-btn');
+// const menuSection = document.querySelector('.menu-section');
 
-menuBtn.addEventListener('click', () => {
-    menuSection.classList.toggle('active');
+// menuBtn.addEventListener('click', () => {
+//     menuSection.classList.toggle('active');
 
-});
+// });

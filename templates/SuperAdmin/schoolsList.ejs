@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>All Schools | Super Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: #0f172a;
+      color: white;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      background: #1e293b;
+      padding: 20px;
+      border-radius: 20px;
+      border: 1px solid #334155;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #334155;
+      padding-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .btn {
+      background: #3b82f6;
+      color: white;
+      padding: 10px 18px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-back {
+      background: transparent;
+      border: 1px solid #334155;
+      color: #94a3b8;
+    }
+
+    .filter-section {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+    }
+
+    #searchInput {
+      flex: 1;
+      min-width: 200px;
+      padding: 12px;
+      border-radius: 8px;
+      border: 2px solid #475569;
+      background: #0f172a;
+      color: #fff;
+      outline: none;
+    }
+
+    #statusFilter {
+      min-width: 150px;
+      padding: 12px;
+      border-radius: 8px;
+      background: #0f172a;
+      color: #fff;
+      border: 2px solid #475569;
+      cursor: pointer;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 700px;
+    }
+
+    th {
+      text-align: left;
+      padding: 15px;
+      color: #94a3b8;
+      font-size: 13px;
+      border-bottom: 1px solid #334155;
+    }
+
+    td {
+      padding: 15px;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+      font-size: 14px;
+    }
+
+    .status-badge {
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status-active {
+      color: #10b981;
+      background: rgba(16, 185, 129, 0.1);
+    }
+
+    .status-expired {
+      color: #ef4444;
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    .code-tag {
+      font-family: monospace;
+      color: #60a5fa;
+      background: rgba(59, 130, 246, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* Modal Responsive */
+    #renewModal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .modal-content {
+      background: #1e293b;
+      padding: 30px;
+      border-radius: 15px;
+      width: 100%;
+      max-width: 350px;
+      border: 1px solid #334155;
+    }
+
+    .actions-cell {
+      min-width: 250px;
+    }
+
+    .action-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: nowrap;
+    }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: none;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: white;
+      text-decoration: none;
+      flex: 1;
+    }
+
+    .action-btn i {
+      font-size: 13px;
+    }
+
+    .renew-btn {
+      background-color: #516bfe;
+    }
+
+    .renew-btn:hover {
+      background-color: #3d52cc;
+      transform: translateY(-1px);
+    }
+
+    .btn-warning {
+      background-color: #f59e0b;
+    }
+
+    .btn-warning:hover {
+      background-color: #d97706;
+      transform: translateY(-1px);
+    }
+
+    .btn-success {
+      background-color: #10b981;
+    }
+
+    .btn-success:hover {
+      background-color: #059669;
+      transform: translateY(-1px);
+    }
+
+    .delete-btn {
+      background-color: #ef4444;
+    }
+
+    .delete-btn:hover {
+      background-color: #dc2626;
+      transform: translateY(-1px);
+    }
+
+    @media (max-width: 600px) {
+      .header {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      #searchInput,
+      #statusFilter {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <div>
+        <h2>All Registered Schools</h2>
+        <p style="color: #94a3b8; font-size: 13px; margin: 5px 0 0 0;">Manage your school database</p>
+      </div>
+      <div style="display: flex; gap: 10px;">
+        <a href="/super-admin/dashboard" class="btn btn-back"><i class="fa-solid fa-arrow-left"></i> Dashboard</a>
+        <a href="/super-admin/add-school" class="btn"><i class="fa-solid fa-plus"></i> Add New</a>
+      </div>
+    </div>
+
+    <div class="filter-section">
+      <input type="text" id="searchInput" placeholder="🔍 Search school name or code...">
+      <select id="statusFilter">
+        <option value="all">All Status</option>
+        <option value="Active">Active</option>
+        <option value="Inactive">Inactive</option>
+        <option value="Expired">Expired</option>
+      </select>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>School Name</th>
+            <th>Code</th>
+            <th>Admin User</th>
+            <th>Plan</th>
+            <th>Expiry Date</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% schools.forEach(school=> { %>
+            <tr class="school-row">
+              <td class="school-name" style="font-weight: 600;">
+                <%= school.name %>
+              </td>
+              <td><span class="code-tag">
+                  <%= school.code %>
+                </span></td>
+              <td>
+                <%= school.adminUsername %>
+              </td>
+              <td style="text-transform: capitalize;">
+                <%= school.planType || 'Quarterly' %>
+              </td>
+              <td>
+                <%= school.subscriptionEnd.toLocaleDateString('en-GB') %>
+              </td>
+              <td>
+                <% if (school.status && school.status.toLowerCase()==='inactive' ) { %>
+                  <span class="status-badge"
+                    style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">Inactive</span>
+                  <% } else if (school.subscriptionEnd> new Date()) { %>
+                    <span class="status-badge status-active">Active</span>
+                    <% } else { %>
+                      <span class="status-badge status-expired">Expired</span>
+                      <% } %>
+              </td>
+              <td class="actions-cell">
+                <div class="action-group">
+                  <!-- Renew Button -->
+                  <button onclick="openRenewModal('<%= school._id %>', '<%= school.name %>')"
+                    class="action-btn renew-btn" title="Renew Subscription">
+                    <i class="fa-solid fa-rotate"></i>
+                    <span>Renew</span>
+                  </button>
+
+                  <!-- Toggle Status Button -->
+                  <button onclick="toggleStatus('<%= school._id %>', '<%= school.status %>')"
+                    class="action-btn status-btn <%= (school.status && school.status.toLowerCase() === 'active') ? 'btn-warning' : 'btn-success' %>">
+                    <i
+                      class="fa-solid <%= (school.status && school.status.toLowerCase() === 'active') ? 'fa-ban' : 'fa-check' %>"></i>
+                    <span>
+                      <%= (school.status && school.status.toLowerCase()==='active' ) ? 'Disable' : 'Enable' %>
+                    </span>
+                  </button>
+
+                  <!-- Delete Button -->
+                  <button onclick="deleteSchool('<%= school._id %>', '<%= school.name %>')"
+                    class="action-btn delete-btn" title="Delete School">
+                    <i class="fa-solid fa-trash"></i>
+                    <span>Delete</span>
+                  </button>
+
+                  <a href="/super-admin/transaction-history/<%= school._id %>" class="action-btn"
+                    title="View Payment History" style="color: #60a5fa;">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                  </a>
+                </div>
+              </td>
+            </tr>
+            <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="renewModal">
+    <div class="modal-content">
+      <h3 id="renewSchoolName" style="margin:0 0 20px 0; color:white;">Renew Subscription</h3>
+      <input type="hidden" id="renewSchoolId">
+      <label style="color:#94a3b8; font-size:12px; display:block; margin-bottom:8px;">Plan Duration</label>
+      <select id="renewPlan"
+        style="width:100%; padding:12px; border-radius:8px; background:#0f172a; color:white; border:1px solid #475569;">
+        <option value="monthly">Monthly (30 Days)</option>
+        <option value="quarterly">Quarterly (90 Days)</option>
+        <option value="half-yearly">Half Yearly (180 Days)</option>
+        <option value="annually">Annually (365 Days)</option>
+      </select>
+      <div style="display:flex; gap:10px; margin-top:25px;">
+        <button onclick="processRenewal()"
+          style="flex:1; background:#3b82f6; color:white; border:none; padding:12px; border-radius:8px; font-weight:bold;">Confirm</button>
+        <button onclick="document.getElementById('renewModal').style.display='none'"
+          style="flex:1; background:transparent; color:#94a3b8; border:1px solid #334155; border-radius:8px;">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Filtering Logic
+    function filterTable() {
+      const searchText = document.getElementById('searchInput').value.toLowerCase();
+      const statusValue = document.getElementById('statusFilter').value.toLowerCase();
+      const rows = document.querySelectorAll('.school-row');
+
+      rows.forEach(row => {
+        const name = row.querySelector('.school-name').innerText.toLowerCase();
+        const code = row.querySelector('.code-tag').innerText.toLowerCase();
+        // Badge ke text ko handle karne ke liye (Active/Inactive/Expired)
+        const badgeText = row.querySelector('.status-badge').innerText.toLowerCase().trim();
+
+        const matchesSearch = name.includes(searchText) || code.includes(searchText);
+        const matchesStatus = (statusValue === 'all') || (badgeText === statusValue);
+
+        row.style.display = (matchesSearch && matchesStatus) ? "" : "none";
+      });
+    }
+
+    document.getElementById('searchInput').addEventListener('keyup', filterTable);
+    document.getElementById('statusFilter').addEventListener('change', filterTable);
+
+    // Modal Logic
+    function openRenewModal(id, name) {
+      document.getElementById('renewSchoolId').value = id;
+      document.getElementById('renewSchoolName').innerText = "Renew: " + name;
+      document.getElementById('renewModal').style.display = 'flex';
+    }
+
+    async function processRenewal() {
+      const id = document.getElementById('renewSchoolId').value;
+      const plan = document.getElementById('renewPlan').value;
+      try {
+        const res = await fetch(`/super-admin/renew-school/${id}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ plan })
+        });
+        if (res.ok) { alert("Success!"); location.reload(); }
+        else { alert("Error!"); }
+      } catch (err) { alert("Server Error!"); }
+    }
+
+    // Toggle Status Function
+    async function toggleStatus(id, currentStatus) {
+      // Case-insensitive check for toggle
+      const isCurrentlyActive = currentStatus.toLowerCase() === 'active';
+      const newStatus = isCurrentlyActive ? 'Inactive' : 'Active';
+
+      if (confirm(`Change status to ${newStatus}?`)) {
+        try {
+          const res = await fetch(`/super-admin/toggle-status/${id}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: newStatus })
+          });
+          if (res.ok) location.reload();
+          else alert("Update failed!");
+        } catch (err) { alert("Error!"); }
+      }
+    }
+
+    // Delete School Function
+    async function deleteSchool(id, name) {
+      if (confirm(`DANGER: Are you sure you want to delete ${name}? All students and records will be permanently removed!`)) {
+        try {
+          const res = await fetch(`/super-admin/delete-school/${id}`, {
+            method: 'DELETE'
+          });
+          if (res.ok) {
+            alert("School deleted successfully");
+            location.reload();
+          } else { alert("Delete failed!"); }
+        } catch (err) { alert("Error!"); }
+      }
+    }
+  </script>
+</body>

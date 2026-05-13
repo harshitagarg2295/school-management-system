@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Add School | Super Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: #0f172a;
+      color: white;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 450px;
+      margin: auto;
+      background: #1e293b;
+      padding: 35px;
+      border-radius: 20px;
+      border: 1px solid #334155;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    h2 {
+      text-align: center;
+      color: #fff;
+      margin-bottom: 25px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      color: #94a3b8;
+      font-size: 13px;
+      margin-bottom: 5px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #334155;
+      background: #0f172a;
+      color: white;
+      box-sizing: border-box;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #2563eb;
+    }
+
+    .secondary-btn {
+      display: block;
+      text-align: center;
+      padding: 12px;
+      margin-top: 15px;
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 14px;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      transition: 0.3s;
+    }
+
+    .secondary-btn:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+    }
+
+    /* Modern Popup */
+    #popup {
+      display: none;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #10b981;
+      color: white;
+      padding: 15px 25px;
+      border-radius: 12px;
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+      }
+
+      to {
+        transform: translateX(0);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div style="text-align: center; margin-bottom: 15px;">
+      <i class="fa-solid fa-plus-circle" style="font-size: 30px; color: #3b82f6;"></i>
+    </div>
+    <h2>Create New School</h2>
+    <form id="schoolForm">
+
+      <div class="form-group">
+        <label>Official School Name</label>
+        <input type="text" name="schoolName" placeholder="e.g. St. Xavier's Academy" required>
+      </div>
+
+      <div class="form-group">
+        <label>Primary Admin Username</label>
+        <input type="text" name="adminUsername" placeholder="admin_user" required>
+      </div>
+
+      <div class="form-group">
+        <label>Secure Password</label>
+        <input type="password" name="adminPassword" placeholder="••••••••" required>
+      </div>
+
+      <div class="form-group">
+        <label>Select Subscription Plan</label>
+        <select name="plan" required
+          style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #334155; background: #0f172a; color: white;">
+          <option value="monthly">Monthly (30 Days)</option>
+          <option value="quarterly" selected>Quarterly (90 Days)</option>
+          <option value="half-yearly">Half Yearly (180 Days)</option>
+          <option value="annually">Annually (365 Days)</option>
+        </select>
+      </div>
+
+      <button type="submit">Register School</button>
+    </form>
+
+    <a href="/super-admin/dashboard" class="secondary-btn">⬅ Back to Dashboard</a>
+  </div>
+
+  <div id="popup">Success!</div>
+
+  <script>
+    const form = document.getElementById("schoolForm");
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const data = {
+        schoolName: form.schoolName.value,
+        adminUsername: form.adminUsername.value,
+        adminPassword: form.adminPassword.value,
+        plan: form.plan.value
+      };
+      const res = await fetch("/super-admin/add-school", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+      const text = await res.text();
+      const popup = document.getElementById("popup");
+      popup.innerText = text;
+      popup.style.display = "block";
+      setTimeout(() => { popup.style.display = "none"; }, 5000);
+      form.reset();
+    });
+  </script>
+</body>
+
+</html>

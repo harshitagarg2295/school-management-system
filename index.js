@@ -2,8 +2,6 @@
 
 
 // https://school-management-system-trft.onrender.com  my website live link :
-
-
 require("dotenv").config(); // for mongoDB atlas connection string
 
 
@@ -27,22 +25,26 @@ app.use(
   session({
     name: "school.sid",
     secret: process.env.SESSION_SECRET,
-    resave: false,
+    resave: true,                // Rolling session ke liye true zaroori hai
     saveUninitialized: false,
-
+    rolling: true,               // User active hai toh session extend hota rahega
     store: new MongoStore({
       mongoUrl: process.env.MONGO_URI,
       collectionName: "sessions",
     }),
-
     cookie: {
-      secure: isProduction,          // true only on live (https)
+      secure: isProduction,
       httpOnly: true,
       sameSite: isProduction ? "none" : "lax",
-      maxAge: 1000 * 60 * 60 * 24,
+      maxAge: 1000 * 60 * 60 * 4, // Maine ise 4 ghante kar diya hai (School shift ke hisab se)
     },
   })
 );
+
+app.use((req, res, next) => {
+  res.locals.schoolName = req.session.schoolName || "";
+  next();
+});
 
 // Set view engine to EJS
 app.set("view engine", "ejs");
@@ -69,52 +71,18 @@ app.use((req, res, next) => {
 });
 
 
-// Serve index.html from templates
-// app.get('/', (req, res) => {
-//     res.sendFile('templates/index.html', { root: __dirname });
-// });
+// Landing Page (Home + Login)
+app.get('/', (req, res) => res.render('HomePage/index'));
+app.get('/about-us', (req, res) => res.render('HomePage/about-us'));
+app.get('/features', (req, res) => res.render('HomePage/features'));
+app.get('/contact-us', (req, res) => res.render('HomePage/contact-us'));
 
-
-// // Route to render index.ejs
-app.get("/", (req, res) => {
-  res.render("HomePage/index");  // This will render templates/index.ejs
-});
-
-// Route to render school.ejs
-app.get("/school.html", (req, res) => {
-  res.render("HomePage/school");
-});
-
-// Route to render mission.ejs
-app.get("/mission.html", (req, res) => {
-  res.render("HomePage/mission");
-});
-
-// Route to render management.ejs
-app.get("/management.html", (req, res) => {
-  res.render("HomePage/management");
-});
-
-// Route to render rules.ejs
-app.get("/rules.html", (req, res) => {
-  res.render("HomePage/rules");
-});
-
-app.get("/academics.html", (req, res) => {
-  res.render("HomePage/academics");
-});
-
-app.get("/non-academics.html", (req, res) => {
-  res.render("HomePage/non-academics");
-});
-
-app.get("/admission.html", (req, res) => {
-  res.render("HomePage/admission");
-});
-
-app.get("/contactUs.html", (req, res) => {
-  res.render("HomePage/contactUs");
-});
+// Legal Pages for Razorpay
+app.get('/privacy-policy', (req, res) => res.render('HomePage/privacy-policy'));
+app.get('/terms-conditions', (req, res) => res.render('HomePage/terms-conditions'));
+app.get('/refund-policy', (req, res) => res.render('HomePage/refund-policy'));
+app.get('/login', (req, res) => res.render('HomePage/login'));
+app.get('/try-demo', (req, res) => res.render('HomePage/demo-access'));
 
 // Login for all (student, teacher & admin)
 
@@ -124,6 +92,9 @@ const Student = require("./models/StudentSchema");
 app.set("Teacher", Teacher);
 app.set("Student", Student);
 
+const superAdminRoutes = require("./routes/SuperAdminRoutes/superAdminRoutes");
+app.use(superAdminRoutes)
+
 const loginRoutes = require("./routes/loginRoutes");
 app.use("/", loginRoutes);
 
@@ -132,27 +103,20 @@ const settingRoutes = require("./routes/settingsRoutes");
 app.use("/", settingRoutes);
 
 
-// MongoDB connect
-
-// mongoose.connect('mongodb://localhost:27017/schoolDB', {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true,
-// }).then(() => console.log("MongoDB connected")).catch(err => console.log(err));
-
-
 // MongoDB connection
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB Atlas connected"))
-  .catch(err => console.log(err));
-
 const PORT = process.env.PORT || 3005;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log("MongoDB Connected");
 
-// ✅ Import cleanup scheduler
-require("./cleanupNotifications");  // <- important line
+    // ✅ Import cleanup scheduler
+    require("./cleanupNotifications");  // <- important line
 
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  })
+  .catch(err => console.log(err));
 
 //  <---- Admin Dashboard related routes ---->
 
@@ -237,6 +201,9 @@ app.use(syllabusRoute);
 const studyMaterialRoute = require("./routes/TeacherRoutes/studyMaterialRoutes");
 app.use(studyMaterialRoute);
 
+const teacherProfileRoute = require("./routes/TeacherRoutes/profileRoutes");
+app.use(teacherProfileRoute);
+
 
 //  <---- Student Dashboard related routes ---->
 
@@ -280,3 +247,6 @@ app.use(checkOutFeesRoute);
 // Route for Actual payment
 const paymentRoute = require("./routes/StudentRoutes/paymentRoutes");
 app.use(paymentRoute);
+
+const studentProfileRoute = require("./routes/StudentRoutes/profileRoutes");
+app.use(studentProfileRoute);

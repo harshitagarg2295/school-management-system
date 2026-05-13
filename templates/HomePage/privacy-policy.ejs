@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy | SchoolFlow</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1e3c72;
+            --secondary: #2a5298;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --bg-body: #f8fafc;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.7;
+            color: var(--text-dark);
+            background: var(--bg-body);
+            margin: 0;
+            padding: 0;
+        }
+
+        /* ---------- HEADER ---------- */
+        .policy-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 80px 20px;
+            text-align: center;
+        }
+
+        .policy-header h1 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+
+        .policy-header p {
+            color: white;
+            opacity: 0.8;
+            font-size: 1.1rem;
+        }
+
+        /* ---------- CONTENT ---------- */
+        .container {
+            max-width: 900px;
+            margin: -40px auto 80px;
+            background: #fff;
+            padding: 60px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .back-link {
+            display: inline-block;
+            text-decoration: none;
+            color: var(--secondary);
+            font-weight: 600;
+            margin-bottom: 30px;
+            transition: 0.3s;
+        }
+
+        .back-link:hover { transform: translateX(-5px); }
+
+        h2 {
+            color: var(--primary);
+            font-size: 1.5rem;
+            margin-top: 40px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        h2 i { font-size: 1.2rem; opacity: 0.7; }
+
+        p, li {
+            color: var(--text-light);
+            margin-bottom: 15px;
+            font-size: 1.05rem;
+        }
+
+        ul { padding-left: 20px; }
+
+        .last-updated {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: var(--secondary);
+        }
+
+        /* ---------- RESPONSIVE ---------- */
+        @media (max-width: 768px) {
+            .container {
+                margin-top: 0;
+                padding: 30px 20px;
+                border-radius: 0;
+            }
+            .policy-header { padding: 60px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <%- include("partials/HomePageNavbar") %>
+
+    <header class="policy-header">
+        <h1>Privacy Policy</h1>
+        <p>Your data security is our top priority at SchoolFlow.</p>
+    </header>
+
+    <div class="container">
+        <a href="/" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to Home</a>
+        
+        <span class="last-updated">Last Updated: May 2024</span>
+        
+        <p>Welcome to <strong>SchoolFlow</strong>. We value the trust you place in us when sharing school data. This policy explains how we collect, use, and protect your information.</p>
+
+        <h2><i class="fa-solid fa-database"></i> 1. Information We Collect</h2>
+        <p>We collect information necessary to provide seamless school management services:</p>
+        <ul>
+            <li><strong>School Data:</strong> Name, address, and contact details of the institution.</li>
+            <li><strong>Student & Parent Data:</strong> Names, enrollment numbers, attendance records, and contact information.</li>
+            <li><strong>Financial Data:</strong> Fee payment history and transaction IDs (processed securely via Razorpay).</li>
+        </ul>
+
+        <h2><i class="fa-solid fa-shield-check"></i> 2. How We Use Data</h2>
+        <p>Your data is used strictly for school-related operations:</p>
+        <ul>
+            <li>To manage attendance and academic results.</li>
+            <li>To facilitate online fee payments and generate receipts.</li>
+            <li>To send important announcements and notifications via the portal.</li>
+        </ul>
+
+        <h2><i class="fa-solid fa-user-secret"></i> 3. Data Security</h2>
+        <p>We implement industry-standard encryption to protect your data. We do not sell or rent your personal information to third-party advertisers. Access to data is restricted to authorized school administrators and teachers only.</p>
+
+        <h2><i class="fa-solid fa-credit-card"></i> 4. Payment Information</h2>
+        <p>All payments are processed through <strong>Razorpay</strong>. SchoolFlow does not store your credit card or bank login details on our servers. Please refer to Razorpay’s Privacy Policy for more details on payment security.</p>
+
+        <h2><i class="fa-solid fa-envelope"></i> 5. Contact Us</h2>
+        <p>If you have any questions regarding this Privacy Policy or data protection, please reach out to our support team at:</p>
+        <p><strong>Email:</strong> support@schoolflow.com</p>
+    </div>
+
+    <%- include("partials/HomePageFooter") %>
+
+</body>
+</html>

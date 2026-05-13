@@ -464,8 +464,11 @@
                                             <div class="id">
                                                 <%= index + 1 %>
                                             </div>
-                                            <div class="name">
-                                                <%= student.name %>
+                                           <div class="name">
+                                                <a href="/student/<%= student._id %>"
+                                                    style="text-decoration:none; color:inherit;">
+                                                    <%= student.name %>
+                                                </a>
                                             </div>
                                             <div class="id">
                                                 <%= student.id %>
@@ -474,7 +477,7 @@
                                                 <%= student.class %>
                                             </div>
                                             <div class="DOB">
-                                                <%= student.DOB.toISOString().split("T")[0]%>
+                                                <%= student.DOB ? student.DOB.toISOString().split("T")[0] : 'N/A' %>
                                             </div>
                                             <div class="address">
                                                 <%= student.address %>
@@ -483,7 +486,7 @@
                                                 <%= student.phone %>
                                             </div>
                                             <div class="fees">
-                                                <%= student.fees.toLocaleString('en-IN') %>
+                                              <%= student.fees ? student.fees.toLocaleString('en-IN') : '0' %>
                                             </div>
                                             <div class="icons">
 

@@ -4,21 +4,29 @@ const moment = require("moment");
 
 const Teacher = require("../../models/TeacherSchema")
 const SalaryStatus = require("../../models/TeacherSalaryStatus");
-const {teacherAuth} =  require("../../middlewares/auth");
+const { teacherAuth } = require("../../middlewares/auth");
 
 // 👉 Teacher Salary Status Page
-router.get("/teachers/salary",teacherAuth, async (req, res) => {
-
+router.get("/teachers/salary", teacherAuth, async (req, res) => {
+  const schoolCode = req.session.schoolCode;
   const teacherId = req.session.teacherId; // मान लो teacher login से id आ रही है
   if (!teacherId) {
-    return res.redirect("/teacher.html");
+    return res.redirect("/login");
   }
 
-  const teacher = await Teacher.findById(teacherId);
+  const teacher = await Teacher.findOne({
+    _id: teacherId,
+    schoolCode
+  });
+
+  if (!teacher) {
+    return res.redirect("/login");
+  }
+
 
 
   // DB से सारे months के salary status fetch करो
-  const salaryRecords = await SalaryStatus.find({ teacherId })
+  const salaryRecords = await SalaryStatus.find({ teacherId, schoolCode })
     .sort({ year: 1, month: 1 });
 
   // Month Name + Year convert करो
@@ -46,14 +54,22 @@ router.get("/teachers/salary",teacherAuth, async (req, res) => {
 
 // Salary Receipt Download Route
 
-router.get("/teachers/download-receipt/:month/:year",teacherAuth, async (req, res) => {
+router.get("/teachers/download-receipt/:month/:year", teacherAuth, async (req, res) => {
+  const schoolCode = req.session.schoolCode;
   const { month, year } = req.params;
   const teacherId = req.session.teacherId; // 👈 teacher login ID session se lo
 
 
   try {
-    const record = await SalaryStatus.findOne({ teacherId, month, year })
-      .populate("teacherId");
+    const record = await SalaryStatus.findOne({
+      teacherId,
+      month,
+      year,
+      schoolCode
+    }).populate({
+      path: "teacherId",
+      match: { schoolCode }
+    });
 
     if (!record) {
       return res.status(404).send("No salary record found for this month.");
@@ -66,7 +82,7 @@ router.get("/teachers/download-receipt/:month/:year",teacherAuth, async (req, re
       year,
       status: record.status,
       paidOn: record.paidOn,
-      presentDays:  record.presentDays,
+      presentDays: record.presentDays,
       absentDays: record.absentDays,
       lateCount: record.lateCount,
       totalAbsent: record.totalAbsent,

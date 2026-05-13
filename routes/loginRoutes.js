@@ -2,40 +2,27 @@ const express = require("express");
 const router = express.Router();
 const profile = require("../models/AdminProfileSchema");
 const bcrypt = require("bcrypt");
-
-
-const Teacher = require("../models/TeacherSchema");
-const Student = require("../models/StudentSchema");
-
-
-// ---------------- HTML ROUTES ----------------
-// GET routes to render the login form for each role
-
-router.get("/admin.html", (req, res) => {
-  res.render("HomePage/loginForm", { title: "Admin Login", loginTitle: "Admin Login", role: "admin" });
-});
-
-router.get("/teacher.html", (req, res) => {
-  res.render("HomePage/loginForm", { title: "Teacher Login", loginTitle: "Teacher Login", role: "teacher" });
-});
-
-router.get("/student.html", (req, res) => {
-  res.render("HomePage/loginForm", { title: "Student Login", loginTitle: "Student Login", role: "student" });
-});
-
+const School = require("../models/AllSchools")
+const Teacher = require("../models/TeacherSchema")
+const Student = require("../models/StudentSchema")
 
 // ---------------- LOGIN CHECK FUNCTION (UPDATED) ----------------
 
 // This function checks the login credentials against the database.
 // It now queries the database using the provided username to find the correct user.
 
-async function checkLogin(role, username, password, TeacherSchema, StudentSchema) {
+async function checkLogin(role, username, password, schoolCode, TeacherSchema, StudentSchema) {
   // Check for Admin
+
   if (role === "admin") {
-    const admin = await profile.findOne({ username });
+    const admin = await profile.findOne({
+      username: username.trim(),
+      schoolCode: schoolCode.trim()
+    });
 
     if (admin) {
-      return await bcrypt.compare(password, admin.password);  // hashed compare
+      const match = await bcrypt.compare(password, admin.password);
+      return match;
     }
   }
 
@@ -43,18 +30,27 @@ async function checkLogin(role, username, password, TeacherSchema, StudentSchema
   // Check for Teacher
   if (role === "teacher") {
     // Find a teacher in the database with the given username
-    const teacher = await TeacherSchema.findOne({ username: username });
+
+    const teacher = await TeacherSchema.findOne({
+      username: username.trim().toLowerCase(),
+      schoolCode: schoolCode.trim()
+    });
 
     // If a teacher is found, check if the password matches
     if (teacher) {
-      return await bcrypt.compare(password, teacher.password);
+      const match = await bcrypt.compare(password, teacher.password)
+
+      return match;
     }
   }
 
   // Check for Student
   if (role === "student") {
     // Find a student in the database with the given username
-    const student = await StudentSchema.findOne({ username: username });
+    const student = await StudentSchema.findOne({
+      username: username.trim(),
+      schoolCode: schoolCode.trim()
+    });
 
     // If a student is found, check if the password matches
     if (student) {
@@ -68,79 +64,94 @@ async function checkLogin(role, username, password, TeacherSchema, StudentSchema
 
 // ---------------- LOGIN ROUTE ----------------
 // The main POST route for handling login form submissions
-
 router.post("/login", async (req, res) => {
-  const { role, username, password } = req.body;
+  const { role, username, password, schoolCode } = req.body;
 
-  const Teacher = req.app.get("Teacher");
-  const Student = req.app.get("Student");
-
-  const isValid = await checkLogin(role, username, password, Teacher, Student);
-
-  if (!isValid) {
-    return res.redirect(`/${role}.html?error=1`);
-  }
-
-  // 🔥 VERY IMPORTANT: regenerate session
-  req.session.regenerate(async (err) => {
-    if (err) {
-      console.error("Session regenerate error:", err);
-      return res.redirect(`/${role}.html?error=1`);
+  try {
+    // 1. School check (Subscription & Existence)
+    const school = await School.findOne({ code: schoolCode.trim() });
+    if (!school) {
+      return res.redirect(`/login?error=Invalid School Code`);
     }
 
-    // 🔒 COMMON ROLE FLAG
-    req.session.userRole = role;
+    const isExpired = school.status === 'Inactive' || (school.subscriptionEnd && new Date() > school.subscriptionEnd);
+    if (isExpired && role !== "admin") {
+      return res.render("Admin/subscriptionBlocked", { role: role.charAt(0).toUpperCase() + role.slice(1) });
+    }
 
-    // ================= ADMIN =================
+    // 2. Credential Check
+    const isValid = await checkLogin(role, username, password, schoolCode, Teacher, Student);
+    if (!isValid) {
+      return res.redirect(`/login?error=1`);
+    }
+
+    // 3. User Data Fetch (Before Session Change)
+    let userData = null;
     if (role === "admin") {
-      const admin = await profile.findOne({ username });
+      userData = await profile.findOne({ username: username.trim(), schoolCode: schoolCode.trim() });
+    } else if (role === "teacher") {
+      userData = await Teacher.findOne({ username: username.trim().toLowerCase(), schoolCode: schoolCode.trim() });
+    } else if (role === "student") {
+      userData = await Student.findOne({ username: username.trim(), schoolCode: schoolCode.trim() });
+    }
 
-      req.session.adminId = admin._id;
-      req.session.adminName = admin.name;
+    if (!userData) {
+      return res.redirect(`/login?error=User Data Not Found`);
+    }
 
-      // ❌ clear others
+    // 4. 🔥 SESSION REGENERATE (Purana sab khatam)
+    req.session.regenerate((err) => {
+      if (err) {
+        console.error("Session regenerate error:", err);
+        return res.redirect(`/login?error=1`);
+      }
+
+      // 5. Common Data Set Karo
+      req.session.userRole = role;
+      req.session.schoolCode = schoolCode.trim();
+      req.session.schoolName = school.name;
+
+      // 6. Role-Specific Data & Clean-up (Just to be 100% sure)
+      // Regenerate sab clean kar deta hai, par hum specific IDs initialize kar rahe hain
+      req.session.adminId = null;
       req.session.teacherId = null;
       req.session.studentId = null;
 
-      return res.redirect("/adminDashboard");
-    }
+      if (role === "admin") {
+        req.session.adminId = userData._id;
+        req.session.adminName = userData.name;
+      } else if (role === "teacher") {
+        req.session.teacherId = userData._id;
+        req.session.teacherName = userData.name;
+      } else if (role === "student") {
+        req.session.studentId = {
+          id: userData._id,
+          class: userData.class
+        };
+      }
 
-    // ================= TEACHER =================
-    if (role === "teacher") {
-      const teacher = await Teacher.findOne({ username });
+      // 7. ✅ FINAL SAVE & REDIRECT
+      // Is callback ke bina redirect kiya toh 2-attempt wala bug aayega
+      req.session.save((saveErr) => {
+        if (saveErr) {
+          console.error("Session Save Error:", saveErr);
+          return res.redirect("/login?error=1");
+        }
 
-      req.session.teacherId = teacher._id;
-      req.session.teacherName = teacher.name;
+        // Success! Redirecting to Dashboard
+        if (role === "admin") return res.redirect("/adminDashboard");
+        if (role === "teacher") return res.redirect("/teacherDashboard");
+        if (role === "student") return res.redirect("/studentDashboard");
+      });
+    });
 
-      // ❌ clear others
-      req.session.adminId = null;
-      req.session.studentId = null;
-
-      return res.redirect("/teacherDashboard");
-    }
-
-    // ================= STUDENT =================
-    if (role === "student") {
-      const student = await Student.findOne({ username });
-
-      req.session.studentId = {
-        id: student._id,
-        class: student.class,
-      };
-
-      // ❌ clear others
-      req.session.adminId = null;
-      req.session.teacherId = null;
-
-      return res.redirect("/studentDashboard");
-    }
-  });
+  } catch (error) {
+    console.error("Login System Crash:", error);
+    return res.status(500).send("Internal Server Error");
+  }
 });
 
-
-
 // Forget Password Routes: 
-
 
 router.get("/forgot-password", (req, res) => {
   const role = req.query.role || "student"; // default student
@@ -151,7 +162,12 @@ router.get("/forgot-password", (req, res) => {
 // ---------------- FORGOT PASSWORD SUBMIT ----------------
 router.post("/forgot-password", async (req, res) => {
   try {
-    const { role, username, dob, phone, newPassword, confirmPassword } = req.body;
+
+    if (req.body.schoolCode === "DEMO248") {
+    return res.send("<script>alert('Forgot Password is disabled in Demo Mode'); window.history.back();</script>");
+}
+
+    const { role, username, dob, phone, newPassword, confirmPassword, schoolCode } = req.body;
 
     // 1️⃣ New == Confirm check
     if (newPassword !== confirmPassword) {
@@ -170,17 +186,19 @@ router.post("/forgot-password", async (req, res) => {
       // AdminProfileSchema: username + mobile
       user = await profile.findOne({
         username: username,
-        mobile: phone
+        mobile: phone,
+        schoolCode
       });
     } else if (role === "teacher") {
       user = await Teacher.findOne({
         username: username,
-        phone: phone
+        phone: phone,
+        schoolCode
       });
     } else if (role === "student") {
 
       // ✨ Step 1: username match
-      const student = await Student.findOne({ username: username });
+      const student = await Student.findOne({ username: username, schoolCode });
       if (!student) user = null;
       else {
 
@@ -218,7 +236,7 @@ router.post("/forgot-password", async (req, res) => {
     return res.send(`
       <script>
         alert('Password updated successfully!');
-        window.location.href = '/${role}.html';
+        window.location.href = '/login';
       </script>
     `);
   } catch (err) {
@@ -231,5 +249,11 @@ router.post("/forgot-password", async (req, res) => {
     `);
   }
 });
+
+// --- Route to show Demo Credentials Page ---
+router.get("/try-demo", (req, res) => {
+    res.render("HomePage/demo-access", { demoCode: "DEMO248" }); 
+});
+
 
 module.exports = router;

@@ -2,6 +2,11 @@
 const mongoose = require("mongoose");
 
 const salaryStatusSchema = new mongoose.Schema({
+
+  schoolCode: {
+    type: String,
+    required: true
+  },
   teacherId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "TeacherSchema",

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Student Profile | <%= student.name %>
+    </title>
+
+    <link rel="stylesheet" href="/css/adminDashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #4caf50;
+            --light-bg: #f4f7fb;
+            --text-dark: #2c3e50;
+            --border: #e0e0e0;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            margin: 0;
+            background: var(--light-bg);
+            color: var(--text-dark);
+        }
+
+        .student-dash {
+            display: flex;
+        }
+
+        .profile-card {
+            font-family: "Poppins", sans-serif;
+            margin: 20px;
+            width: 100%;
+            background: var(--card-bg);
+            padding: 35px 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            /* Button aur info ko align karne ke liye */
+            gap: 25px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 20px;
+        }
+
+        .header-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .profile-img {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--primary);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .profile-header h2 {
+            margin: 0;
+            font-size: 26px;
+        }
+
+        .profile-header p {
+            margin: 5px 0 0;
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .profile-item {
+            background: var(--light-bg);
+            padding: 12px 15px;
+            border-radius: 10px;
+            border: 1px solid transparent;
+        }
+
+        .profile-item:hover {
+            border-color: var(--primary);
+            background: #f0fdf4;
+        }
+
+        .profile-item label {
+            font-size: 13px;
+            color: #777;
+            display: block;
+            margin-bottom: 3px;
+            font-weight: 500;
+        }
+
+        .profile-item span {
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .full-width {
+            grid-column: span 2;
+        }
+
+
+        @media (max-width: 768px) {
+            .profile-card {
+                margin: 20px;
+                width: 100%;
+            }
+
+            .profile-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+           
+        }
+
+        @media (max-width: 480px) {
+            .profile-img {
+                width: 80px;
+                height: 80px;
+            }
+             .profile-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .full-width {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="student-dash">
+        <%- include("partials/StudentPageSidebar") %>
+
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="header-info">
+                        <% if (student.photo) { %>
+                            <img src="/uploads/students/<%= student.photo %>" class="profile-img">
+                            <% } else { %>
+                                <img src="/images/default-student.png" class="profile-img">
+                                <% } %>
+
+                                    <div>
+                                        <h2>
+                                            <%= student.name %>
+                                        </h2>
+                                        <p>Class: <%= student.class %> - <%= student.section %>
+                                        </p>
+                                    </div>
+                    </div>
+                </div>
+
+                <div class="profile-grid">
+
+                    <div class="profile-item">
+                        <label>Admission No / ID</label>
+                        <span>
+                            <%= student.id %>
+                        </span>
+                    </div>
+
+                    <div class="profile-item">
+                        <label>Roll Number</label>
+                        <span>
+                            <%= student.rollNo || "N/A" %>
+                        </span>
+                    </div>
+
+                    <div class="profile-item">
+                        <label>House</label>
+                        <span>
+                            <%= student.house || "N/A" %>
+                        </span>
+                    </div>
+
+                    <div class="profile-item">
+                        <label>Father's Name</label>
+                        <span>
+                            <%= student.fatherName || "N/A" %>
+                        </span>
+                    </div>
+
+                    <div class="profile-item">
+                        <label>Mother's Name</label>
+                        <span>
+                            <%= student.motherName || "N/A" %>
+                        </span>
+                    </div>
+
+                    <div class="profile-item">
+                        <label>Phone / WhatsApp</label>
+                        <span>
+                            <%= student.phone %>
+                        </span>
+                    </div>
+
+                    <div class="profile-item">
+                        <label>Date of Birth</label>
+                        <span>
+                            <%= student.DOB ? new Date(student.DOB).toLocaleDateString('en-GB') : "N/A" %>
+                        </span>
+                    </div>
+
+                    <div class="profile-item">
+                        <label>Gender</label>
+                        <span>
+                            <%= student.gender || "N/A" %>
+                        </span>
+                    </div>
+
+                    <div class="profile-item">
+                        <label>Admission Date</label>
+                        <span>
+                            <%= student.admissionDate ? new Date(student.admissionDate).toLocaleDateString('en-GB')
+                                : "N/A" %>
+                        </span>
+                    </div>
+
+                    <div class="profile-item">
+                        <label>Admitted In Class</label>
+                        <span>
+                            <%= student.initialClass || "N/A" %>
+                        </span>
+                    </div>
+
+
+                    <div class="profile-item">
+                        <label>Blood Group</label>
+                        <span>
+                            <%= student.bloodGroup || "N/A" %>
+                        </span>
+                    </div>
+
+                    <div class="profile-item">
+                        <label>Username</label>
+                        <span>
+                            <%= student.username %>
+                        </span>
+                    </div>
+
+                    <div class="profile-item">
+                        <label>Previous School</label>
+                        <span>
+                            <%= student.previousSchool || "N/A" %>
+                        </span>
+                    </div>
+
+                    <div class="profile-item full-width">
+                        <label>Residential Address</label>
+                        <span>
+                            <%= student.address || "N/A" %>
+                        </span>
+                    </div>
+
+                </div>
+            </div>
+    </div>
+
+</body>
+
+</html>

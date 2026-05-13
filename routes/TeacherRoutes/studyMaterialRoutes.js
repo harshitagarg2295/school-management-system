@@ -6,7 +6,7 @@ const Student = require("../../models/StudentSchema")
 const multer = require("multer"); //sabse common for handling file uploads in Express.
 const fs = require('fs'); // fs module
 const StudyMaterial = require("../../models/StudyMaterial");
-const {teacherAuth} =  require("../../middlewares/auth");
+const { teacherAuth } = require("../../middlewares/auth");
 
 // ... (Multer storage setup and upload middleware remains the same) ...
 
@@ -26,8 +26,8 @@ const upload = multer({
 // ----------------------------------------
 // Function to prepare class list (for both GET and POST)
 // ----------------------------------------
-const prepareClassList = async () => {
-    const classList = await Student.distinct("class");
+const prepareClassList = async (schoolCode) => {
+    const classList = await Student.distinct("class", { schoolCode });
     const classOrder = [
         "Nursery", "LKG", "UKG",
         "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
@@ -46,9 +46,11 @@ const prepareClassList = async () => {
 // ----------------------------------------
 // GET Route: Renders the form
 // ----------------------------------------
-router.get("/teachers/upload-material",teacherAuth, async (req, res) => {
+router.get("/teachers/upload-material", teacherAuth, async (req, res) => {
     // ✅ classList is fetched and passed correctly here
-    const classList = await prepareClassList();
+
+    const schoolCode = req.session.schoolCode;
+    const classList = await prepareClassList(schoolCode);
     res.render("Teachers/uploadStudyMaterial", {
         classList,
         selectedClass: req.query.class || "",
@@ -62,9 +64,30 @@ router.get("/teachers/upload-material",teacherAuth, async (req, res) => {
 // ----------------------------------------
 // POST Route: Handles upload and DB save
 // ----------------------------------------
-router.post("/teachers/upload-material", upload.array("material", 10),teacherAuth, async (req, res) => {
+router.post("/teachers/upload-material", upload.array("material", 10), teacherAuth, async (req, res) => {
+    const schoolCode = req.session.schoolCode;
     const { title, description, className } = req.body;
     const uploadedFiles = req.files;
+
+
+    // 🔥 1. DEMO SIZE CHECK
+    if (schoolCode === "DEMO248" && uploadedFiles) {
+        const demoSizeLimit = 2 * 1024 * 1024; // 2MB Limit
+        for (const file of uploadedFiles) {
+            if (file.size > demoSizeLimit) {
+                // Pehle file delete karo jo multer ne save kar di hai
+                for (const f of uploadedFiles) {
+                    if (fs.existsSync(f.path)) fs.unlinkSync(f.path);
+                }
+                return res.send(`
+                    <script>
+                        alert('Demo Mode Limit: You cannot upload files larger than 2MB. This is to save server space during your trial.');
+                        window.history.back();
+                    </script>
+                `);
+            }
+        }
+    }
 
     // Validation
     if (!className || !title || !description || !uploadedFiles || uploadedFiles.length === 0) {
@@ -92,7 +115,8 @@ router.post("/teachers/upload-material", upload.array("material", 10),teacherAut
                 description: description,
                 fileUrl: `/uploads/study-material/${file.filename}`,
                 uploadedBy: req.session.teacherName,
-                uploadedAt: new Date()
+                uploadedAt: new Date(),
+                schoolCode
             });
         }
 
@@ -106,15 +130,16 @@ router.post("/teachers/upload-material", upload.array("material", 10),teacherAut
 });
 
 
-router.get("/teachers/view-material",teacherAuth, async (req, res) => {
+router.get("/teachers/view-material", teacherAuth, async (req, res) => {
+    const schoolCode = req.session.schoolCode;
     const teacherName = req.session.teacherName
 
     if (!teacherName) {
-        return res.redirect("/teacher.html")
+        return res.redirect("/login")
     }
     const selectedClass = req.query.class;
 
-    let query = { uploadedBy: teacherName };
+    let query = { uploadedBy: teacherName, schoolCode };
 
     if (selectedClass && selectedClass !== "") {
         query.class = selectedClass;
@@ -123,7 +148,7 @@ router.get("/teachers/view-material",teacherAuth, async (req, res) => {
         .sort({ uploadedAt: -1 });
 
 
-    const classList = await prepareClassList();
+    const classList = await prepareClassList(schoolCode);
 
 
     res.render("Teachers/viewStudyMaterial", {
@@ -134,4 +159,41 @@ router.get("/teachers/view-material",teacherAuth, async (req, res) => {
     });
 
 })
+
+// Study Material Delete Route
+const path = require('path'); // Isse path handle karna aasan hoga
+
+router.get("/teachers/delete-material/:id", teacherAuth, async (req, res) => {
+    try {
+        const materialId = req.params.id;
+        const schoolCode = req.session.schoolCode;
+
+        const material = await StudyMaterial.findById(materialId);
+        if (!material) return res.redirect("/teachers/view-material");
+
+
+        // 1. File Delete Logic
+        // Aapka fileUrl hai: /uploads/study-material/filename.pdf
+        // Humne '.' isliye lagaya taaki ye root directory se start kare
+        const filePath = path.join(__dirname, '../../', material.fileUrl); 
+        // Note: '../../' isliye kyunki aapka route file shayad routes/teachers/ folder mein hai.
+        // Agar file seedha routes folder mein hai toh '../' use karein.
+
+        if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+            console.log("File deleted from server:", filePath);
+        } else {
+            console.log("File not found on server, just deleting from DB");
+        }
+
+        // 2. DB Delete Logic
+        await StudyMaterial.findByIdAndDelete(materialId);
+
+        res.redirect("/teachers/view-material?status=deleted");
+    } catch (error) {
+        console.error("Delete Error:", error);
+        res.redirect("/teachers/view-material?status=error");
+    }
+});
+
 module.exports = router;

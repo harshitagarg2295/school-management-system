@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Staff Profile</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+    <style>
+        :root {
+            --bg: #f5f7fb;
+            --card-bg: #ffffff;
+            --primary: #4f7cff;
+            --primary-dark: #315fdb;
+            --accent: #eaf1ff;
+            --muted: #6b7280;
+            --text: #1f2937;
+            --border: #e5e7eb;
+            --shadow: rgba(17, 24, 39, 0.08);
+            --radius-lg: 18px;
+            --radius-md: 12px;
+            --radius-sm: 10px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .admin_dash {
+            display: flex;
+            gap: 24px;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 24px;
+        }
+
+        .profile-card {
+            font-family: "Segoe UI", Arial, sans-serif;
+            width: 100%;
+            max-width: 1180px;
+            margin: 10px auto;
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 12px 30px var(--shadow);
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 340px 1fr;
+            min-height: 680px;
+        }
+
+        /* LEFT SECTION */
+        .profile-section {
+            padding: 34px 28px;
+            background: linear-gradient(180deg, #f8fbff, #eef5ff);
+            border-right: 1px solid #edf2f7;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .image {
+            width: 190px;
+            height: 190px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: #fff;
+            border: 5px solid #dbe7ff;
+            box-shadow: 0 10px 24px rgba(79, 124, 255, 0.16);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image img.preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .staff-basic {
+            text-align: center;
+        }
+
+        .staff-basic h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #172033;
+        }
+
+        .staff-basic p {
+            color: var(--muted);
+            font-size: 15px;
+        }
+
+        .staff-badge {
+            display: inline-block;
+            margin-top: 8px;
+            background: #ffffff;
+            color: var(--primary-dark);
+            border: 1px solid #d7e4ff;
+            padding: 8px 14px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .upload-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .upload-actions button {
+            border: none;
+            border-radius: 10px;
+            padding: 11px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+        }
+
+        #chooseBtn {
+            background: #fff;
+            color: #24313a;
+            border: 1px solid #dbe3f0;
+        }
+
+        #cameraBtn {
+            background: linear-gradient(90deg, var(--primary), #6ea2ff);
+            color: white;
+        }
+
+        .left-meta {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.75);
+            border: 1px solid #e3ebfa;
+            border-radius: 14px;
+            padding: 16px;
+            display: grid;
+            gap: 12px;
+        }
+
+        .meta-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+
+        .meta-item span:first-child {
+            color: var(--muted);
+            font-weight: 600;
+        }
+
+        .meta-item span:last-child {
+            color: #1f2937;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        /* RIGHT SECTION */
+        .details {
+            padding: 34px 36px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .details-header h1 {
+            font-size: 30px;
+            color: #172033;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            font-size: 15px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2d36;
+        }
+
+        .section-subtitle {
+            color: var(--muted);
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .readonly,
+        .edit-form {
+            background: linear-gradient(180deg, #fcfdff, #f7faff);
+            border: 1px solid #e8eef8;
+            border-radius: 16px;
+            padding: 22px;
+        }
+
+        .info-grid,
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(240px, 1fr));
+            gap: 16px;
+        }
+
+        .info-card {
+            background: white;
+            border: 1px solid #ebf0f7;
+            border-radius: 14px;
+            padding: 14px 16px;
+            box-shadow: 0 4px 10px rgba(17, 24, 39, 0.03);
+        }
+
+        .info-card .label {
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-card .value {
+            color: #1f2937;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #4b5563;
+        }
+
+        .edit-form input,
+        .edit-form select {
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid #ccd7ea;
+            outline: none;
+            width: 100%;
+        }
+
+        /* RIGHT ALIGNED BUTTONS */
+        .row-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 12px;
+            padding: 11px 22px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+
+        .btn.edit {
+            background: linear-gradient(90deg, var(--primary), #6ea2ff);
+            color: white;
+        }
+
+        .btn.secondary {
+            background: #ffffff;
+            color: #1f2937;
+            border: 1px solid #d5dfef;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        /* CROPPER MODAL */
+        #cropModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.84);
+            backdrop-filter: blur(6px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+        }
+
+        .crop-container {
+            width: 90%;
+            max-width: 380px;
+      height: 90%;
+            background: #111;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .crop-footer {
+            padding: 16px;
+            display: flex;
+            gap: 12px;
+            background: #111;
+        }
+
+        .crop-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .save-btn {
+            background: var(--primary);
+            color: white;
+        }
+
+        @media (max-width: 1100px) {
+            .profile-card {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-section {
+                border-right: none;
+                border-bottom: 1px solid #edf2f7;
+            }
+        }
+
+        @media (max-width: 768px) {
+
+            .info-grid,
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin_dash">
+        <%- include("partials/AdminPageSidebar") %>
+
+            <div class="profile-card">
+                <form id="imageForm" method="post" action="/staff/upload-image/<%= staff._id %>"
+                    class="profile-section">
+                    <input type="hidden" id="croppedImageInput" name="croppedImage">
+
+                    <div class="image">
+                        <img id="previewImg" class="preview"
+                            src="<%= staff.photo ? '/uploads/staffs/' + staff.photo : '/images/default-profile.png' %>">
+                        <input id="fileInput" type="file" accept="image/*" style="display:none;">
+                    </div>
+
+                    <div class="staff-basic">
+                        <h2>
+                            <%= staff.name %>
+                        </h2>
+                        <p>
+                            <%= staff.category || "Role Not Added" %>
+                        </p>
+                        <span class="staff-badge">Staff ID: <%= staff.empId || "N/A" %></span>
+                    </div>
+
+                    <div class="upload-actions">
+                        <button id="chooseBtn" type="button"><i class="fa-regular fa-image"></i> Upload</button>
+                        <button id="cameraBtn" type="button"><i class="fa-solid fa-camera"></i> Camera</button>
+                    </div>
+
+                    <div class="left-meta">
+                        <div class="meta-item"><span>Phone</span><span>
+                                <%= staff.phone || "N/A" %>
+                            </span></div>
+                        <div class="meta-item"><span>Salary</span><span>₹<%= staff.salary ?
+                                    Number(staff.salary).toLocaleString('en-IN') : "0" %></span></div>
+                        <div class="meta-item"><span>Category</span><span>
+                                <%= staff.category %>
+                            </span></div>
+                    </div>
+
+                    <div id="cropModal">
+                        <div class="crop-container">
+                            <div style="color:white; padding:15px; text-align:center;">Adjust Photo</div>
+                            <div style="height:300px; background:#000;"><img id="cropImage" style="max-width:100%;">
+                            </div>
+                            <div class="crop-footer">
+                                <button id="cropCancel" type="button" class="crop-btn"
+                                    style="background:#333; color:#fff;">Cancel</button>
+                                <button id="cropSave" type="button" class="crop-btn save-btn">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="details">
+                    <div class="details-header">
+                        <h1>Staff Profile</h1>
+                        <div class="subtitle">View and manage staff details</div>
+                    </div>
+
+                    <div class="readonly" id="detailForm">
+                        <div class="section-title">General Information</div>
+                        <div class="section-subtitle">Official staff record details</div>
+                        <div class="info-grid">
+                            <div class="info-card">
+                                <div class="label"><i class="fa-solid fa-user"></i> Full Name</div>
+                                <div class="value">
+                                    <%= staff.name %>
+                                </div>
+                            </div>
+                            <div class="info-card">
+                                <div class="label"><i class="fa-solid fa-briefcase"></i> Role/Category</div>
+                                <div class="value">
+                                    <%= staff.category %>
+                                </div>
+                            </div>
+                            <div class="info-card">
+                                <div class="label"><i class="fa-solid fa-phone"></i> Mobile</div>
+                                <div class="value">
+                                    <%= staff.phone %>
+                                </div>
+                            </div>
+                            <div class="info-card">
+                                <div class="label"><i class="fa-solid fa-money-bill"></i> Salary</div>
+                                <div class="value">₹<%= staff.salary %>
+                                </div>
+                            </div>
+                            <div class="info-card">
+                                <div class="label"><i class="fa-solid fa-calendar"></i> Joining Date</div>
+                                <div class="value">
+                                    <%= staff.joiningDate ? new Date(staff.joiningDate).toLocaleDateString('en-GB')
+                                        : "N/A" %>
+                                </div>
+                            </div>
+                            <div class="info-card">
+                                <div class="label"><i class="fa-solid fa-graduation-cap"></i> Education</div>
+                                <div class="value">
+                                    <%= staff.education || "N/A" %>
+                                </div>
+                            </div>
+
+                            <div class="info-card">
+                                <div class="label"><i class="fa-solid fa-graduation-cap"></i> Experience</div>
+                                <div class="value">
+                                    <%= staff.experience || "N/A" %>
+                                </div>
+                            </div>
+
+
+                            <% if (staff.category && staff.category.trim().toLowerCase()==="driver" ) { %>
+                                <div class="info-card">
+                                    <div class="label"><i class="fa-solid fa-bus"></i> Vehicle</div>
+                                    <div class="value">
+                                        <%= staff.vehicle || "N/A" %>
+                                    </div>
+                                </div>
+                                <div class="info-card">
+                                    <div class="label"><i class="fa-solid fa-hashtag"></i> Vehicle No</div>
+                                    <div class="value">
+                                        <%= staff.vehicleNo || "N/A" %>
+                                    </div>
+                                </div>
+                                <% } %>
+
+                                    <div class="info-card" style="grid-column: 1 / -1;">
+                                        <div class="label"><i class="fa-solid fa-location-dot"></i> Address</div>
+                                        <div class="value">
+                                            <%= staff.address %>
+                                        </div>
+                                    </div>
+                        </div>
+                    </div>
+
+                    <form id="profileForm" action="/edit-staff/<%= staff._id %>" method="post" class="edit-form"
+                        style="display:none;">
+                        <div class="section-title">Edit Staff Details</div>
+                        <div class="section-subtitle">Update information and save changes</div>
+                        <div class="form-grid">
+                            <div class="form-group"><label>Full Name</label><input type="text" name="name"
+                                    value="<%= staff.name %>" required></div>
+                            <div class="form-group"><label>Mobile Number</label><input type="text" name="phone"
+                                    value="<%= staff.phone %>" required></div>
+                            <div class="form-group"><label>Salary</label><input type="number" name="salary"
+                                    value="<%= staff.salary %>" required></div>
+                            <div class="form-group"><label>Education</label><input type="text" name="education"
+                                    value="<%= staff.education || '' %>"></div>
+                            <div class="form-group"><label>Experience</label><input type="text" name="experience"
+                                    value="<%= staff.experience || '' %>"></div>
+                            <div class="form-group"><label>Joining Date</label><input type="date" name="joiningDate"
+                                    value="<%= staff.joiningDate ? new Date(staff.joiningDate).toISOString().split('T')[0] : '' %>">
+                            </div>
+                            <div class="form-group">
+                                <label>Category</label>
+                                <select name="category" required>
+                                    <option value="Accountant" <%=staff.category==="Accountant" ? "selected" :"" %>
+                                        >Accountant</option>
+                                    <option value="Receptionist" <%=staff.category==="Receptionist" ? "selected" :"" %>
+                                        >Receptionist</option>
+                                    <option value="Driver" <%=staff.category==="Driver" ? "selected" :"" %>>Driver
+                                    </option>
+                                    <option value="Cleaner" <%=staff.category==="Cleaner" ? "selected" :"" %>>Cleaner
+                                    </option>
+                                    <option value="Watchman" <%=staff.category==="Watchman" ? "selected" :"" %>>Watchman
+                                    </option>
+                                    <option value="Peon" <%=staff.category==="Peon" ? "selected" :"" %>>Peon</option>
+                                    <option value="Other" <%=staff.category==="Other" ? "selected" :"" %>>Others
+                                    </option>
+                                </select>
+                            </div>
+                            <% if (staff.category && staff.category.trim().toLowerCase()==="driver" ) { %>
+                                <div class="form-group">
+                                    <label>Vehicle</label>
+                                    <input type="text" name="vehicle" value="<%= staff.vehicle || '' %>">
+                                </div>
+                                <div class="form-group">
+                                    <label>Vehicle No</label>
+                                    <input type="text" name="vehicleNo" value="<%= staff.vehicleNo || '' %>">
+                                </div>
+                                <% } %>
+
+                                    <div class="form-group"><label>Address</label><input type="text" name="address"
+                                            value="<%= staff.address %>" required></div>
+                        </div>
+                    </form>
+
+                    <div class="row-actions">
+                        <button class="btn secondary" id="cancelBtn" type="button" style="display:none;"><i
+                                class="fa-solid fa-xmark"></i> Cancel</button>
+                        <button class="btn edit" id="editBtn" type="button"><i class="fa-solid fa-pen-to-square"></i>
+                            Edit</button>
+                        <button class="btn edit" id="saveBtn" type="button" style="display:none;"><i
+                                class="fa-solid fa-floppy-disk"></i> Save Changes</button>
+                    </div>
+                </div>
+            </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const preview = document.getElementById('previewImg');
+        const chooseBtn = document.getElementById('chooseBtn');
+        const cameraBtn = document.getElementById('cameraBtn');
+        const cropModal = document.getElementById('cropModal');
+        const cropImage = document.getElementById('cropImage');
+        const croppedHidden = document.getElementById("croppedImageInput");
+
+        const editForm = document.getElementById('profileForm');
+        const detailForm = document.getElementById('detailForm');
+        const editBtn = document.getElementById('editBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        let cropper;
+
+        // Image Upload Logic
+        chooseBtn.onclick = () => { fileInput.removeAttribute('capture'); fileInput.click(); };
+        cameraBtn.onclick = () => { fileInput.setAttribute('capture', 'environment'); fileInput.click(); };
+
+        fileInput.onchange = (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            cropImage.src = URL.createObjectURL(file);
+            cropModal.style.display = "flex";
+            if (cropper) cropper.destroy();
+            cropper = new Cropper(cropImage, { aspectRatio: 1, viewMode: 2 });
+        };
+
+        document.getElementById('cropCancel').onclick = () => { cropModal.style.display = "none"; if (cropper) cropper.destroy(); };
+
+        document.getElementById('cropSave').onclick = () => {
+            const base64 = cropper.getCroppedCanvas({ width: 600, height: 600 }).toDataURL("image/jpeg");
+            preview.src = base64;
+            croppedHidden.value = base64;
+            cropModal.style.display = "none";
+            cropper.destroy();
+            // Auto-submit image form if only image is changed
+            document.getElementById('imageForm').submit();
+        };
+
+        // Toggle Edit Mode
+        editBtn.onclick = () => {
+            editForm.style.display = 'block';
+            detailForm.style.display = 'none';
+            editBtn.style.display = 'none';
+            saveBtn.style.display = 'inline-flex';
+            cancelBtn.style.display = 'inline-flex';
+        };
+
+        cancelBtn.onclick = () => {
+            editForm.style.display = 'none';
+            detailForm.style.display = 'block';
+            editBtn.style.display = 'inline-flex';
+            saveBtn.style.display = 'none';
+            cancelBtn.style.display = 'none';
+        };
+
+        saveBtn.onclick = () => {
+            editForm.submit();
+        };
+    </script>
+</body>
+
+</html>

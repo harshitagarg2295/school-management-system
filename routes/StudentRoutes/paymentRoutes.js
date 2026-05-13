@@ -3,7 +3,7 @@ const router = express.Router();
 const Razorpay = require("razorpay"); // for payment integration
 const Student = require("../../models/StudentSchema");
 const AdminNotificationSchema = require("../../models/AdminNotificationSchema");
-const {studentAuth, adminAuth} =  require("../../middlewares/auth");
+const { studentAuth, adminAuth } = require("../../middlewares/auth");
 
 const razorpay = new Razorpay({
   key_id: "rzp_test_RSEpP4AhOamoYZ",
@@ -11,7 +11,8 @@ const razorpay = new Razorpay({
 });
 
 // ✅ Create Order Route
-router.post("/create-order",studentAuth, async (req, res) => {
+router.post("/create-order", studentAuth, async (req, res) => {
+  const schoolCode = req.session.schoolCode;
   const { amount } = req.body;
 
   try {
@@ -34,11 +35,14 @@ router.post("/create-order",studentAuth, async (req, res) => {
 });
 
 // ✅ Payment Success Route
-router.get("/payment-success", studentAuth,async (req, res) => {
+router.get("/payment-success", studentAuth, async (req, res) => {
+  const schoolCode = req.session.schoolCode;
   try {
     const studentId = req.session.studentId.id;
-    const student = await Student.findById(studentId);
-
+    const student = await Student.findOne({
+      _id: studentId,
+      schoolCode
+    });
     const { payment_id, amount, installments } = req.query;
     const parsedInstallments = JSON.parse(decodeURIComponent(installments));
 
@@ -54,16 +58,16 @@ router.get("/payment-success", studentAuth,async (req, res) => {
 
     await student.save();
 
-    let admin = await AdminNotificationSchema.findOne();
+    let admin = await AdminNotificationSchema.findOne({ schoolCode });
 
     if (!admin) {
       // DB me admin document nahi hai, create kar do
-      admin = new AdminNotificationSchema({ notifications: [] });
+      admin = new AdminNotificationSchema({ notifications: [], schoolCode });
     }
 
     // Notification add karo
     admin.notifications.unshift({
-      message: `${student.name} (${student.id}) ne ${parsedInstallments.map(i => i.installment).join(", ")} installment ka payment kiya. Total ₹${amount} pay kiya.`
+      message: `Payment Received: ₹${amount} from ${student.name} class ${student.class}${student.section} (${student.id}) for installments: ${parsedInstallments.map(i => i.installment).join(", ")}.`
     });
 
     // Save karo
@@ -76,7 +80,7 @@ router.get("/payment-success", studentAuth,async (req, res) => {
       orderId: payment_id,
       student,
       installments: parsedInstallments,
-      admin
+      admin,
     });
 
   } catch (err) {
@@ -86,16 +90,17 @@ router.get("/payment-success", studentAuth,async (req, res) => {
 });
 
 // ✅ Failure Route
-router.get("/payment-failure", studentAuth,(req, res) => {
+router.get("/payment-failure", studentAuth, (req, res) => {
   res.render("Students/paymentStatus", { success: false });
 });
 
 
 // This mark all notifications as read
 
-router.post("/mark-notifications-read",adminAuth, async (req, res) => {
+router.post("/mark-notifications-read", adminAuth, async (req, res) => {
+  const schoolCode = req.session.schoolCode;
   try {
-    const admin = await AdminNotificationSchema.findOne();
+    const admin = await AdminNotificationSchema.findOne({ schoolCode });
     if (admin) {
       admin.notifications.forEach(n => n.read = true);
       await admin.save();
@@ -104,6 +109,20 @@ router.post("/mark-notifications-read",adminAuth, async (req, res) => {
   } catch (err) {
     console.error("Error marking notifications as read:", err);
     res.status(500).send("Server error");
+  }
+});
+
+// Sare notifications delete karne ke liye
+router.post("/clear-all-notifications", adminAuth, async (req, res) => {
+  const schoolCode = req.session.schoolCode;
+  try {
+    await AdminNotificationSchema.findOneAndUpdate(
+      { schoolCode },
+      { $set: { notifications: [] } } // Array ko khali kar do
+    );
+    res.status(200).send("Cleared");
+  } catch (err) {
+    res.status(500).send("Error");
   }
 });
 

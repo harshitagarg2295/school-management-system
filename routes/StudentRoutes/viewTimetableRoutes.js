@@ -3,10 +3,11 @@ const express = require("express");
 const router = express.Router();
 const moment = require('moment')
 const Timetable = require("../../models/Timetable"); // Your DB model
-const {studentAuth} =  require("../../middlewares/auth");
+const { studentAuth } = require("../../middlewares/auth");
 
 // Monthly Test
-router.get("/students/view-monthly-test/timetable", studentAuth,async (req, res) => {
+router.get("/students/view-monthly-test/timetable", studentAuth, async (req, res) => {
+    const schoolCode = req.session.schoolCode;
     const studentClass = req.session.studentId.class; // ✅ student's class from session
     const period = req.query.period || null;
 
@@ -17,7 +18,8 @@ router.get("/students/view-monthly-test/timetable", studentAuth,async (req, res)
         savedTimetable = await Timetable.findOne({
             class: studentClass,
             type: "monthly",
-            period
+            period,
+            schoolCode
         });
         subjects = savedTimetable ? savedTimetable.subjects.map(s => s.name) : [];
     }
@@ -32,7 +34,8 @@ router.get("/students/view-monthly-test/timetable", studentAuth,async (req, res)
 });
 
 // Exams
-router.get("/students/view-exams/timetable",studentAuth, async (req, res) => {
+router.get("/students/view-exams/timetable", studentAuth, async (req, res) => {
+    const schoolCode = req.session.schoolCode;
     const studentClass = req.session.studentId.class;;
     const period = req.query.period || null;
 
@@ -43,7 +46,8 @@ router.get("/students/view-exams/timetable",studentAuth, async (req, res) => {
         savedTimetable = await Timetable.findOne({
             class: studentClass,
             type: "exams",
-            period
+            period,
+            schoolCode
         });
         subjects = savedTimetable ? savedTimetable.subjects.map(s => s.name) : [];
     }

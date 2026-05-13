@@ -5,19 +5,23 @@ const router = express.Router();
 const Teacher = require("../../models/TeacherSchema");
 const Attendance = require("../../models/TeacherAttendance");
 const Holiday = require("../../models/Holiday");
-const {teacherAuth} =  require("../../middlewares/auth");
+const { teacherAuth } = require("../../middlewares/auth");
 
 // Teacher Attendance View
-router.get("/teachers/view-own-attendance",teacherAuth, async (req, res) => {
+router.get("/teachers/view-own-attendance", teacherAuth, async (req, res) => {
+  const schoolCode = req.session.schoolCode;
 
   // मान लो req.session.teacherId से teacher logged in है
   const teacherId = req.session.teacherId;
   if (!teacherId) {
-    return res.redirect("/teacher.html");
+    return res.redirect("/login");
   }
 
   // teacher fetch
-  const teacher = await Teacher.findById(teacherId);
+  const teacher = await Teacher.findOne({
+    _id: teacherId,
+    schoolCode
+  });
 
   // Month aur Year params
   let month = parseInt(req.query.month) || moment().month() + 1; // 1-based
@@ -36,6 +40,7 @@ router.get("/teachers/view-own-attendance",teacherAuth, async (req, res) => {
 
   const attendanceDocs = await Attendance.find({
     teacherId: teacherId,
+    schoolCode,
     date: { $gte: startDate, $lte: endDate }
   });
 
@@ -62,6 +67,7 @@ router.get("/teachers/view-own-attendance",teacherAuth, async (req, res) => {
   // Holidays fetch
   const holidayDocs = await Holiday.find({
     role: "teacher",
+    schoolCode,
     date: {
       $gte: moment(`${year}-${month}-01`, "YYYY-MM-DD").startOf("day").toDate(),
       $lte: moment(`${year}-${month}-${daysInMonth}`, "YYYY-MM-DD").endOf("day").toDate()

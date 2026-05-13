@@ -19,14 +19,26 @@
             background: #2c3e50;
             min-height: 100vh;
             max-height: auto;
+            position: sticky;
             top: 0;
             left: 0;
+            height: 100vh;
             padding: 20px;
+            overflow-y: auto;
             color: white;
             font-family: Arial, sans-serif;
             transition: transform 0.3s ease-in-out;
             z-index: 1000;
             flex-shrink: 0;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #34495e;
+            border-radius: 10px;
         }
 
         /* Hamburger Menu Icon */
@@ -208,9 +220,14 @@
                     <li><a href="/teachers/view-material"><span>📂</span> View</a></li>
                 </ul>
             </li>
-            
+
             <li><a href="/calen-menu?role=teacher"><i class="fa-solid fa-calendar"></i>Calendar</a></li>
 
+            <li>
+                <a href="/teachers/profile">
+                    <i class="fa-solid fa-circle-user"></i> Profile
+                </a>
+            </li>
             <li><a href="/setting"> <i class="fa-solid fa-gear"></i>Settings</a></li>
         </ul>
     </div>

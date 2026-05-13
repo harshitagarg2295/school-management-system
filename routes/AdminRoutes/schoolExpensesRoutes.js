@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Expense = require('../../models/Expense');
 const AdminNotification = require("../../models/AdminNotificationSchema");
-const { adminAuth } =  require("../../middlewares/auth");
+const { adminAuth } = require("../../middlewares/auth");
 
 
 // helper: current FY start year (Apr–Mar)
@@ -18,6 +18,7 @@ function toTitleCase(str = "") {
 }
 
 router.get("/school_expenses", adminAuth, async (req, res) => {
+    const schoolCode = req.session.schoolCode;
 
     // ===== Table/list filters =====
     const search = req.query.search?.toLowerCase() || "";
@@ -28,7 +29,7 @@ router.get("/school_expenses", adminAuth, async (req, res) => {
     const selectedYear = parseInt(req.query.year) || currentFYStartYear(); // FY start year
     const pieMonth = (req.query.pieMonth ?? "current-year").toString();    // "current-year" | "0".."11" (FY index)
 
-    const allExpenses = await Expense.find().sort({ paymentDate: -1 });
+    const allExpenses = await Expense.find({ schoolCode }).sort({ paymentDate: -1 });
 
     // ---------- Table rows filtering ----------
     const filteredExpenses = allExpenses.filter(exp => {
@@ -116,7 +117,7 @@ router.get("/school_expenses", adminAuth, async (req, res) => {
     const pieCategoryData = CATEGORIES.map(c => categoryTotals[c] || 0);
 
 
-    const admin = await AdminNotification.findOne() || { notifications: [] };
+    const admin = await AdminNotification.findOne({ schoolCode }) || { notifications: [] };
 
     res.render("Admin/school_expenses", {
         // table
@@ -141,8 +142,8 @@ router.get("/school_expenses", adminAuth, async (req, res) => {
 
 
 // POST route to add new expense
-router.post("/add-expense",adminAuth, async (req, res) => {
-
+router.post("/add-expense", adminAuth, async (req, res) => {
+    const schoolCode = req.session.schoolCode;
     const { category, title, quantity, amount, paymentDate } = req.body;
 
     const pyDate = new Date(paymentDate);  // 👈 string to Date object
@@ -152,7 +153,8 @@ router.post("/add-expense",adminAuth, async (req, res) => {
         title: toTitleCase(title),
         quantity: toTitleCase(quantity),
         amount,
-        paymentDate: pyDate
+        paymentDate: pyDate,
+        schoolCode
     });
 
     await expense.save();
@@ -160,26 +162,32 @@ router.post("/add-expense",adminAuth, async (req, res) => {
 });
 
 // Route for Edit particular expense
-router.post("/edit-expense/:id", adminAuth,async (req, res) => {
-
+router.post("/edit-expense/:id", adminAuth, async (req, res) => {
+    const schoolCode = req.session.schoolCode;
     const { category, title, quantity, amount, paymentDate } = req.body;
 
     const pyDate = new Date(paymentDate);  // 👈 string to Date object
 
-    await Expense.findByIdAndUpdate(req.params.id, {
-        category: toTitleCase(category),
-        title: toTitleCase(title),
-        quantity: toTitleCase(quantity),
-        amount,
-        paymentDate: pyDate
-    });
-
+    await Expense.findOneAndUpdate(
+        { _id: req.params.id, schoolCode },  
+        {
+            category: toTitleCase(category),
+            title: toTitleCase(title),
+            quantity: toTitleCase(quantity),
+            amount,
+            paymentDate: pyDate
+        }
+    );
     res.redirect("/school_expenses");
 });
 
 // Route for delete particular expense
-router.post("/delete-expense/:id", adminAuth,async (req, res) => {
-    await Expense.findByIdAndDelete(req.params.id);
+router.post("/delete-expense/:id", adminAuth, async (req, res) => {
+    const schoolCode = req.session.schoolCode;
+    await Expense.findOneAndDelete({
+        _id: req.params.id,
+        schoolCode   
+    });
     res.redirect("/school_expenses");
 })
 

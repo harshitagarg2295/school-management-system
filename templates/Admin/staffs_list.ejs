@@ -396,13 +396,13 @@
                                     <input type="text" name="empId" placeholder="Id" required
                                         style="text-transform: capitalize;">
                                     <select class=".staff-category" name="category">
-                                        <option value="accountant">Accountant</option>
-                                        <option value="receptionist">Receptionist</option>
-                                        <option value="driver">Driver</option>
-                                        <option value="cleaner">Cleaner</option>
-                                        <option value="watchman">Watchman</option>
-                                        <option value="peon">Peon</option>
-                                        <option value="other">Others</option>
+                                        <option value="Accountant">Accountant</option>
+                                        <option value="Receptionist">Receptionist</option>
+                                        <option value="Driver">Driver</option>
+                                        <option value="Cleaner">Cleaner</option>
+                                        <option value="Watchman">Watchman</option>
+                                        <option value="Peon">Peon</option>
+                                        <option value="Other">Others</option>
                                     </select>
                                     <input type="text" name="salary" placeholder="Salary" required>
                                     <input type="text" name="address" placeholder="Address" required
@@ -424,8 +424,11 @@
                                             <div class="id">
                                                 <%= index + 1 %>
                                             </div>
-                                            <div class="name">
-                                                <%= staff.name %>
+                                          <div class="name">
+                                                <a href="/staff/<%= staff._id %>"
+                                                    style="text-decoration:none; color:inherit;">
+                                                    <%= staff.name %>
+                                                </a>
                                             </div>
                                             <div class="id">
                                                 <%= staff.empId %>
@@ -478,22 +481,22 @@
                                             <input type="text" name="empId" value="<%= staff.empId %>" required
                                                 style="text-transform: capitalize;">
                                             <select name="category" required>
-                                                <option value="accountant" <%=staff.category==="Accountant" ? "selected"
+                                                <option value="Accountant" <%=staff.category==="Accountant" ? "selected"
                                                     : "" %>
                                                     >Accountant</option>
-                                                <option value="receptionist" <%=staff.category==="Receptionist"
+                                                <option value="Receptionist" <%=staff.category==="Receptionist"
                                                     ? "selected" : "" %>>Receptionist</option>
-                                                <option value="driver" <%=staff.category==="Driver" ? "selected" : "" %>
+                                                <option value="Driver" <%=staff.category==="Driver" ? "selected" : "" %>
                                                     >Driver</option>
-                                                <option value=cleaner" <%=staff.category==="Cleaner" ? "selected" : ""
+                                                <option value="Cleaner" <%=staff.category==="Cleaner" ? "selected" : ""
                                                     %>
                                                     >Cleaner</option>
-                                                <option value="watchman" <%=staff.category==="Watchman" ? "selected"
+                                                <option value="Watchman" <%=staff.category==="Watchman" ? "selected"
                                                     : "" %>
                                                     >Watchman</option>
-                                                <option value="peon" <%=staff.category==="Peon" ? "selected" : "" %>
+                                                <option value="Peon" <%=staff.category==="Peon" ? "selected" : "" %>
                                                     >Peon</option>
-                                                <option value="others" <%=staff.category==="Other" ? "selected" : "" %>
+                                                <option value="Other" <%=staff.category==="Other" ? "selected" : "" %>
                                                     >Others
                                                 </option>
                                             </select>

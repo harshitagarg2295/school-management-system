@@ -4,18 +4,24 @@ const moment = require('moment')
 const Student = require("../../models/StudentSchema");
 const Timetable = require("../../models/Timetable");
 const { getSubjectsForClass } = require("../../routes/TeacherRoutes/submitResultRoutes");
-const { adminAuth } =  require("../../middlewares/auth");
+const { adminAuth } = require("../../middlewares/auth");
 
 // --- 1. Common GET Route for Timetable View (Filter Logic and Data Loading) ---
-router.get("/get-timetable-view/:type/:className/:period",adminAuth, async (req, res) => {
+router.get("/get-timetable-view/:type/:className/:period", adminAuth, async (req, res) => {
+    const schoolCode = req.session.schoolCode;
     const { type, className, period } = req.params;
 
-    const classList = await Student.distinct("class");
+    const classList = await Student.distinct("class", { schoolCode });
 
     // Fetch saved timetable first
     let savedTimetable = null;
     if (className !== 'null' && period !== 'null') {
-        savedTimetable = await Timetable.findOne({ class: className, type, period });
+        savedTimetable = await Timetable.findOne({
+            class: className,
+            type,
+            period,
+            schoolCode   // 🔥 add
+        });
     }
 
     // Prepare subjects list
@@ -45,19 +51,21 @@ router.get("/get-timetable-view/:type/:className/:period",adminAuth, async (req,
 
 // --- 2. Existing Initial GET Routes Update (No Default Class) ---
 
-router.get("/add-timetable/monthly-test", adminAuth,async (req, res) => {
-
+router.get("/add-timetable/monthly-test", adminAuth, async (req, res) => {
+    const schoolCode = req.session.schoolCode;
     return res.redirect(`/get-timetable-view/monthly/null/null`);
 });
 
-router.get("/add-timetable/exams",adminAuth, async (req, res) => {
+router.get("/add-timetable/exams", adminAuth, async (req, res) => {
+    const schoolCode = req.session.schoolCode;
     return res.redirect(`/get-timetable-view/exams/null/null`);
 });
 
 
 // --- 3. POST Route (Save Timetable) Update ---
 
-router.post("/save-timetable",adminAuth, async (req, res) => {
+router.post("/save-timetable", adminAuth, async (req, res) => {
+    const schoolCode = req.session.schoolCode;
     const { className, type, period } = req.body;
 
     // Frontend validation hone ke karan, yahan className aur period available honge.
@@ -78,8 +86,8 @@ router.post("/save-timetable",adminAuth, async (req, res) => {
     try {
         // Find and Update, agar already exist karta hai
         await Timetable.findOneAndUpdate(
-            { class: className, type, period },
-            { $set: { subjects: subjectsData } },
+            { class: className, type, period, schoolCode }, // 🔥
+            { $set: { subjects: subjectsData, schoolCode } },
             { upsert: true, new: true }
         );
 

@@ -7,7 +7,9 @@ const Staff = require('../../models/StaffSchema')
 const Expense = require('../../models/Expense');
 const Fund = require("../../models/FundSchema");
 const AdminNotification = require("../../models/AdminNotificationSchema");
-const { adminAuth } =  require("../../middlewares/auth");
+const { adminAuth } = require("../../middlewares/auth");
+const School = require("../../models/AllSchools")
+
 
 // Helper: Available FY years
 async function getAvailableYears() {
@@ -27,9 +29,25 @@ function getFYRange(selectedYear) {
 }
 
 router.get("/adminDashboard", adminAuth, async (req, res) => {
-    const totalStudents = await Student.countDocuments();
-    const totalTeachers = await Teacher.countDocuments();
-    const totalStaff = await Staff.countDocuments();
+
+    const schoolCode = req.session.schoolCode;
+
+    // Check that subscription days has left for school or not
+    const schoolInfo = await School.findOne({ code: schoolCode });
+
+    // 🔥 Calculate Remaining Days
+    const today = new Date();
+    const expiry = new Date(schoolInfo.subscriptionEnd);
+    const diffTime = expiry - today;
+    const daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    let subStatus = "active";
+    if (daysRemaining <= 0) subStatus = "expired";
+    else if (daysRemaining <= 7) subStatus = "warning";
+
+    const totalStudents = await Student.countDocuments({ schoolCode });
+    const totalTeachers = await Teacher.countDocuments({ schoolCode });
+    const totalStaff = await Staff.countDocuments({ schoolCode });
     const totalAwards = 15;
 
     // FY selection
@@ -50,7 +68,7 @@ router.get("/adminDashboard", adminAuth, async (req, res) => {
     const monthlyExpenseData = new Array(12).fill(0);
 
     // Income
-    const allFees = await Student.find({}, { feeStatus: 1 });
+    const allFees = await Student.find({ schoolCode }, { feeStatus: 1 });
     allFees.forEach(student => {
         if (Array.isArray(student.feeStatus)) {
             student.feeStatus.forEach(fee => {
@@ -66,7 +84,7 @@ router.get("/adminDashboard", adminAuth, async (req, res) => {
     });
 
     // Expenses
-    const allExpenses = await Expense.find({ paymentDate: { $gte: start, $lte: end } });
+    const allExpenses = await Expense.find({ schoolCode, paymentDate: { $gte: start, $lte: end } });
     allExpenses.forEach(exp => {
         const d = new Date(exp.paymentDate);
         const index = d.getMonth() >= 3 ? d.getMonth() - 3 : d.getMonth() + 9;
@@ -96,6 +114,7 @@ router.get("/adminDashboard", adminAuth, async (req, res) => {
     let feesIncome = 0;
 
     const students = await Student.find({
+        schoolCode,
         "feeStatus.paymentDate": { $gte: start, $lte: end }
     });
 
@@ -127,6 +146,7 @@ router.get("/adminDashboard", adminAuth, async (req, res) => {
 
         // Pehle check karo kya is FY ke andar fund record already exist karta hai
         let fundDoc = await Fund.findOne({
+            schoolCode,
             key: "fund",
             date: { $gte: start, $lte: end }
         });
@@ -149,6 +169,7 @@ router.get("/adminDashboard", adminAuth, async (req, res) => {
     } else {
         // Agar query me fund nahi diya gaya, to us FY ka latest record uthao
         const fundDoc = await Fund.findOne({
+            schoolCode,
             key: "fund",
             date: { $gte: start, $lte: end }
         }).sort({ date: -1 });
@@ -170,7 +191,7 @@ router.get("/adminDashboard", adminAuth, async (req, res) => {
     const noData = !(hasIncome || hasExpense || hasRevenue); //flag for fund input
 
 
-    const admin = await AdminNotification.findOne() || { notifications: [] };
+    const admin = await AdminNotification.findOne({ schoolCode }) || { notifications: [] };
     // ---------- Render ----------
     res.render("Admin/adminDashboard", {
         totalStudents,
@@ -185,7 +206,11 @@ router.get("/adminDashboard", adminAuth, async (req, res) => {
         revenueData,
         fundValue,
         noData,
-        admin
+        admin,
+        schoolCode,
+        daysRemaining,
+        subStatus,
+        expiryDate: schoolInfo.subscriptionEnd.toLocaleDateString()
     })
 })
 

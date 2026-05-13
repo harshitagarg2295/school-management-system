@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Teacher Profile</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card-bg: #ffffff;
+      --primary: #4f7cff;
+      --primary-dark: #315fdb;
+      --accent: #eaf1ff;
+      --muted: #6b7280;
+      --text: #1f2937;
+      --border: #e5e7eb;
+      --shadow: rgba(17, 24, 39, 0.08);
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --radius-sm: 10px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .admin_dash {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .profile-card {
+      font-family: "Segoe UI", Arial, sans-serif;
+      width: 100%;
+      max-width: 1180px;
+      margin: 10px auto;
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 12px 30px var(--shadow);
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      min-height: 680px;
+    }
+
+    .profile-section {
+      padding: 34px 28px;
+      background: linear-gradient(180deg, #f8fbff, #eef5ff);
+      border-right: 1px solid #edf2f7;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 18px;
+    }
+
+    .image {
+      width: 190px;
+      height: 190px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: #fff;
+      border: 5px solid #dbe7ff;
+      box-shadow: 0 10px 24px rgba(79, 124, 255, 0.16);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 8px;
+    }
+
+    .image img.preview {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      border-radius: 50%;
+    }
+
+    .image input[type="file"] {
+      display: none;
+    }
+
+    .teacher-basic {
+      text-align: center;
+      margin-top: 6px;
+    }
+
+    .teacher-basic h2 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #172033;
+      margin-bottom: 6px;
+    }
+
+    .teacher-basic p {
+      color: var(--muted);
+      font-size: 15px;
+      margin-bottom: 4px;
+    }
+
+    .teacher-badge {
+      display: inline-block;
+      margin-top: 8px;
+      background: #ffffff;
+      color: var(--primary-dark);
+      border: 1px solid #d7e4ff;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .upload-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      margin-top: 8px;
+    }
+
+    .upload-actions button {
+      border: none;
+      border-radius: 10px;
+      padding: 11px 16px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: 0.2s ease;
+    }
+
+    .upload-actions #chooseBtn {
+      background: #ffffff;
+      color: #24313a;
+      border: 1px solid #dbe3f0;
+      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.04);
+    }
+
+    .upload-actions #chooseBtn:hover {
+      transform: translateY(-2px);
+    }
+
+    .upload-actions #cameraBtn {
+      background: linear-gradient(90deg, var(--primary), #6ea2ff);
+      color: white;
+      box-shadow: 0 8px 18px rgba(79, 124, 255, 0.20);
+    }
+
+    .upload-actions #cameraBtn:hover {
+      transform: translateY(-2px);
+    }
+
+    .left-meta {
+      width: 100%;
+      margin-top: 8px;
+      background: rgba(255, 255, 255, 0.75);
+      border: 1px solid #e3ebfa;
+      border-radius: 14px;
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .left-meta .meta-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 14px;
+    }
+
+    .left-meta .meta-item span:first-child {
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .left-meta .meta-item span:last-child {
+      color: #1f2937;
+      font-weight: 600;
+      text-align: right;
+      word-break: break-word;
+    }
+
+    .details {
+      padding: 34px 36px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .details-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .details-header h1 {
+      font-size: 30px;
+      color: #172033;
+      margin-bottom: 6px;
+    }
+
+    .details-header .subtitle {
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1f2d36;
+      margin-bottom: 2px;
+    }
+
+    .section-subtitle {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .readonly {
+      background: linear-gradient(180deg, #fcfdff, #f7faff);
+      border: 1px solid #e8eef8;
+      border-radius: 16px;
+      padding: 22px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    .info-card {
+      background: white;
+      border: 1px solid #ebf0f7;
+      border-radius: 14px;
+      padding: 14px 16px;
+      min-height: 78px;
+      box-shadow: 0 4px 10px rgba(17, 24, 39, 0.03);
+    }
+
+    .info-card .label {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .info-card .value {
+      color: #1f2937;
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+
+    .edit-form {
+      display: none;
+      background: linear-gradient(180deg, #fcfdff, #f7faff);
+      border: 1px solid #e8eef8;
+      border-radius: 16px;
+      padding: 22px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(240px, 1fr));
+      gap: 18px 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-group label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #4b5563;
+    }
+
+    .edit-form input,
+    .edit-form select {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid #ccd7ea;
+      background: #ffffff;
+      font-size: 15px;
+      color: #1f2937;
+      outline: none;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+    }
+
+    .edit-form input:focus,
+    .edit-form select:focus {
+      border-color: #7ea5ff;
+      box-shadow: 0 0 0 4px rgba(79, 124, 255, 0.10);
+    }
+
+    .row-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 12px;
+      padding: 11px 18px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: 0.2s ease;
+    }
+
+    .btn.edit {
+      background: linear-gradient(90deg, var(--primary), #6ea2ff);
+      color: white;
+      box-shadow: 0 8px 18px rgba(79, 124, 255, 0.18);
+    }
+
+    .btn.edit:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn.secondary {
+      background: #ffffff;
+      color: #1f2937;
+      border: 1px solid #d5dfef;
+    }
+
+    #cropModal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.84);
+      backdrop-filter: blur(6px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 99999;
+    }
+
+    .crop-container {
+      width: 90%;
+      max-width: 380px;
+      height: 90%;
+      background: #111;
+      border-radius: 20px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .crop-header {
+      text-align: center;
+      padding: 16px;
+      color: white;
+      font-size: 18px;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .crop-body {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #000;
+      overflow: auto;
+    }
+
+    #cropImage {
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    .crop-footer {
+      padding: 16px;
+      display: flex;
+      gap: 12px;
+      position: sticky;
+      bottom: 0;
+      background: #111;
+    }
+
+    .crop-btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .crop-btn:first-child {
+      background: #27272a;
+      color: white;
+    }
+
+    .crop-btn.save-btn {
+      background: var(--primary);
+      color: white;
+    }
+
+    @media (max-width: 1100px) {
+      .profile-card {
+        grid-template-columns: 1fr;
+      }
+
+      .profile-section {
+        border-right: none;
+        border-bottom: 1px solid #edf2f7;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .admin_dash {
+        padding: 12px;
+      }
+
+      .profile-card {
+        margin: 0 auto;
+      }
+
+      .details {
+        padding: 22px 18px;
+      }
+
+      .info-grid,
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .details-header h1 {
+        font-size: 26px;
+      }
+
+      .image {
+        width: 160px;
+        height: 160px;
+      }
+
+      .upload-actions {
+        flex-direction: column;
+        width: 100%;
+      }
+
+      .upload-actions button {
+        justify-content: center;
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .profile-section {
+        padding: 22px 16px;
+      }
+
+      .details {
+        padding: 18px 14px;
+      }
+
+      .readonly,
+      .edit-form {
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="admin_dash">
+
+    <%- include("partials/AdminPageSidebar") %>
+
+      <div class="profile-card">
+
+        <!-- IMAGE SECTION -->
+        <form id="imageForm" method="post" action="/teacher/upload-image/<%= teacher._id %>" class="profile-section">
+
+          <input type="hidden" id="croppedImageInput" name="croppedImage">
+
+          <div class="image" aria-label="profile-picture">
+            <img id="previewImg" class="preview"
+              src="<%= teacher.photo ? '/uploads/teachers/' + teacher.photo : '/images/default-profile.png' %>">
+
+            <input id="fileInput" type="file" accept="image/*" capture="environment" style="display:none;">
+          </div>
+
+          <div class="teacher-basic">
+            <h2>
+              <%= teacher.name %>
+            </h2>
+            <p>
+              <%= teacher.subject || "Subject Not Added" %>
+            </p>
+            <span class="teacher-badge">Teacher ID: <%= teacher.empId || "N/A" %></span>
+          </div>
+
+          <div class="upload-actions" role="group" aria-label="upload actions">
+            <button id="chooseBtn" type="button" title="Upload from device">
+              <i class="fa-regular fa-image"></i> Upload Image
+            </button>
+
+            <button id="cameraBtn" class="primary" type="button" title="Open camera (mobile)">
+              <i class="fa-solid fa-camera"></i> Camera
+            </button>
+          </div>
+
+          <div class="left-meta">
+            <div class="meta-item">
+              <span>Phone</span>
+              <span>
+                <%= teacher.phone || "N/A" %>
+              </span>
+            </div>
+            <div class="meta-item">
+              <span>Class(es)</span>
+              <span>
+                <%= teacher.class || "N/A" %>
+              </span>
+            </div>
+            <div class="meta-item">
+              <span>Salary</span>
+              <span>₹<%= teacher.salary ? Number(teacher.salary).toLocaleString('en-IN') : "0" %></span>
+            </div>
+            <div class="meta-item">
+              <span>Class Teacher</span>
+              <span>
+                <%= teacher.classTeacher==="yes" ? "Yes" : "No" %>
+              </span>
+            </div>
+          </div>
+
+          <!-- CROPPER MODAL -->
+          <div id="cropModal">
+            <div class="crop-container">
+              <div class="crop-header">Adjust Photo</div>
+
+              <div class="crop-body">
+                <img id="cropImage">
+              </div>
+
+              <div class="crop-footer">
+                <button id="cropCancel" type="button" class="crop-btn">Cancel</button>
+                <button id="cropSave" type="button" class="crop-btn save-btn">Save</button>
+              </div>
+            </div>
+          </div>
+
+        </form>
+
+        <!-- DETAILS SECTION -->
+        <div class="details">
+
+          <div class="details-header">
+            <div>
+              <h1>Teacher Profile</h1>
+              <div class="subtitle">View and manage teacher details</div>
+            </div>
+          </div>
+
+          <!-- VIEW MODE -->
+          <div class="readonly" id="detailForm">
+            <div class="section-title">Profile Details</div>
+            <div class="section-subtitle">Complete information of this teacher</div>
+
+            <div class="info-grid">
+              <div class="info-card">
+                <div class="label"><i class="fa-solid fa-user"></i> Full Name</div>
+                <div class="value">
+                  <%= teacher.name || "N/A" %>
+                </div>
+              </div>
+
+              <div class="info-card">
+                <div class="label"><i class="fa-solid fa-book"></i> Subject</div>
+                <div class="value">
+                  <%= teacher.subject || "N/A" %>
+                </div>
+              </div>
+
+              <div class="info-card">
+                <div class="label"><i class="fa-solid fa-school"></i> Class(es)</div>
+                <div class="value">
+                  <%= teacher.class || "N/A" %>
+                </div>
+              </div>
+
+              <div class="info-card">
+                <div class="label"><i class="fa-solid fa-phone"></i> Mobile Number</div>
+                <div class="value">
+                  <%= teacher.phone || "N/A" %>
+                </div>
+              </div>
+
+              <div class="info-card">
+                <div class="label"><i class="fa-solid fa-location-dot"></i> Address</div>
+                <div class="value">
+                  <%= teacher.address || "N/A" %>
+                </div>
+              </div>
+
+              <div class="info-card">
+                <div class="label"><i class="fa-solid fa-money-bill-wave"></i> Salary</div>
+                <div class="value">₹<%= teacher.salary ? Number(teacher.salary).toLocaleString('en-IN') : "0" %>
+                </div>
+              </div>
+
+              <div class="info-card">
+                <div class="label"><i class="fa-solid fa-venus-mars"></i> Gender</div>
+                <div class="value">
+                  <%= teacher.gender || "N/A" %>
+                </div>
+              </div>
+
+              <div class="info-card">
+                <div class="label"><i class="fa-solid fa-cake-candles"></i> Date of Birth</div>
+                <div class="value">
+                  <%= teacher.dob ? new Date(teacher.dob).toLocaleDateString('en-GB') : "N/A" %>
+                </div>
+              </div>
+
+              <div class="info-card">
+                <div class="label"><i class="fa-solid fa-droplet"></i> Blood Group</div>
+                <div class="value">
+                  <%= teacher.bloodGroup || "N/A" %>
+                </div>
+              </div>
+
+              <div class="info-card">
+                <div class="label"><i class="fa-solid fa-calendar-check"></i> Joining Date</div>
+                <div class="value">
+                  <%= teacher.joiningDate ? new Date(teacher.joiningDate).toLocaleDateString('en-GB') : "N/A" %>
+                </div>
+              </div>
+
+              <div class="info-card">
+                <div class="label"><i class="fa-solid fa-graduation-cap"></i> Education</div>
+                <div class="value">
+                  <%= teacher.education || "N/A" %>
+                </div>
+              </div>
+
+              <div class="info-card">
+                <div class="label"><i class="fa-solid fa-briefcase"></i> Experience</div>
+                <div class="value">
+                  <%= teacher.experience || "N/A" %>
+                </div>
+              </div>
+
+              <div class="info-card">
+                <div class="label"><i class="fa-solid fa-chalkboard-user"></i> Class Teacher</div>
+                <div class="value">
+                  <%= teacher.classTeacher==="yes" ? "Yes" : "No" %>
+                </div>
+              </div>
+
+              <div class="info-card">
+                <div class="label"><i class="fa-solid fa-list-check"></i> Assigned Class</div>
+                <div class="value">
+                  <%= teacher.assignedClass || "N/A" %>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- EDIT MODE -->
+          <form id="profileForm" action="/edit-teacher/<%= teacher._id %>" method="post" class="edit-form">
+            <div class="section-title">Edit Teacher Details</div>
+            <div class="section-subtitle">Update profile information carefully</div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" name="name" value="<%= teacher.name || '' %>" required>
+              </div>
+
+              <div class="form-group">
+                <label>Employee ID</label>
+                <input type="text" name="empId" value="<%= teacher.empId || '' %>" required>
+              </div>
+
+              <div class="form-group">
+                <label>Subject</label>
+                <input type="text" name="subject" value="<%= teacher.subject || '' %>" required>
+              </div>
+
+              <div class="form-group">
+                <label>Class(es)</label>
+                <input type="text" name="class" value="<%= teacher.class || '' %>" required>
+              </div>
+
+              <div class="form-group">
+                <label>Phone Number</label>
+                <input type="text" name="phone" value="<%= teacher.phone || '' %>" required>
+              </div>
+
+              <div class="form-group">
+                <label>Salary</label>
+                <input type="number" name="salary" value="<%= teacher.salary || '' %>" required>
+              </div>
+
+              <div class="form-group" style="grid-column: 1 / -1;">
+                <label>Address</label>
+                <input type="text" name="address" value="<%= teacher.address || '' %>" required>
+              </div>
+
+              <div class="form-group">
+                <label>Gender</label>
+                <select name="gender">
+                  <option value="">Select Gender</option>
+                  <option value="male" <%=teacher.gender==='male' ? 'selected' : '' %>>Male</option>
+                  <option value="female" <%=teacher.gender==='female' ? 'selected' : '' %>>Female</option>
+                  <option value="other" <%=teacher.gender==='other' ? 'selected' : '' %>>Other</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Date of Birth</label>
+                <input type="date" name="dob"
+                  value="<%= teacher.dob ? new Date(teacher.dob).toISOString().split('T')[0] : '' %>">
+              </div>
+
+              <div class="form-group">
+                <label>Blood Group</label>
+                <input type="text" name="bloodGroup" value="<%= teacher.bloodGroup || '' %>">
+              </div>
+
+              <div class="form-group">
+                <label>Joining Date</label>
+                <input type="date" name="joiningDate"
+                  value="<%= teacher.joiningDate ? new Date(teacher.joiningDate).toISOString().split('T')[0] : '' %>">
+              </div>
+
+              <div class="form-group">
+                <label>Education</label>
+                <input type="text" name="education" value="<%= teacher.education || '' %>">
+              </div>
+
+              <div class="form-group">
+                <label>Experience</label>
+                <input type="text" name="experience" value="<%= teacher.experience || '' %>">
+              </div>
+
+              <div class="form-group">
+                <label>Class Teacher</label>
+                <select name="classTeacher" id="classTeacherSelect">
+                  <option value="no" <%=teacher.classTeacher==='no' ? 'selected' : '' %>>No</option>
+                  <option value="yes" <%=teacher.classTeacher==='yes' ? 'selected' : '' %>>Yes</option>
+                </select>
+              </div>
+
+              <div class="form-group" id="assignedClassGroup">
+                <label>Assigned Class</label>
+                <select name="assignedClass">
+                  <option value="">Select Class</option>
+
+                  <% if (classes && classes.length) { %>
+                    <% classes.forEach(c=> { %>
+                      <option value="<%= c %>" <%=teacher.assignedClass===c ? "selected" : "" %>>
+                        <%= c %>
+                      </option>
+                      <% }) %>
+                        <% } %>
+
+                </select>
+              </div>
+            </div>
+          </form>
+
+          <div class="row-actions">
+            <button class="btn edit" id="editBtn" type="button">
+              <i class="fa-solid fa-pen-to-square"></i> Edit
+            </button>
+
+            <button class="btn edit" id="saveBtn" type="button">
+              <i class="fa-solid fa-floppy-disk"></i> Save
+            </button>
+
+            <button class="btn secondary" id="cancelBtn" type="button" style="display:none;">
+              <i class="fa-solid fa-xmark"></i> Cancel
+            </button>
+          </div>
+
+        </div>
+      </div>
+  </div>
+
+  <script>
+    const fileInput = document.getElementById('fileInput');
+    const preview = document.getElementById('previewImg');
+    const chooseBtn = document.getElementById('chooseBtn');
+    const cameraBtn = document.getElementById('cameraBtn');
+
+    let cropper;
+    const cropModal = document.getElementById('cropModal');
+    const cropImage = document.getElementById('cropImage');
+
+    const croppedHidden = document.getElementById("croppedImageInput");
+
+    const editForm = document.getElementById('profileForm');
+    const detailForm = document.getElementById('detailForm');
+
+    const editBtn = document.getElementById('editBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+
+    const classTeacherSelect = document.getElementById("classTeacherSelect");
+    const assignedClassGroup = document.getElementById("assignedClassGroup");
+
+    function toggleAssignedClass() {
+      if (classTeacherSelect && assignedClassGroup) {
+        assignedClassGroup.style.display = classTeacherSelect.value === "yes" ? "flex" : "none";
+      }
+    }
+
+    if (classTeacherSelect) {
+      classTeacherSelect.addEventListener("change", toggleAssignedClass);
+      toggleAssignedClass();
+    }
+
+    chooseBtn.addEventListener('click', () => {
+      fileInput.removeAttribute('capture');
+      fileInput.click();
+    });
+
+    cameraBtn.addEventListener('click', () => {
+      fileInput.setAttribute('capture', 'environment');
+      fileInput.click();
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const imgUrl = URL.createObjectURL(file);
+      cropImage.src = imgUrl;
+      cropModal.style.display = "flex";
+
+      if (cropper) cropper.destroy();
+
+      cropper = new Cropper(cropImage, {
+        aspectRatio: 1,
+        viewMode: 2,
+        dragMode: 'move',
+        autoCropArea: 0.9,
+        movable: true,
+        zoomable: true,
+        scalable: true,
+        background: false,
+        guides: false,
+        cropBoxMovable: true,
+        cropBoxResizable: true,
+        minCropBoxWidth: 150,
+        minCropBoxHeight: 150,
+      });
+    });
+
+    cropCancel.addEventListener('click', () => {
+      cropModal.style.display = "none";
+      if (cropper) cropper.destroy();
+    });
+
+    cropSave.addEventListener('click', () => {
+      const canvas = cropper.getCroppedCanvas({
+        width: 600,
+        height: 600,
+      });
+
+      const base64 = canvas.toDataURL("image/jpeg");
+      preview.src = base64;
+      croppedHidden.value = base64;
+
+      cropModal.style.display = "none";
+      cropper.destroy();
+
+      // 🔥 THIS LINE ADD KAR
+      document.getElementById("imageForm").submit();
+    });
+
+    editBtn.addEventListener('click', () => {
+      editForm.style.display = 'block';
+      detailForm.style.display = 'none';
+      cancelBtn.style.display = 'inline-flex';
+    });
+
+    cancelBtn.addEventListener('click', () => {
+      editForm.style.display = 'none';
+      detailForm.style.display = 'block';
+      cancelBtn.style.display = 'none';
+    });
+
+    saveBtn.addEventListener('click', () => {
+      if (editForm.style.display === "block") {
+        document.getElementById('profileForm').submit();
+        return;
+      }
+
+      const hasNewImage = document.getElementById("croppedImageInput").value !== "";
+      if (hasNewImage) {
+        document.getElementById('imageForm').submit();
+        return;
+      }
+
+      alert("No changes to save.");
+    });
+  </script>
+</body>
+
+</html>

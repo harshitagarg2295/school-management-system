@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Demo | SchoolFlow</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --dark: #0f172a;
+            --text-slate: #64748b;
+            --bg-light: #f1f5f9;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-light);
+            margin: 0;
+            color: var(--dark);
+        }
+
+        .demo-hero {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 60px 20px 100px;
+            text-align: center;
+        }
+        .demo-hero p{
+            padding-top: 10px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: -60px auto 80px;
+            padding: 0 20px;
+        }
+
+        /* School Code Section */
+        .school-code-banner {
+            background: #fff;
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            border: 2px dashed var(--primary);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+
+        .code-display {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: 2px;
+            background: #eff6ff;
+            padding: 5px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        /* Demo Card Layout */
+        .demo-card {
+            background: white;
+            display: flex;
+            align-items: center;
+            padding: 20px 30px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: 0.3s;
+        }
+
+        .icon-box {
+            width: 50px; height: 50px;
+            background: #eff6ff;
+            color: var(--primary);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem; margin-right: 20px;
+        }
+
+        .info { flex-grow: 1; }
+        .info h3 { margin: 0; font-size: 1.1rem; }
+        .info p { margin: 0; font-size: 0.85rem; color: var(--text-slate); }
+
+        .cred-tags { display: flex; gap: 10px; margin-right: 20px; }
+
+        .tag {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .tag:hover { background: #e2e8f0; }
+        .tag b { color: var(--primary); }
+
+        .login-link {
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        /* Toast Notification */
+        #toast {
+            visibility: hidden;
+            min-width: 200px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 50px;
+            padding: 12px;
+            position: fixed;
+            z-index: 1;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+    </style>
+</head>
+<body>
+
+    <%- include("partials/HomePageNavbar") %>
+
+    <section class="demo-hero">
+        <h1>SchoolFlow Live Demo</h1>
+        <p>Try the system with our pre-configured Demo School</p>
+    </section>
+
+    <div class="container">
+        
+        <div class="school-code-banner">
+            <span><i class="fa-solid fa-school"></i> <b>Demo School Code:</b></span>
+            <div class="code-display" onclick="copyText('DEMO248')">DEMO248</div>
+            <small style="color: var(--text-slate);">(Click to copy)</small>
+        </div>
+
+        <div class="demo-card">
+            <div class="icon-box"><i class="fa-solid fa-user-shield"></i></div>
+            <div class="info">
+                <h3>Admin Portal</h3>
+                <p>Full Management</p>
+            </div>
+            <div class="cred-tags">
+                <div class="tag" onclick="copyText('admin_demo')"><b>ID:</b> admin_demo</div>
+                <div class="tag" onclick="copyText('demo123')"><b>Pass:</b> demo123</div>
+            </div>
+            <a href="/login" class="login-link">Login</a>
+        </div>
+
+        <div class="demo-card">
+            <div class="icon-box"><i class="fa-solid fa-chalkboard-user"></i></div>
+            <div class="info">
+                <h3>Teacher Portal</h3>
+                <p>Academic Tools</p>
+            </div>
+            <div class="cred-tags">
+                <div class="tag" onclick="copyText('teacher_demo')"><b>ID:</b> teacher_demo</div>
+                <div class="tag" onclick="copyText('demo123')"><b>Pass:</b> demo123</div>
+            </div>
+            <a href="/login" class="login-link">Login</a>
+        </div>
+
+        <div class="demo-card">
+            <div class="icon-box"><i class="fa-solid fa-user-graduate"></i></div>
+            <div class="info">
+                <h3>Student/Parent</h3>
+                <p>Learning & Fees</p>
+            </div>
+            <div class="cred-tags">
+                <div class="tag" onclick="copyText('student_demo')"><b>ID:</b> student_demo</div>
+                <div class="tag" onclick="copyText('demo123')"><b>Pass:</b> demo123</div>
+            </div>
+            <a href="/login" class="login-link">Login</a>
+        </div>
+
+    </div>
+
+    <div id="toast">Copied to clipboard!</div>
+
+    <script>
+        function copyText(text) {
+            navigator.clipboard.writeText(text);
+            var x = document.getElementById("toast");
+            x.className = "show";
+            setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+        }
+    </script>
+
+    <%- include("partials/HomePageFooter") %>
+</body>
+</html>

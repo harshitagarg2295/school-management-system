@@ -11,15 +11,19 @@ const { teacherAuth } = require("../../middlewares/auth");
 
 // POST - Mark Holiday for Students
 router.post("/teachers/mark-holiday", teacherAuth, async (req, res) => {
-
+    const schoolCode = req.session.schoolCode;
     const { date, reason } = req.body;
 
-    let existing = await Holiday.findOne({ date: new Date(date), role: "student" });
+    let existing = await Holiday.findOne({
+        date: new Date(date),
+        role: "student",
+        schoolCode
+    });
     if (existing) {
         existing.reason = reason;
         await existing.save();
     } else {
-        await Holiday.create({ role: "student", date: new Date(date), reason });
+        await Holiday.create({ role: "student", date: new Date(date), reason, schoolCode });
     }
 
     res.redirect("/teachers/mark-attendance");
@@ -27,11 +31,15 @@ router.post("/teachers/mark-holiday", teacherAuth, async (req, res) => {
 
 // GET - Teacher mark attendance page
 router.get("/teachers/mark-attendance", teacherAuth, async (req, res) => {
+    const schoolCode = req.session.schoolCode;
     try {
         const teacherId = req.session.teacherId;
-        if (!teacherId) return res.redirect("/teacher.html");
+        if (!teacherId) return res.redirect("/login");
 
-        const teacher = await Teacher.findById(teacherId);
+        const teacher = await Teacher.findOne({
+            _id: teacherId,
+            schoolCode
+        });
 
         // Not a class teacher
         if (!teacher || teacher.classTeacher !== "yes" || !teacher.assignedClass) {
@@ -39,7 +47,10 @@ router.get("/teachers/mark-attendance", teacherAuth, async (req, res) => {
         }
 
         // Fetch students of assigned class
-        const students = await Student.find({ class: teacher.assignedClass }).sort({ name: 1 });
+        const students = await Student.find({
+            class: teacher.assignedClass,
+            schoolCode
+        }).sort({ name: 1 });
 
         const month = req.query.month || moment().format("MM");
         const year = req.query.year || moment().format("YYYY");
@@ -58,6 +69,7 @@ router.get("/teachers/mark-attendance", teacherAuth, async (req, res) => {
         // Holidays for students
         const allHolidays = await Holiday.find({
             role: "student",
+            schoolCode,
             date: { $gte: startOfMonth, $lte: endOfMonth }
         });
 
@@ -71,6 +83,7 @@ router.get("/teachers/mark-attendance", teacherAuth, async (req, res) => {
         // Attendance records
         const attendanceData = await Attendance.find({
             studentId: { $in: students.map(s => s._id) },
+            schoolCode,
             date: { $gte: startOfMonth, $lte: endOfMonth }
         });
 
@@ -107,8 +120,12 @@ router.get("/teachers/mark-attendance", teacherAuth, async (req, res) => {
 // POST - Save Attendance for Teacher’s class
 // 👉 Teacher Submit Student Attendance (SECURE VERSION)
 router.post("/teachers/submit-students-attendance", teacherAuth, async (req, res) => {
+    const schoolCode = req.session.schoolCode;
     const teacherId = req.session.teacherId;
-    const teacher = await Teacher.findById(teacherId);
+    const teacher = await Teacher.findOne({
+        _id: teacherId,
+        schoolCode
+    });
 
     // Permission Check
     if (!teacher || teacher.classTeacher !== "yes" || !teacher.assignedClass) {
@@ -151,7 +168,11 @@ router.post("/teachers/submit-students-attendance", teacherAuth, async (req, res
 
                 // CASE 2: PAST EDIT -> Ignore (Agar pehle se marked hai)
                 if (checkDate.isBefore(serverToday, 'day')) {
-                    const existing = await Attendance.findOne({ studentId: studentId, date: dateForDb });
+                    const existing = await Attendance.findOne({
+                        studentId,
+                        date: dateForDb,
+                        schoolCode
+                    });
                     if (existing) {
                         continue; // Edit allow nahi hai, purana hi rehne do
                     }
@@ -159,8 +180,8 @@ router.post("/teachers/submit-students-attendance", teacherAuth, async (req, res
 
                 // --- SAVE TO DB (Direct Update) ---
                 await Attendance.findOneAndUpdate(
-                    { studentId: studentId, date: dateForDb },
-                    { status: status },
+                    { studentId, date: dateForDb, schoolCode },
+                    { status, schoolCode },
                     { upsert: true, new: true }
                 );
             }

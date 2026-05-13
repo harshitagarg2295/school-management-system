@@ -254,29 +254,19 @@
                             </p>
                         </div>
 
-                        <form method="POST" action="/update-class-teacher" id="classTeacherForm">
-                            <div class="data">
-                                <h3>Class Teacher</h3>
+                        <div class="data">
+                            <h3>Class Teacher</h3>
+                            <p>
+                                <%= teacher.classTeacher==="yes" ? "Yes" : "No" %>
+                            </p>
+                        </div>
 
-                                <select class="isClassTeacher" name="classTeacher" id="classTeacherSelect">
-                                    <option value="">Option</option>
-                                    <option value="yes" <%=teacher.classTeacher==="yes" ? "selected" : "" %>>Yes
-                                    </option>
-                                    <option value="no" <%=teacher.classTeacher==="no" ? "selected" : "" %>>No</option>
-                                </select>
-
-                                <select name="assignedClass" id="assignedClassSelect" style="display:none;">
-                                    <% sortedClasses.forEach(c=> { %>
-                                        <option value="<%= c %>" <%=teacher.assignedClass===c ? "selected" : "" %>>
-                                            <%= c %>
-                                        </option>
-                                        <% }) %>
-                                </select>
-
-                                <p id="noMessage" style="display:none;">No</p>
-                                <p id="classMessage" style="display:none;"></p>
-                            </div>
-                        </form>
+                        <div class="data">
+                            <h3>Assigned Class</h3>
+                            <p>
+                                <%= teacher.assignedClass || "N/A" %>
+                            </p>
+                        </div>
                     </div>
                 </div>
 
@@ -287,66 +277,5 @@
     </div>
 
 </body>
-
-<script>
-
-    const isClassTeacher = "<%= teacher.classTeacher %>";
-    const assignedClass = "<%= teacher.assignedClass %>";
-
-    const classTeacherSelect = document.getElementById("classTeacherSelect");
-    const assignedClassSelect = document.getElementById("assignedClassSelect");
-    const noMessage = document.getElementById("noMessage");
-    const classMessage = document.getElementById("classMessage");
-    const form = document.getElementById("classTeacherForm");
-
-    // When Yes/No changes
-    classTeacherSelect.addEventListener("change", function () {
-        if (this.value === "yes") {
-            assignedClassSelect.style.display = "inline-block"; // show classes
-            noMessage.style.display = "none";
-            classTeacherSelect.style.display = "none";          // hide yes/no
-        } else if (this.value === "no") {
-            assignedClassSelect.style.display = "none";
-            noMessage.style.display = "block";                  // show No
-            classMessage.style.display = "none";
-            classTeacherSelect.style.display = "none";
-            form.submit();
-        }
-    });
-
-    // When Class is selected (ek hi bar allow)
-    assignedClassSelect.addEventListener("change", function () {
-        if (this.value) {
-            classMessage.textContent = this.value + " Grade";
-            classMessage.style.display = "block";   // show message
-            assignedClassSelect.style.display = "none"; // hide dropdown
-            form.submit();
-        }
-    });
-
-    // Refresh ke baad bhi UI correct ho
-    window.addEventListener("DOMContentLoaded", () => {
-
-        // 🔥 Highlight if NOT assigned
-        if (!isClassTeacher || !assignedClass) {
-            classTeacherSelect.classList.add("select-warning");
-        }
-
-        if (classTeacherSelect.value === "yes" && assignedClassSelect.value) {
-            // Agar class already selected hai
-            classMessage.textContent = assignedClassSelect.value + " Grade";
-            classMessage.style.display = "block";
-            assignedClassSelect.style.display = "none";
-            classTeacherSelect.style.display = "none";
-        } else if (classTeacherSelect.value === "yes") {
-            assignedClassSelect.style.display = "inline-block";
-            classTeacherSelect.style.display = "none";
-        } else if (classTeacherSelect.value === "no") {
-            noMessage.style.display = "block";
-            classTeacherSelect.style.display = "none";
-        }
-    });
-</script>
-
 
 </html>

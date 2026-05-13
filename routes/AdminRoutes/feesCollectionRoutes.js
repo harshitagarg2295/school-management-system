@@ -8,11 +8,12 @@ const { adminAuth } = require("../../middlewares/auth");
 
 
 router.get("/school_fees_collection", adminAuth, async (req, res) => {
+  const schoolCode = req.session.schoolCode;
   const classFilter = req.query.classFilter;
   const statusFilter = req.query.statusFilter;
   const selectedYear = parseInt(req.query.year) || new Date().getFullYear();
 
-  let filter = {};
+  let filter = { schoolCode };
 
   if (classFilter && classFilter !== "All Classes") {
     filter.class = classFilter;
@@ -113,6 +114,7 @@ router.get("/school_fees_collection", adminAuth, async (req, res) => {
   // const expenses = await Expense.find();
 
   const expenses = await Expense.find({
+    schoolCode,
     date: {
       $gte: new Date(`${selectedYear}-04-01`),
       $lte: new Date(`${selectedYear + 1}-03-31`)
@@ -128,10 +130,10 @@ router.get("/school_fees_collection", adminAuth, async (req, res) => {
 
   const totalProfit = totalReceived - totalExpense;
 
-  const classList = await Student.distinct("class");
+  const classList = await Student.distinct("class", { schoolCode });
   const sortedClasses = ["All Classes", ...classList.sort()];
 
-  const admin = await AdminNotification.findOne() || { notifications: [] };
+  const admin = await AdminNotification.findOne({ schoolCode }) || { notifications: [] };
 
   res.render("Admin/school_fees_collection", {
     students: processedStudents,

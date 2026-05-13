@@ -1,10 +1,14 @@
 const mongoose = require("mongoose");
 
 const holidaySchema = new mongoose.Schema({
-  role: { 
-    type: String, 
+  schoolCode: {
+    type: String,
+    required: true
+  },
+  role: {
+    type: String,
     enum: ["teacher", "student", "staff"], // किसके लिए holiday है
-    required: true 
+    required: true
   },
   date: { type: Date, required: true },
   reason: { type: String, default: "" }

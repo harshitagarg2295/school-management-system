@@ -1,44 +1,41 @@
 const mongoose = require('mongoose')
 
 const studentSchema = new mongoose.Schema({
+  schoolCode: { type: String, required: true },
   name: String,
-  id: String,
+  id: String, // Admission No / Student ID
   class: String,
+  section: String, 
+  rollNo: String, 
+  house: String,
+    bloodGroup: String,
+  gender: String, 
   DOB: Date,
+  admissionDate: Date, 
+  fatherName: String,  
+  motherName: String,  
+  initialClass: String, 
+  previousSchool: String,
   fees: Number,
   phone: Number,
   address: String,
-
-  username: { type: String, required: true, unique: true }, // username फ़ील्ड जोड़ा
+  photo: String, 
+  username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-
   feeStatus: [
     {
-      feeType: String,         // Admission / Tuition
-      installment: String,     // 1st / 2nd / 3rd / One-time
-      month: String,           // Optional: April, July, etc.
+      feeType: String,
+      installment: String,
+      month: String,
       amount: Number,
-      status: String,          // Paid / Pending
-      mode: String,            // Online / Offline
+      status: String,
+      mode: String,
       paymentDate: Date
     }
   ],
+}, {
+  toObject: { id: false, virtuals: true, getters: true },
+  toJSON: { virtuals: true, id: false }
+});
 
-  }, {
-  // ✅ FIX: Schema Options यहाँ जोड़े गए
-  toObject: {
-    // Mongoose के virtual 'id' को disable करें ताकि आपका custom 'id' field use हो सके
-    id: false, 
-    virtuals: true,
-    getters: true,
-  },
-  toJSON: {
-    // Mongoose के virtual 'id' को disable करें
-    virtuals: true,
-    id: false 
-  }
-  
-})
-
-module.exports = mongoose.model("StudentSchema", studentSchema)
-
+module.exports = mongoose.model("StudentSchema", studentSchema);

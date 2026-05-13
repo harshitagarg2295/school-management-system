@@ -10,89 +10,226 @@ const AdminNotification = require("../../models/AdminNotificationSchema");
 const Expense = require("../../models/Expense");
 const createSalaryExpense = require("../../utils/createSalaryExpense");
 const { adminAuth } = require("../../middlewares/auth");
+const Student = require("../../models/StudentSchema");
 const bcrypt = require("bcrypt");
+const fs = require("fs");
+const path = require("path");
 
 
 // List all teachers
 router.get("/teach-menu", adminAuth, async (req, res) => {
-
-  const admin = await AdminNotification.findOne() || { notifications: [] };
-  const teachers = await Teacher.find().sort({ name: 1 });
+  const schoolCode = req.session.schoolCode;
+  const admin = await AdminNotification.findOne({ schoolCode }) || { notifications: [] };
+  const teachers = await Teacher.find({ schoolCode }).sort({ name: 1 });
   res.render("Admin/teachers_list", { teachers, admin });
 });
 
 // Add teacher
 router.post("/add-teacher", adminAuth, async (req, res) => {
+  const schoolCode = req.session.schoolCode;
   const toTitleCase = str => str.replace(/\w\S*/g, txt =>
     txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase()
   );
 
-  const { name, empId, subject, salary, address, phone, class: className } = req.body;
+  const { name, empId, subject, salary, dob, phone, class: className } = req.body;
 
-  // Example logic: username = first 3 letters of name (lowercase) + @ +  987
-  // password = first 2 letters of name  + @ + last 3 digits of mobile
+  // name is in lowercase
+  // Example logic: username = first 3 letters of name + @ + last4 mobile
+  // password = first 2 letters of name + @ + DDMM (dob) + last2 mobile
 
-  const username = name.slice(0, 3).toLowerCase() + "@" + 987;
-  const rawPassword = name.slice(0, 2).toLowerCase() + "@" + phone.toString().slice(-3);
+  // 👉 clean name (no spaces)
+  const cleanName = name.toLowerCase().replace(/\s+/g, "");
 
-  // 🔐 HASH PASSWORD (IMPORTANT) store password in secure form
+  // 👉 name parts
+  const name3 = cleanName.slice(0, 3);
+  const name2 = cleanName.slice(0, 2);
+
+  // 👉 mobile parts
+  const phoneStr = phone.toString();
+  const last4 = phoneStr.slice(-4);
+  const last2 = phoneStr.slice(-2);
+
+  // 👉 username
+  const username = `${name3}@${last4}`;
+
+  // 👉 DOB format (DDMM)
+  // 👉 DOB format (DDMM)
+  let dobPart = "0000";
+
+  if (req.body.dob) {
+    const [year, month, day] = req.body.dob.split("-");
+    dobPart = day + month;
+  }
+
+  // 👉 password
+  const rawPassword = `${name2}@${dobPart}${last2}`;
+  console.log("🔥 GENERATED PASSWORD:", rawPassword);
+
+  // 🔐 HASH PASSWORD
   const hashedPassword = await bcrypt.hash(rawPassword, 10);
 
   const teacher = new Teacher({
     name: toTitleCase(name),
-    empId,
+    empId: empId?.toUpperCase() || "",
     subject: toTitleCase(subject),
     class: className.toUpperCase(),
-    address: toTitleCase(address),
+    dob,
     salary,
     phone,
     username,
-    password: hashedPassword
+    password: hashedPassword,
+    schoolCode
   });
 
-  await teacher.save();
-  res.redirect("/teach-menu");
+  const savedTeacher = await teacher.save();
+
+  // 🔥 IMPORTANT: redirect to profile page
+  return res.redirect(`/teacher/${savedTeacher._id}`);
+});
+
+router.get("/teacher/:id", adminAuth, async (req, res) => {
+  try {
+    const schoolCode = req.session.schoolCode;
+    const teacher = await Teacher.findOne({
+      _id: req.params.id,
+      schoolCode: req.session.schoolCode
+    });
+
+    if (!teacher) {
+      return res.send("Teacher not found");
+    }
+    // 🔥 DB से classes fetch
+    const classList = await Student.distinct("class", { schoolCode });
+    const sortedClasses = classList.sort();
+
+    res.render("Admin/teacherProfile", {
+      teacher,
+      classes: sortedClasses
+    });
+
+  } catch (err) {
+    console.log(err);
+    res.send("Error loading profile");
+  }
 });
 
 // Delete teacher
 router.post("/delete-teacher/:id", adminAuth, async (req, res) => {
-  await Teacher.findByIdAndDelete(req.params.id);
+  const schoolCode = req.session.schoolCode;
+  const teacher = await Teacher.findById(req.params.id);
+
+    if (teacher && teacher.username === "teacher_demo") {
+         return res.send(`
+                <script>
+                    alert('Notice: This is a default Demo Teacher. You cannot delete it, but you can delete any new teacher you create.');
+                    window.history.back();
+                </script>
+            `);
+    }
+
+  await Teacher.findOneAndDelete({
+    _id: req.params.id,
+    schoolCode
+  });
   res.redirect("/teach-menu");
 });
 
 // Edit teacher
 router.post("/edit-teacher/:id", adminAuth, async (req, res) => {
-  const toTitleCase = str => str.replace(/\w\S*/g, txt =>
-    txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase()
-  );
+  const schoolCode = req.session.schoolCode;
+  const toTitleCase = (str) => {
+    if (!str) return "";   // 🔥 important
+    return str.replace(/\w\S*/g, txt =>
+      txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase()
+    );
+  };
 
   const { name, empId, subject, class: className, salary, address, phone } = req.body;
 
-  await Teacher.findByIdAndUpdate(req.params.id, {
-    name: toTitleCase(name),
-    empId,
-    subject: toTitleCase(subject),
-    class: className.toUpperCase(),
-    address: toTitleCase(address),
-    salary,
-    phone
-  });
+  const updateData = {};
 
-  res.redirect("/teach-menu");
+  if (name) updateData.name = toTitleCase(name);
+  if (empId) updateData.empId = empId.trim().toUpperCase();
+  if (subject) updateData.subject = toTitleCase(subject);
+  if (className) updateData.class = className.trim().toUpperCase();
+  if (address) updateData.address = toTitleCase(address);
+  if (salary) updateData.salary = salary;
+  if (phone) updateData.phone = phone;
+
+  if (req.body.gender) updateData.gender = req.body.gender;
+  if (req.body.dob) updateData.dob = req.body.dob;
+  if (req.body.bloodGroup) updateData.bloodGroup = req.body.bloodGroup;
+  if (req.body.education) updateData.education = req.body.education;
+  if (req.body.experience) updateData.experience = req.body.experience;
+  if (req.body.joiningDate) updateData.joiningDate = req.body.joiningDate;
+  if (req.body.classTeacher) updateData.classTeacher = req.body.classTeacher;
+  if (req.body.assignedClass) updateData.assignedClass = req.body.assignedClass;
+
+  await Teacher.findOneAndUpdate(
+    { _id: req.params.id, schoolCode },
+    { $set: updateData }
+  );
+
+  res.redirect(`/teacher/${req.params.id}`);
 });
 
+router.post("/teacher/upload-image/:id", adminAuth, async (req, res) => {
+  try {
+    const base64 = req.body.croppedImage;
+    if (!base64) return res.redirect(`/teacher/${req.params.id}`);
+
+    const base64Data = base64.split(";base64,").pop();
+
+    // detect file type
+    const mimeType = base64.match(/data:(image\/\w+);base64/)[1];
+    const ext = mimeType.split("/")[1];
+    const fileName = Date.now() + "." + ext;
+
+    const uploadDir = path.join(__dirname, "../../uploads/teachers");
+
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+
+    // 🔒 secure fetch
+    const teacher = await Teacher.findOne({
+      _id: req.params.id,
+      schoolCode: req.session.schoolCode
+    });
+
+    // 🧹 delete old image
+    if (teacher && teacher.photo) {
+      const oldPath = path.join(uploadDir, teacher.photo);
+      if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+    }
+
+    fs.writeFileSync(path.join(uploadDir, fileName), base64Data, "base64");
+
+    await Teacher.findOneAndUpdate(
+      { _id: req.params.id, schoolCode: req.session.schoolCode },
+      { photo: fileName }
+    );
+
+    res.redirect(`/teacher/${req.params.id}`);
+
+  } catch (err) {
+    console.log(err);
+    res.send("Error uploading image");
+  }
+});
 
 // 👉 Declare Holiday (for teachers)
 router.post("/mark-teacher-holiday", adminAuth, async (req, res) => {
+  const schoolCode = req.session.schoolCode;
   const { date, reason } = req.body;
   let holidayDate = moment.utc(date, "YYYY-MM-DD").startOf("day").toDate();
 
-  let existing = await Holiday.findOne({ date: holidayDate, role: "teacher" });
+  let existing = await Holiday.findOne({ date: holidayDate, role: "teacher", schoolCode });
   if (existing) {
     existing.reason = reason;
     await existing.save();
   } else {
-    await Holiday.create({ role: "teacher", date: holidayDate, reason });
+    await Holiday.create({ role: "teacher", date: holidayDate, reason, schoolCode });
   }
   res.redirect("/view-attendance-teachers");
 });
@@ -100,8 +237,9 @@ router.post("/mark-teacher-holiday", adminAuth, async (req, res) => {
 
 // 👉 View Attendance Page
 router.get("/view-attendance-teachers", adminAuth, async (req, res) => {
+  const schoolCode = req.session.schoolCode;
   try {
-    const teachers = await Teacher.find().sort({ name: 1 });
+    const teachers = await Teacher.find({ schoolCode }).sort({ name: 1 });
 
     const month = parseInt(req.query.month) || parseInt(moment().format("MM"));
     const year = parseInt(req.query.year) || parseInt(moment().format("YYYY"));
@@ -120,6 +258,7 @@ router.get("/view-attendance-teachers", adminAuth, async (req, res) => {
     // Holidays
     const allHolidays = await Holiday.find({
       role: "teacher",
+      schoolCode,
       date: { $gte: startOfMonth, $lte: endOfMonth },
     });
 
@@ -134,6 +273,7 @@ router.get("/view-attendance-teachers", adminAuth, async (req, res) => {
 
     // Attendance
     const attendanceData = await Attendance.find({
+      schoolCode,
       date: { $gte: startOfMonth, $lte: endOfMonth },
     });
 
@@ -183,6 +323,7 @@ router.get("/view-attendance-teachers", adminAuth, async (req, res) => {
         teacherId: teacher._id,
         month,
         year,
+        schoolCode
       });
 
       if (!statusDoc) {
@@ -197,7 +338,8 @@ router.get("/view-attendance-teachers", adminAuth, async (req, res) => {
           totalAbsent,
           lateCount,
           deduction,
-          status: "pending"
+          status: "pending",
+          schoolCode
         });
       }
       else {
@@ -249,6 +391,7 @@ router.get("/view-attendance-teachers", adminAuth, async (req, res) => {
 
 // 👉 Submit Attendance
 router.post("/submit-attendance-teachers", adminAuth, async (req, res) => {
+  const schoolCode = req.session.schoolCode;
   let { attendance = {}, paymentStatus = {}, month, year } = req.body;
 
   // Always work in IST
@@ -274,7 +417,7 @@ router.post("/submit-attendance-teachers", adminAuth, async (req, res) => {
         const dateForDb = moment.utc(checkDate.format("YYYY-MM-DD"), "YYYY-MM-DD").toDate();
 
         // Check kro ki pehle se attendance entry h ya ni
-        const existing = await Attendance.findOne({ teacherId, date: dateForDb });
+        const existing = await Attendance.findOne({ teacherId, date: dateForDb, schoolCode });
 
         if (existing && existing.source === "biometric") {
           // biometric entry → never editable
@@ -296,8 +439,8 @@ router.post("/submit-attendance-teachers", adminAuth, async (req, res) => {
 
         // Agar yahan tak aa gaye, matlab sab sahi hai. Save kar do.
         await Attendance.findOneAndUpdate(
-          { teacherId, date: dateForDb },
-          { status: status },
+          { teacherId, date: dateForDb, schoolCode },
+          { status, schoolCode },
           { upsert: true, new: true }
         );
       }
@@ -315,14 +458,14 @@ router.post("/submit-attendance-teachers", adminAuth, async (req, res) => {
 
       if (newStatus === "pending") {
         const uniqueKey = `teacher_${teacherId}_${year}_${month}`;
-        await Expense.findOneAndDelete({ uniqueKey });
+        await Expense.findOneAndDelete({ uniqueKey, schoolCode });
       }
     }
 
     // Create expense for all PAID teachers only
-    const paidTeachers = await SalaryStatus.find({ month, year, status: "paid" });
+    const paidTeachers = await SalaryStatus.find({ month, year, status: "paid", schoolCode });
     for (let t of paidTeachers) {
-      const teacher = await Teacher.findById(t.teacherId);
+      const teacher = await Teacher.findOne({ _id: t.teacherId, schoolCode });
       await createSalaryExpense({
         name: teacher.name,
         amount: t.payableSalary,
@@ -343,6 +486,7 @@ router.post("/submit-attendance-teachers", adminAuth, async (req, res) => {
 
 // 👉 Update Salary Status (Paid/Pending)
 router.post("/update-salary-status/:teacherId", adminAuth, async (req, res) => {
+  const schoolCode = req.session.schoolCode;
   try {
     const { teacherId } = req.params;
     const { month, year, status } = req.body;
@@ -351,8 +495,8 @@ router.post("/update-salary-status/:teacherId", adminAuth, async (req, res) => {
     year = Number(year);
 
     await SalaryStatus.findOneAndUpdate(
-      { teacherId, month, year },
-      { status, paidOn: status === "paid" ? new Date() : null },
+      { teacherId, month, year, schoolCode },
+      { status, paidOn: status === "paid" ? new Date() : null, schoolCode },
       { upsert: true }
     );
 

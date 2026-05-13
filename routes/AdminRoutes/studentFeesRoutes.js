@@ -1,12 +1,16 @@
 const express = require("express");
 const router = express.Router();
 const Student = require("../../models/StudentSchema");
-const { adminAuth } =  require("../../middlewares/auth");
+const { adminAuth } = require("../../middlewares/auth");
 
 
-router.get("/fee-status/:id", adminAuth , async (req, res) => {
+router.get("/fee-status/:id", adminAuth, async (req, res) => {
+  const schoolCode = req.session.schoolCode;
   try {
-    const student = await Student.findById(req.params.id);
+    const student = await Student.findOne({
+      _id: req.params.id,
+      schoolCode
+    });
     res.render("Admin/students_fees_page", { student });
   } catch (err) {
     res.status(500).send("Student not found");
@@ -14,11 +18,16 @@ router.get("/fee-status/:id", adminAuth , async (req, res) => {
 
 });
 
-router.post("/update-fee-status/:studentId", adminAuth,async (req, res) => {
+router.post("/update-fee-status/:studentId", adminAuth, async (req, res) => {
+  const schoolCode = req.session.schoolCode;
+
   const { studentId } = req.params;
   const feeStatus = req.body.feeStatus;
 
-  const student = await Student.findById(studentId);
+  const student = await Student.findOne({
+    _id: studentId,
+    schoolCode
+  });
   if (!student || !feeStatus) return res.send("Invalid data");
 
   student.feeStatus.forEach((fee, index) => {

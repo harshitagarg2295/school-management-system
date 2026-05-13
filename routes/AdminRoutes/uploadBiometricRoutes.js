@@ -18,6 +18,7 @@ const { adminAuth } =  require("../../middlewares/auth");
 const upload = multer({ dest: "uploads/" });
 
 router.post("/upload-biometric", upload.single("bioFile"),adminAuth, async (req, res) => {
+    const schoolCode = req.session.schoolCode;
     try {
         if (!req.file) return res.send("No file uploaded!");
 
@@ -122,7 +123,7 @@ router.post("/upload-biometric", upload.single("bioFile"),adminAuth, async (req,
         ];
 
         for (let empType of employees) {
-            const list = await empType.model.find();
+            const list = await empType.model.find({ schoolCode });
 
             for (let emp of list) {
                 const empId = emp.empId;
@@ -138,8 +139,8 @@ router.post("/upload-biometric", upload.single("bioFile"),adminAuth, async (req,
                 }
 
                 await empType.attendanceModel.findOneAndUpdate(
-                    { [empType.field]: emp._id, date: jsDate },
-                    { status, source: "biometric" },
+                    { [empType.field]: emp._id, date: jsDate,schoolCode },
+                    { status, source: "biometric", schoolCode },
                     { upsert: true }
                 );
             }

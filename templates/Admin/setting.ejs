@@ -187,34 +187,60 @@
                     <div class="settings-card">
                       <h2>Change Password</h2>
 
-                      <form action="/change-password" method="post" class="password-box">
-
-                        <div class="old-password">
-
-                          <input type="text" name="username" value="<%= user.username %>">
-
-                          <input type="password" name="currentPassword" id="currentPassword"
-                            placeholder="Enter Current Password" required>
-                          <i class="fa fa-eye" id="toggleCurrent"
-                            style="position: absolute; right: 20px; top: 73%; transform: translateY(-50%); cursor: pointer;"></i>
-
-                          <p><a href="/forgot-password?role=<%= userType %>">Forget Password</a></p>
-
+                      <% if (user.schoolCode==="DEMO248" ) { %>
+                        <div
+                          style="background: #fff4f4; color: #d32f2f; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; border: 1px solid #f8d7da;">
+                          <i class="fa-solid fa-circle-exclamation"></i>
+                          <strong>Demo Mode:</strong> Password changing is disabled to keep the demo account accessible
+                          for everyone.
                         </div>
+                        <% } %>
 
-                        <div class="new-password">
-                          <input type="text" name="newPassword" placeholder="Enter New Password" required>
-                          <input type="password" name="confirmPassword" id="confirmPassword"
-                            placeholder="Confirm New Password" required>
-                          <i class="fa fa-eye" id="toggleConfirm"
-                            style="position: absolute; right: 20px; top: 73%; transform: translateY(-50%); cursor: pointer;"></i>
-                        </div>
+                          <form action="/change-password" method="post" class="password-box">
 
+                            <div class="old-password">
 
-                        <button class="save-pass-btn" type="submit">
-                          Save Password
-                        </button>
-                      </form>
+                              <input type="text" value="<%= user.username %>" readonly>
+
+                              <input type="password" name="currentPassword" id="currentPassword"
+                                placeholder="Enter Current Password" required
+
+                              <% if (user.schoolCode==="DEMO248" ) { %> disabled <% } %>>
+
+                                  <i class="fa fa-eye" id="toggleCurrent"
+                                    style="position: absolute; right: 20px; top: 73%; transform: translateY(-50%); cursor: pointer;"></i>
+
+                                  <p><a
+                                      href="/forgot-password?role=<%= userType %>&schoolCode=<%= user.schoolCode %>">Forget
+                                      Password</a></p>
+
+                            </div>
+
+                            <div class="new-password">
+                              <input type="text" name="newPassword" placeholder="Enter New Password" required
+
+                              <% if (user.schoolCode==="DEMO248" ) { %> disabled <% } %>>
+
+                                  <input type="password" name="confirmPassword" id="confirmPassword"
+                                    placeholder="Confirm New Password" required
+                                  <% if (user.schoolCode==="DEMO248" ) { %> disabled <% } %>>
+
+                                      <i class="fa fa-eye" id="toggleConfirm"
+                                        style="position: absolute; right: 20px; top: 73%; transform: translateY(-50%); cursor: pointer;"></i>
+                            </div>
+
+                            <% if (user.schoolCode==="DEMO248" ) { %>
+                              <button class="save-pass-btn" type="button"
+                                style="background: #9ca3af; cursor: not-allowed;"
+                                onclick="alert('Change Password is disabled in Demo version.')">
+                                Save Password (Disabled)
+                              </button>
+                              <% } else { %>
+                                <button class="save-pass-btn" type="submit">
+                                  Save Password
+                                </button>
+                                <% } %>
+                          </form>
                     </div>
 
                     <!-- Logout -->
@@ -223,8 +249,6 @@
                   </div>
   </div>
   <script>
-
-    const userType = "<%= userType %>";
 
     // LOGOUT — dynamic per userType
     const logoutBtn = document.getElementById("logoutBtn");

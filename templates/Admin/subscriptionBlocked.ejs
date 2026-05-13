@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Suspended</title>
+</head>
+
+<body
+    style="background-color: #f3f4f6; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+
+    <div
+        style="text-align: center; background: white; padding: 50px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); max-width: 450px;">
+        <div style="font-size: 70px; margin-bottom: 20px;">🚫</div>
+        <h1 style="color: #ef4444; margin-bottom: 10px; font-size: 28px;">Services Suspended</h1>
+
+        <!-- Role ke hisab se message badlega -->
+        <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">
+            Dear <strong>
+                <%= role %>
+            </strong>, your school's portal subscription has expired.
+            Access to all management tools and features is currently restricted.
+        </p>
+
+        <div style="margin-top: 30px;">
+            <% if (role==='Admin' ) { %>
+                <p
+                    style="background: #fef2f2; color: #991b1b; padding: 10px; border-radius: 6px; font-size: 14px; border: 1px solid #fecaca;">
+                    Your dashboard is locked. Please contact Super Admin immediately for renewal.
+                </p>
+                <a href="/login"
+                    style="margin-top: 15px; display: inline-block; color: #3b82f6; text-decoration: none; font-weight: 500;">←
+                    Back to Login</a>
+                <% } else { %>
+                    <p
+                        style="background: #fffbeb; color: #92400e; padding: 10px; border-radius: 6px; font-size: 14px; border: 1px solid #fde68a;">
+                        Please contact your School Office/Admin to restore services.
+                    </p>
+                    <a href="/login"
+                        style="margin-top: 15px; display: inline-block; color: #3b82f6; text-decoration: none; font-weight: 500;">←
+                        Back to Home</a>
+                    <% } %>
+        </div>
+    </div>
+
+</body>
+
+</html>

@@ -283,23 +283,31 @@
                                         </span>
                                     </div>
 
-                                    <a href="<%= material.fileUrl %>" download="<%= material.title %>">
-                                        <button class="download-btn">
-                                            <i class="fas fa-download"></i> Download
-                                        </button>
-                                    </a>
-                                </div>
-                            </div>
+                                    <div style="display: flex; gap: 10px; align-items: center;">
+                                        <a href="/teachers/delete-material/<%= material._id %>"
+                                            onclick="return confirm('Are you sure you want to delete this material?')"
+                                            style="color: #e74c3c; font-size: 1.2rem;">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </a>
 
-                            <% }) %>
-                                <% } else { %>
-                                    <p style="grid-column: 1 / -1; text-align: center; padding: 50px; color: #7f8c8d;">
-                                        You haven't uploaded any study material yet.
-                                    </p>
-                                    <% } %>
+                                        <a href="<%= material.fileUrl %>" download="<%= material.title %>">
+                                            <button class="download-btn">
+                                                <i class="fas fa-download"></i> Download
+                                            </button>
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <% }) %>
+                                    <% } else { %>
+                                        <p
+                                            style="grid-column: 1 / -1; text-align: center; padding: 50px; color: #7f8c8d;">
+                                            You haven't uploaded any study material yet.
+                                        </p>
+                                        <% } %>
+                            </div>
                 </div>
             </div>
-    </div>
 </body>
 
 <script>

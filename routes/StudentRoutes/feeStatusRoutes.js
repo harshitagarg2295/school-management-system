@@ -1,17 +1,21 @@
 const express = require("express");
 const router = express.Router();
 const Student = require("../../models/StudentSchema");
-const {studentAuth} =  require("../../middlewares/auth");
+const { studentAuth } = require("../../middlewares/auth");
 
 // Student Fee Status Page
-router.get("/students/fees-status",studentAuth, async (req, res) => {
+router.get("/students/fees-status", studentAuth, async (req, res) => {
+  const schoolCode = req.session.schoolCode;
   try {
 
     if (!req.session.studentId || !req.session.studentId.id) {
-      return res.redirect("/student.html");
+      return res.redirect("/login");;
     }
 
-    const student = await Student.findById(req.session.studentId.id);
+    const student = await Student.findOne({
+      _id: req.session.studentId.id,
+      schoolCode
+    });
 
     if (!student) {
       return res.status(404).send("Student not found");

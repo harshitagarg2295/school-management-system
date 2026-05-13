@@ -5,7 +5,7 @@ const router = express.Router();
 const Student = require("../../models/StudentSchema");
 const Teacher = require("../../models/TeacherSchema");
 const StudentResult = require("../../models/StudentResultSchema");
-const {teacherAuth} =  require("../../middlewares/auth");
+const { teacherAuth } = require("../../middlewares/auth");
 
 // subjects per class (example)
 const classSubjects = {
@@ -29,11 +29,16 @@ const examSubtypes = ["Quarterly", "Half-Yearly", "Annual", "Pre-board"];
 
 // ---------- GET ----------
 
-router.get("/teachers/submit-result",teacherAuth, async (req, res) => {
+router.get("/teachers/submit-result", teacherAuth, async (req, res) => {
   try {
 
     const teacherId = req.session.teacherId;
-    const teacher = await Teacher.findById(teacherId);
+    const schoolCode = req.session.schoolCode;
+
+    const teacher = await Teacher.findOne({
+      _id: teacherId,
+      schoolCode
+    });
 
     // ✅ convert subjects/classes to array
     const teacherSubjects = teacher.subject.split(",").map(s => s.trim());
@@ -43,7 +48,7 @@ router.get("/teachers/submit-result",teacherAuth, async (req, res) => {
     req.session.teacherSubjects = teacherSubjects;
     req.session.teacherClasses = teacherClasses;
 
-    const classList = await Student.distinct("class");
+    const classList = await Student.distinct("class", { schoolCode });
     const classOrder = [
       "Nursery", "LKG", "UKG",
       "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
@@ -66,7 +71,10 @@ router.get("/teachers/submit-result",teacherAuth, async (req, res) => {
     let students = [];
     let resultsMap = {};
     if (classFilter && classFilter !== "") {
-      students = await Student.find({ class: classFilter }).sort({ name: 1 });
+      students = await Student.find({
+        class: classFilter,
+        schoolCode
+      }).sort({ name: 1 });
 
       // अब हर student का id string बना दो
       students = students.map(stu => ({
@@ -78,7 +86,8 @@ router.get("/teachers/submit-result",teacherAuth, async (req, res) => {
         class: classFilter,
         examType,
         examName,
-        year
+        year,
+        schoolCode
       }).lean();;
 
       results.forEach(r => {
@@ -110,7 +119,8 @@ router.get("/teachers/submit-result",teacherAuth, async (req, res) => {
 
 
 // ---------- POST ----------
-router.post("/teachers/submit-result", async (req, res) => {
+router.post("/teachers/submit-result",teacherAuth, async (req, res) => {
+  const schoolCode = req.session.schoolCode;
   const { classFilter, examType, examName, outOf, year, marks } = req.body;
   const teacherId = req.session.teacherId;
 
@@ -128,15 +138,15 @@ router.post("/teachers/submit-result", async (req, res) => {
 
     // पहले का result निकालो
     const existing = await StudentResult.findOne({
-      studentId, class: classFilter, examType, examName, year
+      studentId, class: classFilter, examType, examName, year, schoolCode
     });
 
     let newMarks = { ...(existing?.marks?.toObject?.() || {}) };
     newMarks = { ...newMarks, ...marksMap };   // merge करो
 
     await StudentResult.findOneAndUpdate(
-      { studentId, class: classFilter, examType, examName, year },
-      { $set: { marks: newMarks, outOf, teacherId, updatedAt: new Date() } },
+      { studentId, class: classFilter, examType, examName, year, schoolCode },
+      { $set: { marks: newMarks, outOf, teacherId, updatedAt: new Date(), schoolCode } },
       { upsert: true, new: true }
     );
   }

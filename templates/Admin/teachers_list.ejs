@@ -363,7 +363,7 @@
                                     <li>Subject</li>
                                     <li>Class(es)</li>
                                     <li>Salary</li>
-                                    <li>Address</li>
+                                    <li>DOB</li>
                                     <li>Phone Number</li>
                                     <li>Action</li>
                                 </ul>
@@ -384,8 +384,10 @@
                                         style="text-transform: capitalize;">
                                     <input type="text" name="class" placeholder="Classes (comma-separated)" required
                                         style="text-transform:  uppercase;;">
-                                    <input type="text" name="address" placeholder="Address" required
-                                        style="text-transform: capitalize;">
+                                    <input type="text" onfocus="(this.type='date')" name="dob" placeholder="DOB"
+                                        required>
+                                    <!-- <input type="text" name="address" placeholder="Address" required
+                                        style="text-transform: capitalize;"> -->
                                     <input type="text" name="salary" placeholder="Salary" required>
                                     <input type="text" name="phone" placeholder="Phone Number" required>
                                     <button type="submit">Save</button>
@@ -404,7 +406,10 @@
                                                 <%= index + 1 %>
                                             </div>
                                             <div class="name">
-                                                <%= teacher.name %>
+                                                <a href="/teacher/<%= teacher._id %>"
+                                                    style="text-decoration:none; color:inherit;">
+                                                    <%= teacher.name %>
+                                                </a>
                                             </div>
                                             <div class="id">
                                                 <%= teacher.empId%>
@@ -413,13 +418,13 @@
                                                 <%= teacher.subject %>
                                             </div>
                                             <div class="class">
-                                                <%= teacher.class %>
+                                                <%= teacher.class%>
                                             </div>
                                             <div class="salary">
-                                                <%= teacher.salary.toLocaleString('en-IN') %>
+                                                <%= teacher.salary ? teacher.salary.toLocaleString('en-IN') : '0' %>
                                             </div>
-                                            <div class="address">
-                                                <%= teacher.address %>
+                                           <div class="DOB">
+                                                <%= teacher.dob ? teacher.dob.toISOString().split("T")[0] : 'N/A' %>
                                             </div>
                                             <div class="number">
                                                 <%= teacher.phone %>
@@ -465,8 +470,8 @@
                                             <input type="text" name="class" value="<%= teacher.class %>" required
                                                 style="text-transform:  uppercase;;">
                                             <input type="text" name="salary" value="<%= teacher.salary %>" required>
-                                            <input type="text" name="address" value="<%= teacher.address %>" required
-                                                style="text-transform: capitalize;">
+                                             <input type="date" name="DOB"
+                                                value="<%= teacher.dob ? teacher.dob.toISOString().split("T")[0] : 'N/A' %>" required>
                                             <input type="text" name="phone" value="<%= teacher.phone %>" required>
                                             <button type="submit">Save</button>
 

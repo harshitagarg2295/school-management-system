@@ -9,21 +9,28 @@ const AdminNotification = require("../../models/AdminNotificationSchema");
 const Expense = require("../../models/Expense");
 const createSalaryExpense = require("../../utils/createSalaryExpense");
 const { adminAuth } = require("../../middlewares/auth");
+const fs = require("fs");
+const path = require("path");
 
 
 // List all staffs
 router.get("/staff-menu", adminAuth, async (req, res) => {
-
-    const admin = await AdminNotification.findOne() || { notifications: [] };
-    const staffs = await Staff.find().sort({ name: 1 });
+    const schoolCode = req.session.schoolCode;
+    const admin = await AdminNotification.findOne({ schoolCode }) || { notifications: [] };
+    const staffs = await Staff.find({ schoolCode }).sort({ name: 1 });
     res.render("Admin/staffs_list", { staffs, admin });
 });
 
-// Add staff
-router.post("/add-staff", adminAuth, async (req, res) => {
-    const toTitleCase = str => str.replace(/\w\S*/g, txt =>
+const toTitleCase = (str) => {
+    if (!str) return "";
+    return str.replace(/\w\S*/g, txt =>
         txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase()
     );
+};
+
+// Add staff
+router.post("/add-staff", adminAuth, async (req, res) => {
+    const schoolCode = req.session.schoolCode;
 
     const { name, empId, category, salary, address, phone } = req.body;
 
@@ -33,51 +40,148 @@ router.post("/add-staff", adminAuth, async (req, res) => {
         address: toTitleCase(address),
         salary: salary,
         phone: phone,
-        empId
+        empId: empId?.toUpperCase() || "",
+        schoolCode
     });
 
-    await testaff.save();
-    res.redirect("/staff-menu");
+    const savedStaff = await testaff.save();
+    return res.redirect(`/staff/${savedStaff._id}`);
 });
 
 // Delete staff
 router.post("/delete-staff/:id", adminAuth, async (req, res) => {
-    await Staff.findByIdAndDelete(req.params.id);
+    const schoolCode = req.session.schoolCode;
+    await Staff.findOneAndDelete({
+        _id: req.params.id,
+        schoolCode
+    });
     res.redirect("/staff-menu");
+});
+
+router.get("/staff/:id", adminAuth, async (req, res) => {
+    try {
+        const schoolCode = req.session.schoolCode;
+
+        const staff = await Staff.findOne({
+            _id: req.params.id,
+            schoolCode
+        });
+
+        if (!staff) {
+            return res.send("Staff not found");
+        }
+
+        res.render("Admin/staffProfile", { staff });
+
+    } catch (err) {
+        console.log(err);
+        res.send("Error loading staff profile");
+    }
 });
 
 // Edit staff
 router.post("/edit-staff/:id", adminAuth, async (req, res) => {
-    const toTitleCase = str => str.replace(/\w\S*/g, txt =>
-        txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase()
-    );
+    try {
+        const schoolCode = req.session.schoolCode;
 
-    const { name, empId, category, salary, address, phone } = req.body;
+        const updateData = {};
 
-    await Staff.findByIdAndUpdate(req.params.id, {
-        name: toTitleCase(name),
-        category: toTitleCase(category),
-        address: toTitleCase(address),
-        salary,
-        phone,
-        empId
-    });
+        // 🔥 clean category first
+        let category = (req.body.category || "").trim().toLowerCase();
 
-    res.redirect("/staff-menu");
+        if (category) {
+            updateData.category =
+                category.charAt(0).toUpperCase() + category.slice(1);
+        }
+
+        if (req.body.name) updateData.name = toTitleCase(req.body.name);
+        if (req.body.empId) updateData.empId = req.body.empId.trim().toUpperCase();
+        if (req.body.phone) updateData.phone = req.body.phone;
+        if (req.body.salary) updateData.salary = req.body.salary;
+        if (req.body.address) updateData.address = toTitleCase(req.body.address);
+        if (req.body.education) updateData.education = req.body.education;
+        if (req.body.experience) updateData.experience = req.body.experience;
+        if (req.body.joiningDate) updateData.joiningDate = req.body.joiningDate;
+
+        // 🔥 driver logic
+        if (category === "driver") {
+            if (req.body.vehicle) updateData.vehicle = req.body.vehicle;
+            if (req.body.vehicleNo) updateData.vehicleNo = req.body.vehicleNo;
+        } else {
+            updateData.vehicle = null;
+            updateData.vehicleNo = null;
+        }
+
+        await Staff.findOneAndUpdate(
+            { _id: req.params.id, schoolCode },
+            { $set: updateData }
+        );
+
+        res.redirect(`/staff/${req.params.id}`);
+    } catch (err) {
+        console.error("Update Error:", err);
+        res.status(500).send("Error updating staff");
+    }
+});
+
+// Upload image
+router.post("/staff/upload-image/:id", adminAuth, async (req, res) => {
+    try {
+        const base64 = req.body.croppedImage;
+        if (!base64) return res.redirect(`/staff/${req.params.id}`);
+
+        const base64Data = base64.split(";base64,").pop();
+
+        const mimeType = base64.match(/data:(image\/\w+);base64/)[1];
+        const ext = mimeType.split("/")[1];
+        const fileName = Date.now() + "." + ext;
+
+        const uploadDir = path.join(__dirname, "../../uploads/staffs");
+
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
+
+        // 🔒 secure fetch
+        const staff = await Staff.findOne({
+            _id: req.params.id,
+            schoolCode: req.session.schoolCode
+        });
+
+        // 🧹 delete old image
+        if (staff && staff.photo) {
+            const oldPath = path.join(uploadDir, staff.photo);
+            if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+        }
+
+        fs.writeFileSync(path.join(uploadDir, fileName), base64Data, "base64");
+
+        await Staff.findOneAndUpdate(
+            { _id: req.params.id, schoolCode: req.session.schoolCode },
+            { photo: fileName }
+        );
+
+        res.redirect(`/staff/${req.params.id}`);
+
+    } catch (err) {
+        console.log(err);
+        res.send("Error uploading image");
+    }
 });
 
 
 // 👉 Declare Holiday (for tseaff)
 router.post("/mark-staff-holiday", adminAuth, async (req, res) => {
+    const schoolCode = req.session.schoolCode;
     const { date, reason } = req.body;
     let holidayDate = moment.utc(date, "YYYY-MM-DD").startOf("day").toDate();
 
-    let existing = await Holiday.findOne({ date: holidayDate, role: "staff" });
+    let existing = await Holiday.findOne({ date: holidayDate, role: "staff", schoolCode });
     if (existing) {
         existing.reason = reason;
         await existing.save();
     } else {
-        await Holiday.create({ role: "staff", date: holidayDate, reason });
+        await Holiday.create({ role: "staff", date: holidayDate, reason, schoolCode });
     }
     res.redirect("/view-attendance-staffs");
 });
@@ -86,7 +190,8 @@ router.post("/mark-staff-holiday", adminAuth, async (req, res) => {
 // 👉 View Attendance Page
 router.get("/view-attendance-staffs", adminAuth, async (req, res) => {
     try {
-        const staffs = await Staff.find().sort({ name: 1 });
+        const schoolCode = req.session.schoolCode;
+        const staffs = await Staff.find({ schoolCode }).sort({ name: 1 });
 
         const month = parseInt(req.query.month) || parseInt(moment().format("MM"));
         const year = parseInt(req.query.year) || parseInt(moment().format("YYYY"));
@@ -105,6 +210,7 @@ router.get("/view-attendance-staffs", adminAuth, async (req, res) => {
         // Holidays
         const allHolidays = await Holiday.find({
             role: "staff",
+            schoolCode,
             date: { $gte: startOfMonth, $lte: endOfMonth },
         });
 
@@ -119,6 +225,7 @@ router.get("/view-attendance-staffs", adminAuth, async (req, res) => {
 
         // Attendance
         const attendanceData = await Attendance.find({
+            schoolCode,
             date: { $gte: startOfMonth, $lte: endOfMonth },
         });
 
@@ -209,6 +316,7 @@ router.get("/view-attendance-staffs", adminAuth, async (req, res) => {
 
 // 👉 Submit Attendance
 router.post("/submit-attendance-staffs", adminAuth, async (req, res) => {
+    const schoolCode = req.session.schoolCode;
     let { attendance = {}, paymentStatus = {}, month, year } = req.body;
 
     // 1. Server Time (India)
@@ -237,7 +345,7 @@ router.post("/submit-attendance-staffs", adminAuth, async (req, res) => {
                 const dateForDb = moment.utc(checkDate.format("YYYY-MM-DD"), "YYYY-MM-DD").toDate();
 
                 // Check kro ki pehle se attendance entry h ya ni
-                const existing = await Attendance.findOne({ staffId: staffId, date: dateForDb });
+                const existing = await Attendance.findOne({ staffId: staffId, date: dateForDb, schoolCode });
 
 
                 if (existing && existing.source === "biometric") {
@@ -262,8 +370,8 @@ router.post("/submit-attendance-staffs", adminAuth, async (req, res) => {
 
                 // --- SAVE TO DB (Direct Save) ---
                 await Attendance.findOneAndUpdate(
-                    { staffId: staffId, date: dateForDb },
-                    { status: status },
+                    { staffId: staffId, date: dateForDb, schoolCode }, // 🔥
+                    { status: status, schoolCode },
                     { upsert: true, new: true }
                 );
             }
@@ -287,12 +395,12 @@ router.post("/submit-attendance-staffs", adminAuth, async (req, res) => {
             // ❌ DELETE EXPENSE when status becomes pending
             if (newStatus === "pending") {
                 const uniqueKey = `staff_${staffId}_${year}_${month}`;
-                await Expense.findOneAndDelete({ uniqueKey });
+                await Expense.findOneAndDelete({ uniqueKey, schoolCode });
             }
         }
 
         // --- Create Expense for all PAID staff ---
-        const staffList = await Staff.find();
+        const staffList = await Staff.find({ schoolCode });
 
         for (let s of staffList) {
             const status = s.salaryStatus.get(yearKey)?.get(monthKey) || "pending";
@@ -320,14 +428,18 @@ router.post("/submit-attendance-staffs", adminAuth, async (req, res) => {
 
 // 👉 Update Staff Salary Status (NO delete/add here)
 router.post("/update-staff-salary/:staffId", adminAuth, async (req, res) => {
+    const schoolCode = req.session.schoolCode;
     const { staffId } = req.params;
     const { month, year, status } = req.body;
 
-    await Staff.findByIdAndUpdate(staffId, {
-        $set: {
-            [`salaryStatus.${year}.${month}`]: status
+    await Staff.findOneAndUpdate(
+        { _id: staffId, schoolCode },
+        {
+            $set: {
+                [`salaryStatus.${year}.${month}`]: status
+            }
         }
-    });
+    );
 
     res.redirect(`/view-attendance-staffs?month=${month}&year=${year}`);
 });

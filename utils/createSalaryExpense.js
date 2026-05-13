@@ -2,7 +2,7 @@ const Expense = require("../models/Expense");
 
 // This function is used to automatic create an expense when you paid salary to any teacher or staff
 
-async function createSalaryExpense({ name, amount, month, year, personId, role }) {
+async function createSalaryExpense({ name, amount, month, year, personId, role, schoolCode }) {
 
     const title = name;
     const category = "Salary Distribution";
@@ -15,7 +15,7 @@ async function createSalaryExpense({ name, amount, month, year, personId, role }
     const uniqueKey = `${role}_${personId}_${year}_${month}`;
 
     // Prevent duplicate expense
-    const existing = await Expense.findOne({ uniqueKey });
+    const existing = await Expense.findOne({ uniqueKey, schoolCode });
     if (existing) return;
 
     const expense = new Expense({
@@ -24,7 +24,8 @@ async function createSalaryExpense({ name, amount, month, year, personId, role }
         quantity: 1,
         amount,
         paymentDate: new Date(),
-        uniqueKey
+        uniqueKey,
+        schoolCode
     });
 
     await expense.save();

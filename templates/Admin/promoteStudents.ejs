@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulk Promotion | SchoolFlow</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            background: #f4f7fe;
+            margin: 0;
+            color: #334155;
+        }
+
+        .admin_dash {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .content-area {
+            font-family: 'Poppins', sans-serif;
+            flex: 1;
+            padding: 50px 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .promo-card {
+            background: white;
+            max-width: 800px;
+            width: 100%;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Top Header Section */
+        .promo-header {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            padding: 40px;
+            color: white;
+            text-align: center;
+        }
+
+        .promo-header i {
+            font-size: 40px;
+            background: rgba(255,255,255,0.2);
+            padding: 20px;
+            border-radius: 50%;
+            margin-bottom: 15px;
+        }
+
+        .promo-header h2 { margin: 10px 0; font-size: 28px; }
+
+        /* Form Body */
+        .promo-body { padding: 40px; }
+
+        .steps-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .step-box {
+            flex: 1;
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px dashed #cbd5e1;
+            text-align: center;
+        }
+
+        .arrow-divider {
+            font-size: 24px;
+            color: #6366f1;
+            animation: bounceRight 2s infinite;
+        }
+
+        @keyframes bounceRight {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(10px); }
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #475569;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            font-size: 16px;
+            background: white;
+            cursor: pointer;
+        }
+
+        /* Warning Section */
+        .warning-note {
+            background: #fffbeb;
+            border: 1px solid #fef3c7;
+            color: #92400e;
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-submit:hover {
+            background: #4338ca;
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .steps-container { flex-direction: column; }
+            .arrow-divider { transform: rotate(90deg); animation: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="admin_dash">
+        <%- include("../partials/AdminPageSidebar") %>
+
+        <div class="content-area">
+            <div class="promo-card">
+                <div class="promo-header">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                    <h2>New Academic Session</h2>
+                    <p>Batch Promotion Management</p>
+                </div>
+
+                <div class="promo-body">
+                    <div class="warning-note">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span>This process will bulk update student records. Ensure all final exams are cleared before proceeding.</span>
+                    </div>
+
+                    <form action="/promote-students" method="POST" id="promoForm">
+                        <div class="steps-container">
+                            <div class="step-box">
+                                <label>Current Class</label>
+                                <select name="fromClass" required>
+                                    <option value="">-- From --</option>
+                                    <% classList.forEach(c => { %>
+                                        <option value="<%= c %>"><%= c %></option>
+                                    <% }) %>
+                                </select>
+                            </div>
+
+                            <div class="arrow-divider">
+                                <i class="fa-solid fa-circle-arrow-right"></i>
+                            </div>
+
+                            <div class="step-box">
+                                <label>Target Class</label>
+                                <select name="toClass" required>
+                                    <option value="">-- To --</option>
+                                    <option value="LKG">LKG</option>
+                                    <option value="UKG">UKG</option>
+                                    <% for(let i=1; i<=12; i++) { %>
+                                        <option value="<%= i %>">Class <%= i %></option>
+                                    <% } %>
+                                    <option value="Graduate" style="color:red; font-weight:bold;">Passed Out</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-submit">
+                            Confirm & Promote Batch
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('promoForm').onsubmit = function(e) {
+            const f = document.getElementsByName('fromClass')[0].value;
+            const t = document.getElementsByName('toClass')[0].value;
+            
+            if(f === t) {
+                alert("Source and Target classes cannot be the same!");
+                return false;
+            }
+            
+            return confirm(`Final Confirmation: You are promoting all students from ${f} to ${t}. Continue?`);
+        };
+    </script>
+</body>
+</html>

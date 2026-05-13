@@ -4,83 +4,268 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            /* Modern Blue */
+            --dark-color: #0f172a;
+            --text-gray: #475569;
+            --white: #ffffff;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 8%;
+            height: 80px;
+            background: var(--white);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        /* Logo Style */
+        .logo a {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--dark-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+        }
+
+        /* Nav Links */
+        .nav {
+            display: flex;
+            list-style: none;
+            align-items: center;
+            gap: 35px;
+        }
+
+        .nav a {
+            text-decoration: none;
+            color: var(--text-gray);
+            font-weight: 500;
+            font-size: 15px;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .nav a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Dropdown Styling */
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: var(--white);
+            min-width: 200px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            padding: 10px 0;
+            display: none;
+            /* Hidden by default */
+            border: 1px solid #f1f5f9;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dropdown:hover .dropdown-menu {
+            display: block;
+        }
+
+        .dropdown-menu li {
+            list-style: none;
+        }
+
+        .dropdown-menu a {
+            padding: 7px 20px;
+            display: block;
+            font-size: 14px;
+            color: var(--text-gray);
+        }
+
+        .dropdown-menu a:hover {
+            background: #f8fbff;
+            color: var(--primary-color);
+        }
+
+        /* Login Button Style */
+        .login-btn {
+            background: var(--primary-color);
+            color: white !important;
+            padding: 10px 25px;
+            border-radius: 50px;
+            /* Capsule shape */
+            font-weight: 600 !important;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);
+        }
+
+        .login-btn:hover {
+            background: var(--dark-color);
+            transform: translateY(-2px);
+        }
+
+        /* Mobile Menu Icon */
+        #menuToggle {
+            display: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--dark-color);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .navbar {
+                padding: 0 5%;
+            }
+
+            .nav {
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 810px) {
+            #menuToggle {
+                display: block;
+            }
+
+            .nav {
+                position: absolute;
+                top: 80px;
+                left: -100%;
+                /* Hidden off-screen */
+                width: 100%;
+                height: calc(100vh - 80px);
+                background: white;
+                flex-direction: column;
+                padding: 40px 20px;
+                gap: 25px;
+                transition: 0.4s;
+                text-align: center;
+                overflow-y: auto;
+            }
+
+            .nav.active {
+                left: 0;
+            }
+
+            .dropdown-menu {
+                position: static;
+                box-shadow: none;
+                border: none;
+                display: none;
+                background: #f8fbff;
+            }
+
+            .dropdown.active .dropdown-menu {
+                display: block;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
     <nav class="navbar">
-
-        <i class="fa-solid fa-bars menu-icon" id="menuToggle"></i>
+        <div class="logo">
+            <a href="/">
+                <i class="fa-solid fa-rocket" style="color: #2563eb;"></i>
+                School<span>Flow</span>
+            </a>
+        </div>
 
         <ul class="nav">
             <li><a href="/">Home</a></li>
-
-            <li class="dropdown">
-                <a >
-                    <span>About Us</span> <i class="fa-solid fa-caret-down"></i>
-                </a>
-                <ul class="dropdown-menu">
-                    <li><a href="/school.html">About School</a></li>
-                    <li><a href="/mission.html">Our Mission & Vision</a></li>
-                    <li><a href="/management.html">Management</a></li>
-                    <li><a href="/rules.html">School Rules</a></li>
-                </ul>
-            </li>
-
-            <li><a href="/academics.html">
-                    Academics</a>
-            </li>
-            <li><a href="/non-academics.html">
-                    Non-Academics</a>
-            </li>
-
-            <li><a href="/admission.html">Admission</a></li>
+            <li><a href="/features">Features</a></li>
 
             <li class="dropdown">
                 <a>
-                    <span>Login</span> <i class="fa-solid fa-caret-down"></i>
+                    Company <i class="fa-solid fa-chevron-down" style="font-size: 12px; margin-left: 5px;"></i>
                 </a>
                 <ul class="dropdown-menu">
-                    <li><a href="/admin.html">Admin Login</a></li>
-                    <li><a href="/teacher.html">Teacher Login</a></li>
-                    <li><a href="/student.html">Student Login</a></li>
+                    <li><a href="/about-us">About Us</a></li>
+                    <li><a href="/terms-conditions">Terms of Service</a></li>
+                    <li><a href="/privacy-policy">Privacy Policy</a></li>
                 </ul>
             </li>
 
-            <li><a href="/contactUs.html">
-                    Contact Us</a>
+            <li><a href="/contact-us">Contact & Support</a></li>
+
+            <li>
+                <a href="/try-demo">Try Demo</a>
             </li>
+
+            <li>
+                <a href="/login" class="login-btn">
+                    <i class="fa-solid fa-user-lock"></i> Login
+                </a>
+            </li>
+
         </ul>
+
+        <i class="fa-solid fa-bars" id="menuToggle"></i>
     </nav>
-</body>
 
+    <script>
+        const menuIcon = document.getElementById("menuToggle");
+        const navMenu = document.querySelector(".nav");
+        const dropdowns = document.querySelectorAll(".dropdown");
 
-<script>
-    const menuIcon = document.getElementById("menuToggle");
-    const navMenu = document.querySelector(".nav");
-    const dropdowns = document.querySelectorAll(".dropdown");
+        // Mobile Menu Toggle
+        menuIcon.addEventListener("click", () => {
+            navMenu.classList.toggle("active");
 
-    // Toggle menu open/close
-    menuIcon.addEventListener("click", () => {
-        navMenu.classList.toggle("active");
-
-        // Toggle icon between bars ↔ cross
-        if (menuIcon.classList.contains("fa-bars")) {
-            menuIcon.classList.replace("fa-bars", "fa-xmark");
-        } else {
-            menuIcon.classList.replace("fa-xmark", "fa-bars");
-        }
-    });
-
-    // For mobile dropdowns - toggle on tap
-    dropdowns.forEach(drop => {
-        drop.addEventListener("click", () => {
-            drop.classList.toggle("active");
+            // Toggle Icon Animation
+            if (navMenu.classList.contains("active")) {
+                menuIcon.classList.replace("fa-bars", "fa-xmark");
+            } else {
+                menuIcon.classList.replace("fa-xmark", "fa-bars");
+            }
         });
-    });
-</script>
 
-
+        // Mobile Dropdown Toggle
+        dropdowns.forEach(drop => {
+            drop.addEventListener("click", (e) => {
+                if (window.innerWidth <= 768) {
+                    drop.classList.toggle("active");
+                }
+            });
+        });
+    </script>
+</body>
 
 </html>

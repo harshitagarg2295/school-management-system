@@ -1,7 +1,10 @@
 const mongoose = require("mongoose");
 
 const StudyMaterialSchema = new mongoose.Schema({
-
+    schoolCode: {
+        type: String,
+        required: true
+    },
     class: String,
     title: String,
     description: String,

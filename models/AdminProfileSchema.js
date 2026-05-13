@@ -1,7 +1,10 @@
 const mongoose = require('mongoose')
 
 const profileSchema = new mongoose.Schema({
-
+    schoolCode: {
+        type: String,
+        required: true
+    },
     name: String,
     email: String,
     mobile: Number,

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Features | SchoolFlow - All-in-One ERP</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --dark: #0f172a;
+            --text-slate: #475569;
+            --bg-light: #f8fafc;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            background-color: var(--bg-light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        /* ---------- HERO SECTION ---------- */
+        .features-hero {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 100px 20px;
+            text-align: center;
+        }
+
+        .features-hero h1 {
+            font-size: clamp(2.2rem, 5vw, 3.2rem);
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+
+        .features-hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+
+        /* ---------- FEATURES GRID ---------- */
+        .container {
+            max-width: 1200px;
+            margin: -60px auto 100px;
+            padding: 0 20px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-item {
+            background: var(--white);
+            padding: 45px 35px;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            text-align: left;
+        }
+
+        .feature-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(37, 99, 235, 0.1);
+            border-color: var(--primary);
+        }
+
+        .icon-box {
+            width: 70px;
+            height: 70px;
+            background: #eff6ff;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            border-radius: 18px;
+            margin-bottom: 25px;
+        }
+
+        .feature-item h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+
+        .feature-item p {
+            color: var(--text-slate);
+            font-size: 1rem;
+        }
+
+        /* ---------- CTA SECTION ---------- */
+        .bottom-cta {
+            background: var(--white);
+            padding: 80px 20px;
+            text-align: center;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .bottom-cta h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .btn-cta {
+            background: var(--primary);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+            transition: 0.3s;
+        }
+
+        .btn-cta:hover {
+            background: var(--dark);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        /* Responsive */
+        @media (max-width: 350px) {
+            .feature-item { padding: 30px 20px; }
+            .features-hero h1 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <%- include("partials/HomePageNavbar") %>
+
+    <section class="features-hero">
+        <h1>Powerful Tools for Powerful Schools</h1>
+        <p>Everything you need to manage your institution from a single, intuitive dashboard.</p>
+    </section>
+
+    <div class="container">
+        <div class="features-grid">
+            
+            <div class="feature-item">
+                <div class="icon-box"><i class="fa-solid fa-calendar-check"></i></div>
+                <h3>Smart Attendance</h3>
+                <p>Digital attendance for students and staff with automatic SMS alerts to parents. Generate monthly reports in one click.</p>
+            </div>
+
+            <div class="feature-item">
+                <div class="icon-box"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+                <h3>Online Fee Portal</h3>
+                <p>Integrated with Razorpay for 24/7 fee collection. Auto-generate professional receipts and track pending dues easily.</p>
+            </div>
+
+            <div class="feature-item">
+                <div class="icon-box"><i class="fa-solid fa-graduation-cap"></i></div>
+                <h3>Result Management</h3>
+                <p>Create report cards, manage marks, and publish exam results online for parents and students to view instantly.</p>
+            </div>
+
+            <div class="feature-item">
+                <div class="icon-box"><i class="fa-solid fa-bullhorn"></i></div>
+                <h3>Instant Notifications</h3>
+                <p>No more paper circulars. Send digital notices, holiday announcements, and event updates to the entire school instantly.</p>
+            </div>
+
+            <div class="feature-item">
+                <div class="icon-box"><i class="fa-solid fa-book-open"></i></div>
+                <h3>Study Resources</h3>
+                <p>Manage class timetables and upload syllabus or study materials so students can access them from anywhere.</p>
+            </div>
+
+            <div class="feature-item">
+                <div class="icon-box"><i class="fa-solid fa-shield-halved"></i></div>
+                <h3>Secure & Cloud Based</h3>
+                <p>Your school's data is 100% encrypted and stored on secure cloud servers, accessible only to authorized staff.</p>
+            </div>
+
+        </div>
+    </div>
+
+    <section class="bottom-cta">
+        <h2>Ready to Digitise Your School?</h2>
+        <p style="margin-bottom: 30px; color: var(--text-slate);">Join 50+ schools already using SchoolFlow.</p>
+        <a href="/login" class="btn-cta">Start Your Journey Now</a>
+    </section>
+
+    <%- include("partials/HomePageFooter") %>
+
+</body>
+</html>

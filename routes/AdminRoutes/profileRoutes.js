@@ -1,27 +1,27 @@
 const express = require('express')
 const router = express.Router()
 const profile = require("../../models/AdminProfileSchema");
-const { adminAuth } =  require("../../middlewares/auth");
+const { adminAuth } = require("../../middlewares/auth");
 
 const path = require("path");
 const fs = require("fs");
 
 
-router.get("/profile-menu",adminAuth, async (req, res) => {
-
-    const admin = await profile.findOne();
+router.get("/profile-menu", adminAuth, async (req, res) => {
+    const schoolCode = req.session.schoolCode;
+    const admin = await profile.findOne({ schoolCode });
     res.render("Admin/profile", { admin });
 })
 
 // Post route for saving admin profile details
 
 router.post("/edit-details", adminAuth, async (req, res) => {
-
+    const schoolCode = req.session.schoolCode;
     const { name, email, mobile, address, bio } = req.body;
 
     await profile.findOneAndUpdate(
-        {},                                     // filter (single admin)
-        { name, email, mobile, address, bio },  // update data
+        { schoolCode },                                    // filter (single admin)
+        { name, email, mobile, address, bio, schoolCode },  // update data
         { new: true, upsert: true }             // create if not found
     )
 
@@ -31,7 +31,7 @@ router.post("/edit-details", adminAuth, async (req, res) => {
 // Route For upload image
 
 // Create upload folder if not exists
-const uploadPath = path.join(__dirname, "../../uploads/profile");
+const uploadPath = path.join(__dirname, "../../uploads/admin");
 if (!fs.existsSync(uploadPath)) {
     fs.mkdirSync(uploadPath, { recursive: true });
 }
@@ -39,7 +39,8 @@ if (!fs.existsSync(uploadPath)) {
 
 // --- IMAGE UPLOAD ROUTE ---
 
-router.post("/upload-profile-image",adminAuth, async (req, res) => {
+router.post("/upload-profile-image", adminAuth, async (req, res) => {
+    const schoolCode = req.session.schoolCode;
     const base64Data = req.body.croppedImage;
 
     if (!base64Data || base64Data.trim() === "") {
@@ -55,8 +56,8 @@ router.post("/upload-profile-image",adminAuth, async (req, res) => {
     fs.writeFileSync(filePath, buffer);
 
     await profile.findOneAndUpdate(
-        {},
-        { image: fileName },
+        { schoolCode },
+        { image: fileName, schoolCode },
         { upsert: true }
     );
 

@@ -2,6 +2,10 @@
 const mongoose = require("mongoose");
 
 const studentResultSchema = new mongoose.Schema({
+  schoolCode: {
+    type: String,
+    required: true
+  },
   studentId: { type: mongoose.Schema.Types.ObjectId, ref: "StudentSchema", required: true },
   class: { type: String, required: true },
   examType: { type: String, required: true },   // Monthly Test / Exam

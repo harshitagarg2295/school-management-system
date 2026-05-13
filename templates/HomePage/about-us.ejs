@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | SchoolFlow</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --dark: #0f172a;
+            --text-slate: #475569;
+            --bg-light: #f8fafc;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            background-color: var(--bg-light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        /* Hero Section */
+        .about-hero {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 100px 20px;
+            text-align: center;
+        }
+
+        .about-hero h1 {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            margin-bottom: 20px;
+            font-weight: 800;
+        }
+
+        .about-hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+
+        /* Content Section */
+        .container {
+            max-width: 1100px;
+            margin: -50px auto 80px;
+            padding: 0 20px;
+        }
+
+        .story-card {
+            background: white;
+            padding: 60px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+        }
+
+        .story-text h2 {
+            color: var(--primary);
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .story-text p {
+            color: var(--text-slate);
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+
+        /* Mission & Vision Grid */
+        .vision-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .vision-item {
+            padding: 40px;
+            border-radius: 20px;
+            background: #f1f5f9;
+            border-left: 5px solid var(--primary);
+        }
+
+        .vision-item i {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .vision-item h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        /* Stats Section */
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-top: 60px;
+            text-align: center;
+        }
+
+        .stat-box h4 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin: 0;
+        }
+
+        .stat-box p {
+            font-weight: 600;
+            color: var(--text-slate);
+        }
+
+        /* Responsive Fixes */
+        @media (max-width: 768px) {
+            .story-card { padding: 30px; }
+            .container { margin-top: -30px; }
+            .about-hero { padding: 80px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <%- include("partials/HomePageNavbar") %>
+
+    <section class="about-hero">
+        <h1>Transforming Education</h1>
+        <p>Empowering schools with smart technology to focus more on teaching and less on paperwork.</p>
+    </section>
+
+    <div class="container">
+        <div class="story-card">
+            <div class="story-text">
+                <h2>The SchoolFlow Journey</h2>
+                <p>
+                    SchoolFlow was born out of a simple idea: <strong>Why should school management be complicated?</strong> 
+                    In a world where everything is just a click away, we realized that many educational institutions 
+                    still struggle with manual attendance, messy fee records, and communication gaps.
+                </p>
+                <p>
+                    Founded by <strong>Harshita Garg</strong>, SchoolFlow is designed to be the backbone of modern schools. 
+                    We don't just provide a software; we provide a system that brings transparency, efficiency, 
+                    and ease to students, parents, and administrators alike.
+                </p>
+            </div>
+
+            <div class="vision-grid">
+                <div class="vision-item">
+                    <i class="fa-solid fa-bullseye"></i>
+                    <h3>Our Mission</h3>
+                    <p>To digitize every school in India by providing affordable, high-end management tools that simplify daily operations.</p>
+                </div>
+                <div class="vision-item">
+                    <i class="fa-solid fa-eye"></i>
+                    <h3>Our Vision</h3>
+                    <p>Building an ecosystem where data-driven insights help educators improve student outcomes and institutional growth.</p>
+                </div>
+            </div>
+
+            <div class="stats">
+                <div class="stat-box">
+                    <h4>100%</h4>
+                    <p>Secure Data</p>
+                </div>
+                <div class="stat-box">
+                    <h4>24/7</h4>
+                    <p>Fast Support</p>
+                </div>
+                <div class="stat-box">
+                    <h4>Smart</h4>
+                    <p>Fee Payments</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include("partials/HomePageFooter") %>
+
+</body>
+</html>

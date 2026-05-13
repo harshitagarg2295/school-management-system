@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Fees Payment - Rishikulam Public School</title>
+  <title>Fees Payment</title>
   <style>
   body {
   background: linear-gradient(135deg, #cfe2ff, #f7faff);
@@ -216,7 +216,7 @@ h2 {
 
   <div class="payment-container">
     <h2>Fees Payment</h2>
-    <div class="school-name">Rishikulam Public School</div>
+    <div class="school-name"><%= schoolName %></div>
 
     <div class="summary">
       <div>Student: <strong>
@@ -282,7 +282,7 @@ h2 {
         key: "rzp_test_RSEpP4AhOamoYZ",
         amount: order.amount,
         currency: "INR",
-        name: "Rishikulam Public School",
+        name: "<%= schoolName %>",
         description: "Fees Payment",
         order_id: order.id,
         handler: function (response) {

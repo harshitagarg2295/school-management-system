@@ -1,6 +1,10 @@
 const mongoose = require("mongoose");
 
 const AdminNotificationSchema = new mongoose.Schema({
+  schoolCode: {
+    type: String,
+    required: true
+  },
   notifications: [
     {
       message: String,

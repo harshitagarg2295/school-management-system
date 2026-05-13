@@ -24,96 +24,96 @@
 
                 <%- include("partials/adminNotification", { admin: admin }) %>
 
-                <div class="cards">
+                    <div class="cards">
 
-                    <div class="stud-card card purple">
-                        <h3>
-                            <%= totalStudents %>
-                        </h3>
-                        <p>Students</p>
+                        <div class="stud-card card purple">
+                            <h3>
+                                <%= totalStudents %>
+                            </h3>
+                            <p>Students</p>
+                        </div>
+
+                        <div class="teach-card card">
+                            <h3>
+                                <%= totalTeachers %>
+                            </h3>
+                            <p>Teachers</p>
+                        </div>
+
+                        <div class="staff-card card purple">
+                            <h3>
+                                <%= totalStaff %>
+                            </h3>
+                            <p>Staffs</p>
+                        </div>
+
+                        <div class="award-card card">
+                            <h3>
+                                <%= totalAwards %>
+                            </h3>
+                            <p>Awards</p>
+                        </div>
                     </div>
 
-                    <div class="teach-card card">
-                        <h3>
-                            <%= totalTeachers %>
-                        </h3>
-                        <p>Teachers</p>
-                    </div>
 
-                    <div class="staff-card card purple">
-                        <h3>
-                            <%= totalStaff %>
-                        </h3>
-                        <p>Staffs</p>
-                    </div>
+                    <div class="charts">
+                        <div class="earnings-chart">
 
-                    <div class="award-card card">
-                        <h3>
-                            <%= totalAwards %>
-                        </h3>
-                        <p>Awards</p>
-                    </div>
-                </div>
+                            <div class="earnings-header">
 
+                                <div class="header-flex">
+                                    <h2 class="chart-title">Earnings</h2>
 
-                <div class="charts">
-                    <div class="earnings-chart">
+                                    <form method="GET" action="/adminDashboard">
+                                        <select name="year" onchange="this.form.submit()"
+                                            class="select_class year-dropdown">
+                                            <% availableYears.forEach(yr=> { %>
+                                                <option value="<%= yr %>" <%=selectedYear===yr ? "selected" : "" %>>
+                                                    <%= yr %> - <%= yr + 1 %>
+                                                </option>
+                                                <% }) %>
+                                        </select>
+                                    </form>
+                                </div>
 
-                        <div class="earnings-header">
-
-                            <div class="header-flex">
-                                <h2 class="chart-title">Earnings</h2>
-
-                                <form method="GET" action="/adminDashboard">
-                                    <select name="year" onchange="this.form.submit()"
-                                        class="select_class year-dropdown">
-                                        <% availableYears.forEach(yr=> { %>
-                                            <option value="<%= yr %>" <%=selectedYear===yr ? "selected" : "" %>>
-                                                <%= yr %> - <%= yr + 1 %>
-                                            </option>
-                                            <% }) %>
-                                    </select>
-                                </form>
+                                <div class="legend-row">
+                                    <div class="legend-item">
+                                        <span class="legend-dot income-dot"></span>
+                                        <span>Income</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <span class="legend-dot expense-dot"></span>
+                                        <span>Expense</span>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="legend-row">
-                                <div class="legend-item">
-                                    <span class="legend-dot income-dot"></span>
-                                    <span>Income</span>
-                                </div>
-                                <div class="legend-item">
-                                    <span class="legend-dot expense-dot"></span>
-                                    <span>Expense</span>
-                                </div>
+                            <canvas id="earningsLineChart"></canvas>
+                        </div>
+
+                        <div class="pie-chart">
+
+                            <div class="chart-1">
+                                <h3 class="revenue">Revenue</h3>
+
+                                <!-- ✅ Fund input form -->
+                                <% if (!noData) { %>
+                                    <form method="GET" action="/adminDashboard" class="fund-form"
+                                        onchange="this.form.submit()">
+                                        <input type="hidden" name="year" value="<%= selectedYear %>">
+                                        <label for="fund">Fund (₹):</label>
+                                        <input type="number" name="fund" id="fund" value="<%= fundValue %>">
+                                    </form>
+                                    <% } %>
+                                        <canvas class="revenue-chart"></canvas>
+                            </div>
+
+                            <div class="chart-2">
+                                <h3 class="expense">Expenses</h3>
+                                <canvas class="expense-chart"></canvas>
                             </div>
                         </div>
-
-                        <canvas id="earningsLineChart"></canvas>
                     </div>
-
-                    <div class="pie-chart">
-
-                        <div class="chart-1">
-                            <h3 class="revenue">Revenue</h3>
-
-                            <!-- ✅ Fund input form -->
-                            <% if (!noData) { %>
-                                <form method="GET" action="/adminDashboard" class="fund-form"
-                                    onchange="this.form.submit()">
-                                    <input type="hidden" name="year" value="<%= selectedYear %>">
-                                    <label for="fund">Fund (₹):</label>
-                                    <input type="number" name="fund" id="fund" value="<%= fundValue %>">
-                                </form>
-                                <% } %>
-                                    <canvas class="revenue-chart"></canvas>
-                        </div>
-
-                        <div class="chart-2">
-                            <h3 class="expense">Expenses</h3>
-                            <canvas class="expense-chart"></canvas>
-                        </div>
-                    </div>
-                </div>
 
             </section>
     </div>
@@ -132,5 +132,122 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </body>
+
+<!-- 1. Pehle CSS Block (Sirf tab chalega jab expire ho chuka ho) -->
+<% if (subStatus==='expired' ) { %>
+    <style>
+        .admin_dash {
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .main-section,
+        .sidebar {
+            filter: blur(4px) grayscale(100%);
+            opacity: 0.6;
+        }
+
+        .swal2-container {
+            pointer-events: auto !important;
+        }
+
+        /* Popup ko click hone dega */
+    </style>
+    <% } %>
+
+        <!-- 2. SweetAlert Library -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+        <script>
+            const subStatus = "<%= subStatus %>";
+            const days = "<%= daysRemaining %>";
+            const sCode = "<%= schoolCode %>";
+
+            // Common configurations for better UI
+            const commonConfig = {
+                showClass: {
+                    popup: 'animate__animated animate__fadeInDown'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutUp'
+                },
+                customClass: {
+                    popup: 'my-stylish-popup',
+                    title: 'my-popup-title',
+                    confirmButton: 'my-confirm-btn'
+                }
+            };
+
+            if (subStatus === "expired") {
+                Swal.fire({
+                    ...commonConfig,
+                    title: 'Access Suspended!',
+                    html: `
+                <div style="padding: 10px;">
+                    <i class="fa-solid fa-circle-exclamation" style="font-size: 50px; color: #ef4444; margin-bottom: 15px;"></i>
+                    <p style="font-size: 16px;">Dear Admin, the subscription for school <br><b style="color: #ef4444;">${sCode}</b> has expired.</p>
+                    <p style="background: #fef2f2; padding: 10px; border-radius: 8px; border-left: 4px solid #ef4444; font-size: 14px; color: #991b1b;">
+                        Please renew to unlock all management services.
+                    </p>
+                </div>
+            `,
+                    icon: 'error',
+                    iconColor: '#ef4444',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showConfirmButton: true,
+                    confirmButtonText: '<i class="fa-solid fa-phone"></i> Contact Super Admin',
+                    confirmButtonColor: '#ef4444',
+                    footer: '<span style="color: #6b7280; font-size: 12px;">School Management System Security</span>'
+                });
+            }
+            else if (subStatus === "warning") {
+                Swal.fire({
+                    ...commonConfig,
+                    title: 'Subscription Renewal',
+                    html: `
+                <div style="text-align: left; padding: 5px;">
+                    <p style="font-size: 15px; margin-bottom: 10px;">Your portal subscription is nearing its end date.</p>
+                    <div style="display: flex; align-items: center; background: #fffbeb; padding: 12px; border-radius: 10px; border: 1px solid #fde68a;">
+                        <div style="font-size: 24px; margin-right: 15px;">⏳</div>
+                        <div>
+                            <span style="font-size: 13px; color: #92400e; display: block;">Remaining Time</span>
+                            <b style="font-size: 18px; color: #b45309;">${days} Days Left</b>
+                        </div>
+                    </div>
+                </div>
+            `,
+                    icon: 'warning',
+                    iconColor: '#f59e0b',
+                    confirmButtonText: 'Got it, thanks!',
+                    confirmButtonColor: '#f59e0b',
+                    backdrop: `rgba(245, 158, 11, 0.1)`
+                });
+            }
+        </script>
+
+        <!-- Thodi extra CSS dashboard ko premium dikhane ke liye -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+        <style>
+            .my-stylish-popup {
+                border-radius: 20px !important;
+                padding: 2rem !important;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+            }
+
+            .my-popup-title {
+                font-family: 'Poppins', sans-serif;
+                font-weight: 700 !important;
+                color: #1f2937 !important;
+            }
+
+            .my-confirm-btn {
+                border-radius: 10px !important;
+                padding: 10px 25px !important;
+                font-weight: 600 !important;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+        </style>
 
 </html>

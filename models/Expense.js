@@ -1,6 +1,10 @@
 const mongoose = require('mongoose')
 
 const expenseSchema = new mongoose.Schema({
+  schoolCode: {
+    type: String,
+    required: true
+  },
   category: String,
   title: String,
   quantity: String,
@@ -8,7 +12,7 @@ const expenseSchema = new mongoose.Schema({
   paymentDate: Date,
 
   uniqueKey: { type: String, index: true },  // <-- NEW
-  
+
   createdAt: {
     type: Date,
     default: Date.now

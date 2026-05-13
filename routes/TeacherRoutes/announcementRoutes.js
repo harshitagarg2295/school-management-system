@@ -10,7 +10,8 @@ const mongoose = require('mongoose')
 
 // Announcemt related routes for Teachers
 router.get("/teachers/add-announcement", teacherAuth, async (req, res) => {
-  const classList = await Student.distinct("class");
+  const schoolCode = req.session.schoolCode;
+  const classList = await Student.distinct("class", { schoolCode });
   const classOrder = [
     "Nursery", "LKG", "UKG",
     "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
@@ -36,7 +37,7 @@ router.get("/teachers/add-announcement", teacherAuth, async (req, res) => {
 
 // Save the form (POST request)
 router.post("/teachers/add-announcement", teacherAuth, async (req, res) => {
-
+  const schoolCode = req.session.schoolCode;
   const { title, description, date, class: className } = req.body;
 
   const teacherName = req.session.teacherName;
@@ -47,16 +48,19 @@ router.post("/teachers/add-announcement", teacherAuth, async (req, res) => {
     date,
     class: className || "All",
     by: "Teacher",
-    teacherName: teacherName
+    teacherName: teacherName,
+    schoolCode
   });
   res.redirect("/teachers/add-announcement?status=success");
 })
 
 // Teacher View Announcements
 router.get("/teachers/view-announcement", teacherAuth, async (req, res) => {
+  const schoolCode = req.session.schoolCode;
   const teacherName = req.session.teacherName;
 
   const announcements = await Announcement.find({
+    schoolCode,
     $or: [
       { by: "Teacher", teacherName: teacherName },  // teacher ki apni announcements
       { by: "Principal", target: "teacher" }        // admin ki teacher ke liye wali
@@ -70,7 +74,8 @@ router.get("/teachers/view-announcement", teacherAuth, async (req, res) => {
 // Announcemt related routes for Admin
 
 router.get("/admin/add-announcement", adminAuth, async (req, res) => {
-  const classList = await Student.distinct("class");
+  const schoolCode = req.session.schoolCode;
+  const classList = await Student.distinct("class", { schoolCode });
   const classOrder = [
     "Nursery", "LKG", "UKG",
     "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
@@ -94,6 +99,7 @@ router.get("/admin/add-announcement", adminAuth, async (req, res) => {
 
 
 router.post("/admin/add-announcement", adminAuth, async (req, res) => {
+  const schoolCode = req.session.schoolCode;
   const { title, description, date, class: className } = req.body;
 
   let target = "student";
@@ -111,7 +117,8 @@ router.post("/admin/add-announcement", adminAuth, async (req, res) => {
     class: cls,
     by: "Principal",
     teacherName: null,
-    target
+    target,
+    schoolCode
   });
 
   res.redirect("/admin/add-announcement?status=success");
@@ -120,7 +127,8 @@ router.post("/admin/add-announcement", adminAuth, async (req, res) => {
 
 // Admin View Announcements
 router.get("/admin/view-announcement", adminAuth, async (req, res) => {
-  const announcements = await Announcement.find().sort({ date: -1 });
+  const schoolCode = req.session.schoolCode;
+  const announcements = await Announcement.find({ schoolCode }).sort({ date: -1 });
 
   res.render("Students/viewAnnouncement", { announcements, role: "admin", updated: req.query.updated });
 });
@@ -133,13 +141,13 @@ function redirectByRole(req, res, extraQuery = "") {
   if (req.session.teacherId) {
     return res.redirect("/teachers/view-announcement" + extraQuery);
   }
-  return res.redirect("/admin.html"); // fallback
+  return res.redirect("/login"); // fallback
 }
 
 
 // Edit announcement 
 router.get("/announcement/edit/:id", async (req, res) => {
-
+  const schoolCode = req.session.schoolCode;
   // 🔐 login check
   if (!req.session.adminId && !req.session.teacherId) {
     return redirectByRole(req, res);
@@ -150,7 +158,7 @@ router.get("/announcement/edit/:id", async (req, res) => {
     return redirectByRole(req, res);
   }
 
-  const ann = await Announcement.findById(req.params.id);
+  const ann = await Announcement.findOne({ _id: req.params.id, schoolCode })
   if (!ann) {
     return redirectByRole(req, res);
   }
@@ -167,7 +175,7 @@ router.get("/announcement/edit/:id", async (req, res) => {
   }
 
   // 📚 class list
-  const classList = await Student.distinct("class");
+  const classList = await Student.distinct("class", { schoolCode });
 
   // ✅ SAME EJS (edit mode)
   return res.render("Teachers/addAnnouncement", {
@@ -182,12 +190,12 @@ router.get("/announcement/edit/:id", async (req, res) => {
 
 // Update announcement 
 router.post("/announcement/edit/:id", async (req, res) => {
-
+  const schoolCode = req.session.schoolCode;
   if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
     return redirectByRole(req, res);
   }
 
-  const ann = await Announcement.findById(req.params.id);
+  const ann = await Announcement.findOne({ _id: req.params.id, schoolCode })
   if (!ann) {
     return redirectByRole(req, res);
   }
@@ -219,12 +227,12 @@ router.post("/announcement/edit/:id", async (req, res) => {
 
 // Delete Announcement
 router.post("/announcement/delete/:id", async (req, res) => {
-
+  const schoolCode = req.session.schoolCode;
   if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
     return redirectByRole(req, res);
   }
 
-  const ann = await Announcement.findById(req.params.id);
+  const ann = await Announcement.findOne({ _id: req.params.id, schoolCode })
   if (!ann) {
     return redirectByRole(req, res);
   }
@@ -239,7 +247,10 @@ router.post("/announcement/delete/:id", async (req, res) => {
     return redirectByRole(req, res);
   }
 
-  await Announcement.findByIdAndDelete(req.params.id);
+  await Announcement.findOneAndDelete({
+    _id: req.params.id,
+    schoolCode
+  });
 
   // ✅ CORRECT redirect
   return redirectByRole(req, res);

@@ -5,20 +5,23 @@ const router = express.Router();
 const Student = require("../../models/StudentSchema");
 const Attendance = require("../../models/StudentAttendance");
 const Holiday = require("../../models/Holiday");
-const {studentAuth} =  require("../../middlewares/auth");
+const { studentAuth } = require("../../middlewares/auth");
 
 // Student Attendance View
-router.get("/students/view-attendance",studentAuth, async (req, res) => {
-
+router.get("/students/view-attendance", studentAuth, async (req, res) => {
+  const schoolCode = req.session.schoolCode;
   const studentId = req.session.studentId.id;
 
   // मान लो req.session.studentId से student logged in है
   if (!req.session.studentId || !req.session.studentId.id) {
-    return res.redirect("/student.html");
+    return res.redirect("/login");;
   }
 
   // student fetch
-  const student = await Student.findById(req.session.studentId.id);
+  const student = await Student.findOne({
+    _id: req.session.studentId.id,
+    schoolCode
+  });
 
   // Month aur Year params
   let month = parseInt(req.query.month) || moment().month() + 1; // 1-based
@@ -36,6 +39,7 @@ router.get("/students/view-attendance",studentAuth, async (req, res) => {
 
   const attendanceDocs = await Attendance.find({
     studentId: studentId,
+    schoolCode,
     date: { $gte: startDate, $lte: endDate }
   });
 
@@ -46,12 +50,13 @@ router.get("/students/view-attendance",studentAuth, async (req, res) => {
     attendanceMap[`day_${day}`] = att.status; // "P" / "A"
   });
 
-   const presentCount = attendanceDocs.filter(a => a.status === "P").length;
+  const presentCount = attendanceDocs.filter(a => a.status === "P").length;
   const absentCount = attendanceDocs.filter(a => a.status === "A").length;
 
   // Holidays fetch
   const holidayDocs = await Holiday.find({
     role: "student",
+    schoolCode,
     date: {
       $gte: moment(`${year}-${month}-01`, "YYYY-MM-DD").startOf("day").toDate(),
       $lte: moment(`${year}-${month}-${daysInMonth}`, "YYYY-MM-DD").endOf("day").toDate()

@@ -482,7 +482,7 @@
           <div class="image" aria-label="profile-picture">
             <!-- Preview image element (shows existing profile or placeholder) -->
             <img id="previewImg" class="preview"
-              src="<%= admin?.image ? '/uploads/profile/' + admin.image : '/images/default-profile.png' %>">
+              src="<%= admin?.image ? '/uploads/admin/' + admin.image : '/images/default-profile.png' %>">
 
             <!-- hidden file input (capture attr will prompt camera on mobile) -->
             <input id="fileInput" type="file" accept="image/*" capture="environment" style="display:none;">
@@ -696,7 +696,7 @@
 
       const confirmLogout = confirm("Are you sure you want to logout?");
       if (!confirmLogout) return;
-      window.location = '/admin.html';
+      window.location = '/login';
     });
 
   </script>

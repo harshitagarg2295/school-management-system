@@ -5,39 +5,41 @@ const AdminNotification = require("../../models/AdminNotificationSchema");
 const { adminAuth } = require("../../middlewares/auth");
 const bcrypt = require("bcrypt")
 const moment = require("moment-timezone");
+const path = require('path');
+const fs = require('fs');
 
 
 // POST - Mark Holiday for Students
 router.post("/mark-student-holiday", adminAuth, async (req, res) => {
-
+    const schoolCode = req.session.schoolCode;
     const { date, reason } = req.body;
 
-    let existing = await Holiday.findOne({ date: new Date(date), role: "student" });
+    let existing = await Holiday.findOne({ date: new Date(date), role: "student", schoolCode });
     if (existing) {
         existing.reason = reason;
         await existing.save();
     } else {
-        await Holiday.create({ role: "student", date: new Date(date), reason });
+        await Holiday.create({ role: "student", date: new Date(date), reason, schoolCode });
     }
 
     res.redirect("/view-attendance-students");
 });
 
 router.get("/stud-menu", adminAuth, async (req, res) => {
+    const schoolCode = req.session.schoolCode;
     const classFilter = req.query.classFilter;
 
-    let filter = {};
+    let filter = { schoolCode };
+
     if (classFilter) {
         filter.class = classFilter;
     }
-
     const students = await Student.find(filter).sort({ name: 1 });
 
     // ✅ Dynamically extract all unique classes from DB
-    const classList = await Student.distinct("class");
+    const classList = await Student.distinct("class", { schoolCode });
 
-    const admin = await AdminNotification.findOne() || { notifications: [] };
-
+    const admin = await AdminNotification.findOne({ schoolCode }) || { notifications: [] };
 
     res.render("Admin/students_list", {
         students,
@@ -48,25 +50,32 @@ router.get("/stud-menu", adminAuth, async (req, res) => {
 });
 
 router.post("/add-student", adminAuth, async (req, res) => { //add student
-
+    const schoolCode = req.session.schoolCode;
     function toTitleCase(str) {
+        if (!str || typeof str !== 'string') return ""; // Agar khali hai to error na de
         return str.replace(/\w\S*/g, (txt) => {
             return txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase();
         });
     }
 
-    const { name, id, class: studentClass, DOB, fees, phone, address } = req.body;
-
+    const {
+        name, id, class: studentClass, DOB, fees, phone, address, rollNo, house,
+        section, gender, admissionDate, fatherName, motherName,
+        initialClass, previousSchool, bloodGroup
+    } = req.body;
 
     const dobDate = new Date(DOB); // convert string to date object
 
 
     //username = first 3 letters of name (lowercase) + @ + birth date (dd) no leading zeroes
-    // password = full DOB (yyyymmdd) + @ + student id 
+    // password = full DOB (yyyymmdd) + @ + student id (capital)
 
     const username = name.slice(0, 3).toLowerCase() + "@" + dobDate.getDate();
 
-    const rawPassword = DOB.replace(/-/g, "") + "@" + id.toString();
+    const cleanId = id.trim().toUpperCase();
+
+    const rawPassword = DOB.replace(/-/g, "") + "@" + cleanId;
+    console.log("🔥 GENERATED PASSWORD:", rawPassword);
 
     // 🔐 HASH PASSWORD (IMPORTANT) store password in secure form
     const hashedPassword = await bcrypt.hash(rawPassword, 10);
@@ -108,11 +117,22 @@ router.post("/add-student", adminAuth, async (req, res) => { //add student
     ];
 
     const student = new Student({
+        schoolCode,
         name: toTitleCase(name),
-        id: id,
+        id: id?.toUpperCase() || "",
         class: studentClass.toUpperCase(),
-        address: toTitleCase(address),
+        section: section ? section.toUpperCase() : "A",
+        gender,
+        rollNo,
+        house,
+        bloodGroup,
         DOB: dobDate,
+        admissionDate: admissionDate ? new Date(admissionDate) : new Date(),
+        fatherName: toTitleCase(fatherName),
+        motherName: toTitleCase(motherName),
+        initialClass: initialClass ? initialClass.toUpperCase() : studentClass.toUpperCase(),
+        previousSchool: toTitleCase(previousSchool),
+        address: toTitleCase(address),
         fees: totalFees,
         phone: phone,
         feeStatus: feeStatusArray,
@@ -120,16 +140,60 @@ router.post("/add-student", adminAuth, async (req, res) => { //add student
         password: hashedPassword
     });
 
+    const savedStudent = await student.save();
 
-
-    await student.save();
-    res.redirect("/stud-menu");
+    // 🔥 IMPORTANT: redirect to profile page
+    return res.redirect(`/student/${savedStudent._id}`);
 });
+
+router.get("/student/:id", adminAuth, async (req, res) => {
+    try {
+        const schoolCode = req.session.schoolCode;
+        const student = await Student.findOne({
+            _id: req.params.id,
+            schoolCode: schoolCode
+        });
+
+        if (!student) {
+            return res.status(404).send("Student not found");
+        }
+
+        // Classes fetch kar rahe hain (agar dropdown mein dikhani ho)
+        const classList = await Student.distinct("class", { schoolCode });
+        const sortedClasses = classList.sort();
+
+        res.render("Admin/studentProfile", {
+            student,
+            classes: sortedClasses
+        });
+
+    } catch (err) {
+        console.log("Error loading student profile:", err);
+        res.send("Error loading student profile");
+    }
+});
+
 
 // Delete student route
 router.post("/delete-student/:id", adminAuth, async (req, res) => {
+    const schoolCode = req.session.schoolCode;
     const studentId = req.params.id;
-    await Student.findByIdAndDelete(studentId);
+    const student = await Student.findById(studentId);
+
+    // 🔥 CHECK: Agar student ka username 'student_demo' hai toh delete mat hone do
+    if (student && student.username === "student_demo") {
+        return res.send(`
+                <script>
+                    alert('Notice: This is a default Demo Student. You cannot delete it, but you can delete any new student you create.');
+                    window.history.back();
+                </script>
+            `);
+    }
+
+    await Student.findOneAndDelete({
+        _id: studentId,
+        schoolCode
+    });
     res.redirect("/stud-menu");
 });
 
@@ -137,27 +201,85 @@ router.post("/delete-student/:id", adminAuth, async (req, res) => {
 //  EDIT POST Route (to update data)
 
 function toTitleCase(str) {
+    if (!str || typeof str !== 'string') return ""; // Agar khali hai to error na de
     return str.replace(/\w\S*/g, (txt) => {
         return txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase();
     });
 }
-
 router.post("/edit-student/:id", adminAuth, async (req, res) => {
-    const { name, id, class: className, DOB, fees, address, phone } = req.body;
+    const schoolCode = req.session.schoolCode;
+    const {
+        name, id, fatherName, motherName, phone, address,
+        gender, dob, admissionDate, initialClass, previousSchool,
+        rollNo, house, section, bloodGroup
+    } = req.body;
 
-    const dobDate = new Date(DOB);
+    const updateData = {};
 
-    await Student.findByIdAndUpdate(req.params.id, {
-        name: toTitleCase(name),
-        id: toTitleCase(id),
-        class: className.toUpperCase(),
-        address: toTitleCase(address),
-        DOB: dobDate,
-        fees,
-        phone
-    });
-    res.redirect("/stud-menu");
+    if (name) updateData.name = toTitleCase(name);
+    if (id) updateData.id = id.trim().toUpperCase();
+    if (fatherName) updateData.fatherName = toTitleCase(fatherName);
+    if (motherName) updateData.motherName = toTitleCase(motherName);
+    if (phone) updateData.phone = phone;
+    if (address) updateData.address = toTitleCase(address);
+    if (gender) updateData.gender = gender;
+    if (rollNo) updateData.rollNo = rollNo;
+    if (house) updateData.house = house;
+    if (section) updateData.section = section.trim().toUpperCase();
+    if (bloodGroup) updateData.bloodGroup = bloodGroup;
+
+    if (dob) updateData.DOB = new Date(dob);
+    if (admissionDate) updateData.admissionDate = new Date(admissionDate);
+    if (initialClass) updateData.initialClass = initialClass.toUpperCase();
+    if (previousSchool) updateData.previousSchool = toTitleCase(previousSchool);
+    Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key]);
+
+    await Student.findOneAndUpdate(
+        {
+            _id: req.params.id,
+            schoolCode
+        },
+        { $set: updateData });
+    res.redirect(`/student/${req.params.id}`);
 });
+
+router.post("/student/upload-image/:id", adminAuth, async (req, res) => {
+    try {
+        const base64 = req.body.croppedImage;
+        if (!base64) return res.redirect(`/student/${req.params.id}`);
+
+        const base64Data = base64.split(";base64,").pop();
+
+        const mimeType = base64.match(/data:(image\/\w+);base64/)[1];
+        const ext = mimeType.split("/")[1]; // jpeg, png, etc
+
+        const fileName = Date.now() + "." + ext;
+        const uploadDir = path.join(__dirname, "../../uploads/students"); // Folder path check kar lena
+
+        if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+        fs.writeFileSync(path.join(uploadDir, fileName), base64Data, "base64");
+
+        const student = await Student.findOne({
+            _id: req.params.id,
+            schoolCode: req.session.schoolCode
+        });
+
+        // 🧹 delete old image
+        if (student && student.photo) {
+            const oldPath = path.join(uploadDir, student.photo);
+            if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+        }
+        await Student.findOneAndUpdate(
+            { _id: req.params.id, schoolCode: req.session.schoolCode },
+            { photo: fileName }
+        );
+        res.redirect(`/student/${req.params.id}`);
+    } catch (err) {
+        console.log(err);
+        res.send("Error uploading image");
+    }
+});
+
 
 // Attandance for students + holidays
 
@@ -166,10 +288,13 @@ const Attendance = require("../../models/StudentAttendance");
 
 
 router.get("/view-attendance-students", adminAuth, async (req, res) => {
+    const schoolCode = req.session.schoolCode;
     const classFilter = req.query.classFilter || "";
-    const allClasses = await Student.distinct("class");
+    const allClasses = await Student.distinct("class", { schoolCode });
 
-    const studentQuery = classFilter ? { class: classFilter } : {};
+    const studentQuery = classFilter
+        ? { class: classFilter, schoolCode }
+        : { schoolCode };
     const students = await Student.find(studentQuery).sort({ name: 1 });
 
     const month = req.query.month || moment().format("MM");
@@ -189,9 +314,9 @@ router.get("/view-attendance-students", adminAuth, async (req, res) => {
     // Load declared holidays only for students
     const allHolidays = await Holiday.find({
         role: "student",
+        schoolCode,
         date: { $gte: startOfMonth, $lte: endOfMonth }
     });
-
     // Show holiday reason
     const holidayReasons = {};
     allHolidays.forEach(h => {
@@ -201,6 +326,7 @@ router.get("/view-attendance-students", adminAuth, async (req, res) => {
     const holidayDates = allHolidays.map(h => moment.utc(h.date).date());
 
     const attendanceData = await Attendance.find({
+        schoolCode,
         date: { $gte: startOfMonth, $lte: endOfMonth }
     });
 
@@ -236,6 +362,8 @@ router.get("/view-attendance-students", adminAuth, async (req, res) => {
 // 👉 Submit Attendance Students (SECURE VERSION)
 router.post("/submit-attendance-students", adminAuth, async (req, res) => {
     // Default value {} di hai taaki crash na ho agar empty aaye
+
+    const schoolCode = req.session.schoolCode;
     let { attendance = {}, month, year } = req.body;
 
     const serverToday = moment.tz("Asia/Kolkata").startOf("day");
@@ -269,7 +397,11 @@ router.post("/submit-attendance-students", adminAuth, async (req, res) => {
 
                 // CASE 2: PAST EDIT -> Ignore (Agar pehle se marked hai)
                 if (checkDate.isBefore(serverToday, 'day')) {
-                    const existing = await Attendance.findOne({ studentId: studentId, date: dateForDb });
+                    const existing = await Attendance.findOne({
+                        studentId: studentId,
+                        date: dateForDb,
+                        schoolCode
+                    });
                     if (existing) {
                         continue; // Edit allow nahi hai
                     }
@@ -277,8 +409,8 @@ router.post("/submit-attendance-students", adminAuth, async (req, res) => {
 
                 // --- SAVE TO DB (Direct) ---
                 await Attendance.findOneAndUpdate(
-                    { studentId: studentId, date: dateForDb },
-                    { status: status },
+                    { studentId: studentId, date: dateForDb, schoolCode },
+                    { status: status, schoolCode },
                     { upsert: true, new: true }
                 );
             }
@@ -291,5 +423,72 @@ router.post("/submit-attendance-students", adminAuth, async (req, res) => {
         res.status(500).send("Something went wrong.");
     }
 });
+
+router.get("/promote-students", adminAuth, async (req, res) => {
+    const schoolCode = req.session.schoolCode;
+    const classList = await Student.distinct("class", { schoolCode });
+    
+    res.render("Admin/promoteStudents", { 
+        classList, 
+        schoolCode 
+    });
+});
+
+
+router.post("/promote-students", adminAuth, async (req, res) => {
+    try {
+        const { fromClass, toClass } = req.body;
+        const schoolCode = req.session.schoolCode;
+
+        // 1. Demo Mode Protection (Hamesha zaroori hai)
+        if (schoolCode === "DEMO248") {
+            return res.send(`
+                <script>
+                    alert('Promotion feature is disabled in Demo Mode to keep data stable.');
+                    window.history.back();
+                </script>
+            `);
+        }
+
+        // 2. Validation: Check karo dono class select ki hain ya nahi
+        if (!fromClass || !toClass) {
+            return res.send("<script>alert('Please select both Source and Target classes.'); window.history.back();</script>");
+        }
+
+        // 3. Validation: Kahin same class mein toh promote nahi kar rahe?
+        if (fromClass === toClass) {
+            return res.send("<script>alert('Source and Target class cannot be the same!'); window.history.back();</script>");
+        }
+
+        // 4. Main Logic: Bulk Update
+        // Hum un sabhi students ko dhundenge jo 'fromClass' mein hain aur unhe 'toClass' mein set kar denge
+        const result = await Student.updateMany(
+            { class: fromClass, schoolCode: schoolCode },
+            { $set: { class: toClass } }
+        );
+
+        // 5. Response
+        if (result.modifiedCount > 0) {
+            res.send(`
+                <script>
+                    alert('Success! ${result.modifiedCount} students promoted from ${fromClass} to ${toClass}.');
+                    window.location.href = '/promote-students'; 
+                </script>
+            `);
+        } else {
+            res.send(`
+                <script>
+                    alert('No students found in Class ${fromClass}. No one was promoted.');
+                    window.history.back();
+                </script>
+            `);
+        }
+
+    } catch (error) {
+        console.error("Promotion Error:", error);
+        res.status(500).send("Internal Server Error during promotion.");
+    }
+});
+
 
 module.exports = router;

@@ -6,134 +6,281 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
-
 <style>
-    .notification {
+    /* ✅ Notification Wrapper */
+    .notification-wrapper {
+        position: relative;
         display: flex;
         justify-content: flex-end;
-        align-items: center;
-        margin-right: 50px;
+        margin-right: 30px;
         margin-top: 20px;
     }
 
-    .notification i {
-        font-size: 25px;
-    }
-
-    .notification {
+    .notification-icon-btn {
         position: relative;
+        background: #f3f4f6;
+        padding: 10px;
+        border-radius: 12px;
         cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #4b5563;
+        border: 1px solid transparent;
     }
 
-    .notification .dot {
+    .notification-icon-btn:hover {
+        background: #e5e7eb;
+        color: #1f2937;
+        transform: translateY(-2px);
+    }
+
+    .notification-icon-btn i {
+        font-size: 22px;
+    }
+
+    /* ✅ Red Dot Animation */
+    .notification-icon-btn .dot {
         position: absolute;
-        top: 0px;
-        right: 0px;
-        width: 10px;
-        height: 10px;
-        background: red;
+        top: -2px;
+        right: -2px;
+        width: 12px;
+        height: 12px;
+        background: #ef4444;
+        border: 2px solid white;
         border-radius: 50%;
+        animation: pulse 2s infinite;
     }
 
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+        }
+
+        70% {
+            box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+        }
+
+        100% {
+            box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+        }
+    }
+
+    /* ✅ Dropdown Styling */
     .notification-dropdown {
         position: absolute;
-        top: 40px;
+        top: 55px;
         right: 0;
         background: white;
-        border: 1px solid #ddd;
-        border-radius: 10px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        width: 340px;
-        max-height: 320px;
-        overflow-y: auto;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        width: 360px;
+        max-height: 400px;
+        overflow: hidden;
         display: none;
-        z-index: 999;
-        scrollbar-width: thin;
-        scrollbar-color: #bbb #f9f9f9;
+        z-index: 1000;
+        border: 1px solid #f3f4f6;
+        animation: slideDown 0.3s ease-out;
     }
 
-    /* ✅ Custom scrollbar for Chrome/Edge */
-    .notification-dropdown::-webkit-scrollbar {
-        width: 6px;
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
-    .notification-dropdown::-webkit-scrollbar-thumb {
-        background-color: #bbb;
+    .dropdown-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid #f3f4f6;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .dropdown-header h4 {
+        margin: 0;
+        font-size: 16px;
+        color: #111827;
+        font-weight: 700;
+    }
+
+    .notif-list {
+        max-height: 330px;
+        overflow-y: auto;
+        scrollbar-width: none;
+        /* Firefox */
+    }
+
+    .notif-list::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Chrome/Safari */
+
+    .notif-item {
+        display: flex;
+        gap: 12px;
+        padding: 15px 20px;
+        border-bottom: 1px solid #f9fafb;
+        transition: background 0.2s;
+        text-decoration: none;
+    }
+
+    .notif-item:hover {
+        background-color: #f9fafb;
+    }
+
+    .notif-item.unread {
+        background-color: #eff6ff;
+    }
+
+    .notif-item .notif-avatar {
+        width: 40px;
+        height: 40px;
+        background: #dbeafe;
+        color: #2563eb;
         border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
     }
 
-    .notification-dropdown::-webkit-scrollbar-thumb:hover {
-        background-color: #999;
+    .notif-content {
+        flex: 1;
     }
 
-    .notification-dropdown .notif {
-        padding: 12px 15px;
-        border-bottom: 1px solid #1b1b1b;
-        font-size: 17px;
-        color: #333;
+    .notif-message {
+        font-size: 14px;
+        color: #374151;
+        margin: 0 0 4px 0;
         line-height: 1.4;
     }
 
-    .notification-dropdown .notif.unread {
-        background-color: #f5f9ff;
-        font-weight: 600;
+    .notif-time {
+        font-size: 12px;
+        color: #9ca3af;
     }
 
-    .notification-dropdown .notif.read {
-        background-color: #fff;
+    .no-notif {
+        padding: 40px 20px;
+        text-align: center;
+        color: #9ca3af;
     }
 </style>
 
-<body>
-    <div class="notification">
+<div class="notification-wrapper">
+    <div class="notification-icon-btn">
         <i class="fa-solid fa-bell"></i>
         <% if (admin && admin.notifications && admin.notifications.some(n=> !n.read)) { %>
             <span class="dot"></span>
             <% } %>
     </div>
 
-    <!-- Notification Dropdown -->
     <div class="notification-dropdown">
-        <% admin.notifications.forEach(n=> { %>
-            <div class="notif <%= n.read ? 'read' : 'unread' %>">
-                <%= n.message %> - <%= new Date(n.createdAt).toLocaleString() %>
-            </div>
-            <% }) %>
-    </div>
+        <div class="dropdown-header">
+            <h4>Notifications</h4>
+            <span style="font-size: 12px; color: #2563eb; cursor: pointer;">Clear all</span>
+        </div>
 
-</body>
+        <div class="notif-list">
+            <% if (admin.notifications && admin.notifications.length> 0) { %>
+                <% admin.notifications.forEach(n=> { %>
+                    <div class="notif-item <%= n.read ? 'read' : 'unread' %>">
+                        <div class="notif-avatar">
+                            <i
+                                class="fa-solid <%= n.type === 'alert' ? 'fa-triangle-exclamation' : 'fa-circle-info' %>"></i>
+                        </div>
+                        <div class="notif-content">
+                            <p class="notif-message">
+                                <%= n.message %>
+                            </p>
+                            <span class="notif-time">
+                                <%= new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit' , minute: '2-digit'
+                                    }) %> • <%= new Date(n.createdAt).toLocaleDateString() %>
+                            </span>
+                        </div>
+                    </div>
+                    <% }) %>
+                        <% } else { %>
+                            <div class="no-notif">
+                                <i class="fa-solid fa-bell-slash"
+                                    style="font-size: 30px; display: block; margin-bottom: 10px;"></i>
+                                No new notifications
+                            </div>
+                            <% } %>
+        </div>
+    </div>
+</div>
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-        const bell = document.querySelector(".notification");
+        const bell = document.querySelector(".notification-icon-btn");
         const dropdown = document.querySelector(".notification-dropdown");
+        const clearAllBtn = document.querySelector(".dropdown-header span");
 
         if (bell && dropdown) {
             bell.addEventListener("click", async (e) => {
                 e.stopPropagation();
-                dropdown.style.display =
-                    dropdown.style.display === "block" ? "none" : "block";
+                const isOpen = dropdown.style.display === "block";
+                dropdown.style.display = isOpen ? "none" : "block";
 
-                // ✅ Mark notifications as read when opened
-                if (dropdown.style.display === "block") {
+                if (!isOpen) {
                     try {
                         await fetch("/mark-notifications-read", { method: "POST" });
                         const dot = bell.querySelector(".dot");
-                        if (dot) dot.remove();
+                        if (dot) dot.remove(); // Fade out dot
                     } catch (err) {
-                        console.error("Failed to mark notifications as read:", err);
+                        console.error("Failed:", err);
                     }
                 }
             });
 
-            // Close dropdown if clicked outside
+            // Close dropdown when clicking outside
             document.addEventListener("click", (e) => {
-                if (!bell.contains(e.target)) {
+                if (!bell.contains(e.target) && !dropdown.contains(e.target)) {
                     dropdown.style.display = "none";
                 }
             });
         }
-    });
-</script>
 
-</html>
+
+        // ✅ Corrected Clear All Logic inside DOMContentLoaded
+        if (clearAllBtn) {
+            clearAllBtn.addEventListener("click", async (e) => {
+                e.stopPropagation(); // Dropdown band na ho jaye turant
+
+                if (confirm("Will you want to delete all notifications ?")) {
+                    try {
+                        const res = await fetch("/clear-all-notifications", { method: "POST" });
+                        if (res.ok) {
+                            // UI update: List khali kar do
+                            const notifList = document.querySelector(".notif-list");
+                            notifList.innerHTML = `
+                                <div class="no-notif">
+                                    <i class="fa-solid fa-bell-slash" style="font-size: 30px; display: block; margin-bottom: 10px;"></i>
+                                    No new notifications
+                                </div>`;
+
+                            // Red dot bhi hata do agar hai to
+                            const dot = document.querySelector(".dot");
+                            if (dot) dot.remove();
+                        } else {
+                            alert("Failed to delete.Try Again!");
+                        }
+                    } catch (err) {
+                        console.error("Clear all failed:", err);
+                    }
+                }
+            });
+        }
+    });
+
+</script>

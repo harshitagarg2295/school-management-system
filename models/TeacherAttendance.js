@@ -1,6 +1,10 @@
 const mongoose = require('mongoose')
 
 const attendanceSchema = new mongoose.Schema({
+    schoolCode: {
+        type: String,
+        required: true
+    },
     teacherId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Teacher",
