@@ -18,7 +18,7 @@ const pricing = {
 
 // GET: login page
 router.get("/super-admin/login", (req, res) => {
-  res.render("superAdmin/login", { error: null });
+  res.render("SuperAdmin/login", { error: null });
 });
 
 // POST: login
@@ -28,7 +28,7 @@ router.post("/super-admin/login", async (req, res) => {
     const admin = await SuperAdmin.findOne({ username });
 
     if (!admin) {
-      return res.render("superAdmin/login", {
+      return res.render("SuperAdmin/login", {
         error: "Account not found. Please check your username."
       });
     }
@@ -36,7 +36,7 @@ router.post("/super-admin/login", async (req, res) => {
     const isMatch = await bcrypt.compare(password, admin.password);
 
     if (!isMatch) {
-      return res.render("superAdmin/login", {
+      return res.render("SuperAdmin/login", {
         error: "Invalid password. Access denied."
       });
     }
@@ -45,7 +45,7 @@ router.post("/super-admin/login", async (req, res) => {
     req.session.regenerate((err) => {
       if (err) {
         console.log("Session Regen Error:", err);
-        return res.render("superAdmin/login", { error: "Session Error" });
+        return res.render("SuperAdmin/login", { error: "Session Error" });
       }
 
       // Naya data set karo
@@ -55,7 +55,7 @@ router.post("/super-admin/login", async (req, res) => {
       req.session.save((saveErr) => {
         if (saveErr) {
           console.log("Session Save Error:", saveErr);
-          return res.render("superAdmin/login", { error: "Save Error" });
+          return res.render("SuperAdmin/login", { error: "Save Error" });
         }
         res.redirect("/super-admin/dashboard");
       });
@@ -63,7 +63,7 @@ router.post("/super-admin/login", async (req, res) => {
 
   } catch (err) {
     console.log("Login Error:", err);
-    res.render("superAdmin/login", {
+    res.render("SuperAdmin/login", {
       error: "Internal Server Error. Please try again later."
     });
   }
@@ -312,7 +312,7 @@ router.get("/super-admin/transaction-history/:id", superAdminAuth, async (req, r
 // 1.Super admin setting page
 router.get("/super-admin/settings", superAdminAuth, async (req, res) => {
   // Check if logged in (middleware use karein yahan)
-  res.render("superAdmin/superAdminSetting", { error: null, success: null });
+  res.render("SuperAdmin/superAdminSetting", { error: null, success: null });
 });
 
 // 2. Password Update Karein
@@ -326,7 +326,7 @@ router.post("/super-admin/update-password", superAdminAuth, async (req, res) => 
     // 1. Purana password check karein
     const isMatch = await bcrypt.compare(currentPassword, admin.password);
     if (!isMatch) {
-      return res.render("superAdmin/superAdminSetting", {
+      return res.render("SuperAdmin/superAdminSetting", {
         error: "Invalid Current Password",
         success: null
       });
@@ -340,14 +340,14 @@ router.post("/super-admin/update-password", superAdminAuth, async (req, res) => 
     admin.password = hashedNewPassword;
     await admin.save();
 
-    res.render("superAdmin/superAdminSetting", {
+    res.render("SuperAdmin/superAdminSetting", {
       error: null,
       success: "Password Updated successfully ✅"
     });
 
   } catch (err) {
     console.log(err);
-    res.render("superAdmin/superAdminSetting", {
+    res.render("SuperAdmin/superAdminSetting", {
       error: "Something went wrong. Try Again",
       success: null
     });
