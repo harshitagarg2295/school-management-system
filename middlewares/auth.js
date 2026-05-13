@@ -3,23 +3,17 @@ const School = require("../models/AllSchools");
 module.exports = {
 
   adminAuth: async (req, res, next) => {
-    if (req.session.adminId && req.session.schoolCode && req.session.userRole === "admin") {
+  if (req.session.adminId && req.session.schoolCode && req.session.userRole === "admin") {
+        const school = await School.findOne({ code: req.session.schoolCode });
+        
+        // Check if school is Inactive or Expired
+        const isBlocked = !school || school.status === 'Inactive' || (school.subscriptionEnd && new Date() > school.subscriptionEnd);
 
-      const school = await School.findOne({ code: req.session.schoolCode });
-      const isExpired = !school || school.status === 'Inactive' || (school.subscriptionEnd && new Date() > school.subscriptionEnd);
-
-      if (isExpired) {
-        // Agar Admin Dashboard ke alawa kahi bhi jane ki koshish kare, toh block!
-        if (req.path !== "/adminDashboard") {
-          return res.send(`
-                    <script>
-                        alert("Your subscription has expired. Please renew from the dashboard.");
-                        window.location.href = "/adminDashboard";
-                    </script>
-                `);
+        if (isBlocked) {
+            // Admin ko dashboard bhi mat dikhao, seedha block page!
+            return res.render("Admin/subscriptionBlocked", { role: 'Admin',status: school.status });
         }
-      }
-      return next();
+        return next();
     }
     return res.redirect("/login");
   },
@@ -32,7 +26,7 @@ module.exports = {
       if (isExpired) {
         // Teachers ko dashboard se bhi block kar sakte hain ya login page par bhej sakte hain
         if (isExpired) {
-          return res.render("Admin/subscriptionBlocked", { role: 'Teacher' });
+          return res.render("Admin/subscriptionBlocked", { role: 'Teacher',status: school.status });
         }
       }
       return next();
@@ -47,7 +41,9 @@ module.exports = {
       const isExpired = !school || school.status === 'Inactive' || (school.subscriptionEnd && new Date() > school.subscriptionEnd);
 
       if (isExpired) {
-        return res.render("Admin/subscriptionBlocked", { role: 'Student' });
+        return res.render("Admin/subscriptionBlocked", { role: 'Student',status: school.status
+          
+         });
       }
       return next();
     }
