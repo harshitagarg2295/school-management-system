@@ -1,68 +1,73 @@
-const express = require('express')
-const router = express.Router()
+const express = require('express');
+const router = express.Router();
 const profile = require("../../models/AdminProfileSchema");
 const { adminAuth } = require("../../middlewares/auth");
 
 const path = require("path");
 const fs = require("fs");
 
-
+// --- GET PROFILE VIEW ---
 router.get("/profile-menu", adminAuth, async (req, res) => {
-    const schoolCode = req.session.schoolCode;
-    const admin = await profile.findOne({ schoolCode });
-    res.render("Admin/profile", { admin });
-})
+    try {
+        const schoolCode = req.session.schoolCode;
+        const admin = await profile.findOne({ schoolCode });
+        res.render("Admin/profile", { admin });
+    } catch (error) {
+        console.error("Error fetching profile:", error);
+        res.status(500).send("Internal Server Error");
+    }
+});
 
-// Post route for saving admin profile details
 
-router.post("/edit-details", adminAuth, async (req, res) => {
-    const schoolCode = req.session.schoolCode;
-    const { name, email, mobile, address, bio } = req.body;
-
-    await profile.findOneAndUpdate(
-        { schoolCode },                                    // filter (single admin)
-        { name, email, mobile, address, bio, schoolCode },  // update data
-        { new: true, upsert: true }             // create if not found
-    )
-
-    res.redirect("/profile-menu")
-})
-
-// Route For upload image
-
-// Create upload folder if not exists
+// --- IMAGE UPLOAD FOLDER CONFIG ---
 const uploadPath = path.join(__dirname, "../../uploads/admin");
 if (!fs.existsSync(uploadPath)) {
     fs.mkdirSync(uploadPath, { recursive: true });
 }
 
 
-// --- IMAGE UPLOAD ROUTE ---
+// --- FIXED MASTER POST ROUTE (Handles Details + Image Crop together) ---
+router.post("/edit-details", adminAuth, async (req, res) => {
+    try {
+        const schoolCode = req.session.schoolCode;
+        const { name, email, mobile, address, bio, croppedImage } = req.body;
 
-router.post("/upload-profile-image", adminAuth, async (req, res) => {
-    const schoolCode = req.session.schoolCode;
-    const base64Data = req.body.croppedImage;
+        // Update object setup
+        let updateData = { name, email, mobile, address, bio, schoolCode };
 
-    if (!base64Data || base64Data.trim() === "") {
-        return res.redirect("/profile-menu");
+        // Check if a new cropped image exists
+        if (croppedImage && croppedImage.trim() !== "") {
+            
+            // Clean base64 string metadata
+            const base64Image = croppedImage.replace(/^data:image\/\w+;base64,/, "");
+            
+            // Convert to buffer
+            const buffer = Buffer.from(base64Image, "base64");
+
+            // Generate unique filename
+            const fileName = "profile-" + Date.now() + ".jpg";
+            const filePath = path.join(uploadPath, fileName);
+
+            // Write file to folder
+            fs.writeFileSync(filePath, buffer);
+
+            // Attach filename to database data
+            updateData.image = fileName;
+        }
+
+        // Upsert standard dataset inside single MongoDB call
+        await profile.findOneAndUpdate(
+            { schoolCode },                     
+            updateData,                         
+            { new: true, upsert: true }         
+        );
+
+        res.redirect("/profile-menu");
+
+    } catch (error) {
+        console.error("Error saving profile details or image:", error);
+        res.status(500).send("Error updating profile");
     }
-
-    const base64Image = base64Data.replace(/^data:image\/\w+;base64,/, "");
-    const buffer = Buffer.from(base64Image, "base64");
-
-    const fileName = "profile-" + Date.now() + ".jpg";
-    const filePath = path.join(uploadPath, fileName);
-
-    fs.writeFileSync(filePath, buffer);
-
-    await profile.findOneAndUpdate(
-        { schoolCode },
-        { image: fileName, schoolCode },
-        { upsert: true }
-    );
-
-    res.redirect("/profile-menu");
 });
 
-
-module.exports = router
+module.exports = router;

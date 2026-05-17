@@ -116,12 +116,12 @@
 <script>
   const roleSelect = document.querySelector("select[name='role']");
   const forgotLink = document.getElementById("forgotLink");
- const params = new URLSearchParams(window.location.search);
+  const params = new URLSearchParams(window.location.search);
   if (params.get("error")) {
     document.getElementById("errorMsg").innerText =
       "Invalid username / password / school code";
   }
-  
+
   forgotLink.addEventListener("click", (e) => {
     if (!roleSelect.value) {
       e.preventDefault();
@@ -132,7 +132,40 @@
   roleSelect.addEventListener("change", () => {
     const role = roleSelect.value;
     if (role) {
-      forgotLink.href = `/forgot-password?role=${role}`;
+      forgotLink.href = `/forgot-password?role=${roleSelect.value}`;
+
+    }
+  });
+
+  window.addEventListener('DOMContentLoaded', () => {
+    // URL parameters read karne ke liye
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    const username = urlParams.get('username');
+    const password = urlParams.get('password');
+
+    // Agar URL me data aaya hai toh inputs me daal do
+    // (Note: Input fields ki id check kar lena aur sahi name match kar lena)
+    if (code) {
+      const codeInput = document.querySelector('input[name="schoolCode"]') || document.getElementById('schoolCode');
+      if (codeInput) codeInput.value = code;
+    }
+    if (username) {
+      const userInput = document.querySelector('input[name="username"]');
+      if (userInput) userInput.value = username;
+
+      // Role select karne ke liye ye check daalna padega:
+      if (username.includes('admin')) {
+        roleSelect.value = 'admin';
+      } else if (username.includes('teacher')) {
+        roleSelect.value = 'teacher';
+      } else if (username.includes('student')) {
+        roleSelect.value = 'student';
+      }
+    }
+    if (password) {
+      const passInput = document.querySelector('input[name="password"]') || document.getElementById('password');
+      if (passInput) passInput.value = password;
     }
   });
 </script>

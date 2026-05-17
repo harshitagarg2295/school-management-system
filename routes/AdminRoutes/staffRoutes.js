@@ -249,31 +249,71 @@ router.get("/view-attendance-staffs", adminAuth, async (req, res) => {
             const dailySalary = Math.round(staff.salary / daysInMonth);
             const attendance = attendanceMap[tid] || {};
 
-            // Get absent days + late count
-
             let absentDays = 0;
             let lateCount = 0;
-            let presentDays = 0;
+            let paidDays = 0;
+            let hasAttendanceData = false; // Check: kya attendance bhari gayi hai?
 
-            for (let day = 1; day <= daysInMonth; day++) {
-                const status = attendance["day_" + day];
+            // 🔥 FIX 1: Pata karo loop kahan tak chalana hai (Current month me sirf aaj tak)
+            const currentMoment = moment();
+            let loopUpToDay = daysInMonth;
 
-                if (status === "A" && !sundays.includes(day) && !holidayDates.includes(day)) {
-                    absentDays++;
-                }
-                if (status === "L" && !sundays.includes(day) && !holidayDates.includes(day)) {
-                    lateCount++;
-                }
-                if (status === "P" || status === "L") presentDays++;
+            if (month === parseInt(currentMoment.format("MM")) && year === parseInt(currentMoment.format("YYYY"))) {
+                loopUpToDay = parseInt(currentMoment.format("D"));
             }
 
-            // हर 2 leave = 1 absent
-            const totalAbsent = absentDays + Math.floor(lateCount / 2);
+            // First Pass: Check data existence
+            for (let day = 1; day <= loopUpToDay; day++) {
+                const status = attendance["day_" + day];
+                if (status === "P" || status === "A" || status === "L") {
+                    hasAttendanceData = true;
+                    break;
+                }
+            }
 
-            // const totalSalary = staff.salary - absentDays * dailySalary;
+            // Second Pass: Safe Calculation
+            if (hasAttendanceData) {
+                for (let day = 1; day <= loopUpToDay; day++) {
+                    const status = attendance["day_" + day];
+                    const isSundayOrHoliday = sundays.includes(day) || holidayDates.includes(day);
 
-            const deduction = totalAbsent * dailySalary;
-            const payableSalary = staff.salary - deduction;
+                    if (isSundayOrHoliday) {
+                        if (status !== "A") {
+                            paidDays++; // Sunday/Holiday salary added
+                        } else {
+                            absentDays++;
+                        }
+                    } else {
+                        if (status === "P" || status === "L") {
+                            paidDays++;
+                        } else if (status === "A") {
+                            absentDays++;
+                        }
+                    }
+
+                    if (status === "L" && !isSundayOrHoliday) {
+                        lateCount++;
+                    }
+                }
+            }
+
+            // 🔥 FIX 2: 2 Late = 1 Absent Calculation
+            const lateDeductionDays = Math.floor(lateCount / 2);
+            const totalAbsent = absentDays + lateDeductionDays;
+
+            let finalWorkingDays = hasAttendanceData ? (paidDays - lateDeductionDays) : 0;
+            if (finalWorkingDays < 0) finalWorkingDays = 0;
+            if (finalWorkingDays > daysInMonth) finalWorkingDays = daysInMonth;
+
+            // Final Calculations
+            const payableSalary = hasAttendanceData ? Math.round(finalWorkingDays * dailySalary) : 0;
+            const deduction = hasAttendanceData ? Math.round(totalAbsent * dailySalary) : 0;
+
+            // Present days count for screen layout
+            let presentDays = 0;
+            for (let day = 1; day <= daysInMonth; day++) {
+                if (attendance["day_" + day] === "P" || attendance["day_" + day] === "L") presentDays++;
+            }
 
             const yearMap = staff.salaryStatus ? staff.salaryStatus.get(yearKey) : null;
             const paymentStatus = (yearMap && yearMap.get(monthKey)) || 'pending';
@@ -313,106 +353,157 @@ router.get("/view-attendance-staffs", adminAuth, async (req, res) => {
     }
 });
 
-
-// 👉 Submit Attendance
+// 👉 Submit Attendance & Manage Salary / Expense
 router.post("/submit-attendance-staffs", adminAuth, async (req, res) => {
     const schoolCode = req.session.schoolCode;
     let { attendance = {}, paymentStatus = {}, month, year } = req.body;
 
-    // 1. Server Time (India)
+    month = Number(month);
+    year = Number(year);
+
+    const monthKey = String(month);
+    const yearKey = String(year);
     const serverToday = moment.tz("Asia/Kolkata").startOf("day");
 
     try {
-        // --- ATTENDANCE LOGIC START (Updated) ---
+        // --- 1. ATTENDANCE LOGIC START ---
         for (const staffId in attendance) {
             const daily = attendance[staffId];
 
             for (const dayKey in daily) {
                 const status = daily[dayKey];
-
-                // Invalid status skip karo
                 if (!["P", "A", "L"].includes(status)) continue;
 
                 const day = parseInt(dayKey.replace("day_", ""), 10);
-
-                // Date Creation (Safe Format)
                 const dateString = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-
-                // IST date for logic
                 const checkDate = moment.tz(dateString, "YYYY-MM-DD", "Asia/Kolkata");
-
-                // SAME calendar day ko UTC midnight me convert karo (DB ke liye)
                 const dateForDb = moment.utc(checkDate.format("YYYY-MM-DD"), "YYYY-MM-DD").toDate();
 
-                // Check kro ki pehle se attendance entry h ya ni
-                const existing = await Attendance.findOne({ staffId: staffId, date: dateForDb, schoolCode });
+                const existing = await Attendance.findOne({ staffId, date: dateForDb, schoolCode });
 
+                if (existing && existing.source === "biometric") continue;
+                if (checkDate.isAfter(serverToday, 'day')) continue;
+                if (checkDate.isBefore(serverToday, 'day') && existing) continue;
 
-                if (existing && existing.source === "biometric") {
-                    // biometric entry → never editable
-                    continue;
-                }
-
-                // --- VALIDATION CHECKS 
-
-                // CHECK 1: FUTURE DATE -> Block
-                if (checkDate.isAfter(serverToday, 'day')) {
-                    continue; // Future ki date save nahi hogi
-                }
-
-                // CHECK 2: PAST EDIT -> Block
-                if (checkDate.isBefore(serverToday, 'day')) {
-                    // Agar pehle se marked hai, to Edit mat karne do
-                    if (existing) {
-                        continue;
-                    }
-                }
-
-                // --- SAVE TO DB (Direct Save) ---
                 await Attendance.findOneAndUpdate(
-                    { staffId: staffId, date: dateForDb, schoolCode }, // 🔥
+                    { staffId, date: dateForDb, schoolCode },
                     { status: status, schoolCode },
                     { upsert: true, new: true }
                 );
             }
         }
 
-        // --- Save Payment Status + Delete Expense if pending ---
-
-        const monthKey = String(month);
-        const yearKey = String(year);
-
+        // --- 2. SAVE PAYMENT STATUS & CLEAN PENDING EXPENSES ---
         for (const staffId in paymentStatus) {
-            const newStatus = paymentStatus[staffId]; // paid / pending
+            const newStatus = paymentStatus[staffId];
 
-            // Update status in Staff collection
             await Staff.findByIdAndUpdate(staffId, {
-                $set: {
-                    [`salaryStatus.${yearKey}.${monthKey}`]: newStatus
-                }
+                $set: { [`salaryStatus.${yearKey}.${monthKey}`]: newStatus }
             });
 
-            // ❌ DELETE EXPENSE when status becomes pending
             if (newStatus === "pending") {
                 const uniqueKey = `staff_${staffId}_${year}_${month}`;
                 await Expense.findOneAndDelete({ uniqueKey, schoolCode });
             }
         }
 
-        // --- Create Expense for all PAID staff ---
+        // --- 3. EXACT SALARY CALCULATION WITH LATE COUNT & HOLIDAYS ---
         const staffList = await Staff.find({ schoolCode });
+        const daysInMonth = moment(`${year}-${month}`, "YYYY-MM").daysInMonth();
 
-        for (let s of staffList) {
-            const status = s.salaryStatus.get(yearKey)?.get(monthKey) || "pending";
+        const startOfMonth = moment.utc(`${year}-${month}-01`, "YYYY-MM-DD").startOf("day").toDate();
+        const endOfMonth = moment.utc(startOfMonth).endOf("month").toDate();
 
-            if (status === "paid") {
+        // Target Sundays
+        const sundays = [];
+        for (let i = 1; i <= daysInMonth; i++) {
+            const date = moment.utc(`${year}-${month}-${i}`, "YYYY-MM-DD");
+            if (date.day() === 0) sundays.push(i);
+        }
+
+        // Target Holidays (Role Filter Added)
+        const allHolidays = await Holiday.find({
+            role: "staff",
+            schoolCode,
+            date: { $gte: startOfMonth, $lte: endOfMonth },
+        });
+        const holidayDates = allHolidays.map(h => moment.utc(h.date).date());
+
+        // Fetch All Attendance for this month
+        const attendanceData = await Attendance.find({
+            schoolCode,
+            date: { $gte: startOfMonth, $lte: endOfMonth },
+        });
+
+        const attendanceMap = {};
+        attendanceData.forEach(a => {
+            const day = moment.utc(a.date).date();
+            const sid = a.staffId.toString();
+            if (!attendanceMap[sid]) attendanceMap[sid] = {};
+            attendanceMap[sid]["day_" + day] = a.status;
+        });
+
+        const currentMoment = moment();
+        let loopUpToDay = daysInMonth;
+        if (month === parseInt(currentMoment.format("MM")) && year === parseInt(currentMoment.format("YYYY"))) {
+            loopUpToDay = parseInt(currentMoment.format("D"));
+        }
+
+       for (let s of staffList) {
+            const currentStatus = s.salaryStatus?.get(yearKey)?.get(monthKey) || "pending";
+
+            if (currentStatus === "paid") {
+                const tid = s._id.toString();
+                const attendance = attendanceMap[tid] || {};
+                const dailySalary = Math.round(s.salary / daysInMonth);
+
+                let absentDays = 0;
+                let lateCount = 0;
+                let paidDays = 0;
+                let hasAttendanceData = false;
+
+                // Loop setup (Checking if data exists up to today)
+                for (let day = 1; day <= loopUpToDay; day++) {
+                    const status = attendance["day_" + day];
+                    if (status === "P" || status === "A" || status === "L") {
+                        hasAttendanceData = true;
+                        break;
+                    }
+                }
+
+                if (hasAttendanceData) {
+                    for (let day = 1; day <= loopUpToDay; day++) {
+                        const status = attendance["day_" + day];
+                        const isSundayOrHoliday = sundays.includes(day) || holidayDates.includes(day);
+
+                        if (isSundayOrHoliday) {
+                            if (status !== "A") paidDays++;
+                            else absentDays++;
+                        } else {
+                            if (status === "P" || status === "L") paidDays++;
+                            else if (status === "A") absentDays++;
+                        }
+
+                        if (status === "L" && !isSundayOrHoliday) lateCount++;
+                    }
+                }
+
+                const lateDeductionDays = Math.floor(lateCount / 2);
+                let finalWorkingDays = hasAttendanceData ? (paidDays - lateDeductionDays) : 0;
+
+                if (finalWorkingDays < 0) finalWorkingDays = 0;
+                if (finalWorkingDays > daysInMonth) finalWorkingDays = daysInMonth;
+
+                const payableSalary = hasAttendanceData ? Math.round(finalWorkingDays * dailySalary) : 0;
+
                 await createSalaryExpense({
                     name: s.name,
-                    amount: s.salary,   // or payable salary agar calculate karte ho
+                    amount: payableSalary,
                     month,
                     year,
                     personId: s._id,
-                    role: "staff"
+                    role: "staff",
+                    schoolCode
                 });
             }
         }
@@ -425,23 +516,119 @@ router.post("/submit-attendance-staffs", adminAuth, async (req, res) => {
     }
 });
 
-
-// 👉 Update Staff Salary Status (NO delete/add here)
+// 👉 Update Staff Salary Status Single Row (FIXED)
 router.post("/update-staff-salary/:staffId", adminAuth, async (req, res) => {
     const schoolCode = req.session.schoolCode;
     const { staffId } = req.params;
-    const { month, year, status } = req.body;
 
-    await Staff.findOneAndUpdate(
-        { _id: staffId, schoolCode },
-        {
-            $set: {
-                [`salaryStatus.${year}.${month}`]: status
+    let { month, year, status } = req.body;
+    month = Number(month);
+    year = Number(year);
+
+    try {
+        await Staff.findOneAndUpdate(
+            { _id: staffId, schoolCode },
+            { $set: { [`salaryStatus.${year}.${month}`]: status } }
+        );
+
+        if (status === "pending") {
+            const uniqueKey = `staff_${staffId}_${year}_${month}`;
+            await Expense.findOneAndDelete({ uniqueKey, schoolCode });
+        }else if (status === "paid") {
+            const s = await Staff.findOne({ _id: staffId, schoolCode });
+            if (s) {
+                const daysInMonth = moment(`${year}-${month}`, "YYYY-MM").daysInMonth();
+                const startOfMonth = moment.utc(`${year}-${month}-01`, "YYYY-MM-DD").startOf("day").toDate();
+                const endOfMonth = moment.utc(startOfMonth).endOf("month").toDate();
+
+                const sundays = [];
+                for (let i = 1; i <= daysInMonth; i++) {
+                    const date = moment.utc(`${year}-${month}-${i}`, "YYYY-MM-DD");
+                    if (date.day() === 0) sundays.push(i);
+                }
+
+                const allHolidays = await Holiday.find({
+                    role: "staff",
+                    schoolCode,
+                    date: { $gte: startOfMonth, $lte: endOfMonth },
+                });
+                const holidayDates = allHolidays.map(h => moment.utc(h.date).date());
+
+                const attendanceData = await Attendance.find({
+                    staffId: s._id,
+                    schoolCode,
+                    date: { $gte: startOfMonth, $lte: endOfMonth },
+                });
+
+                const attendance = {};
+                attendanceData.forEach(a => {
+                    const day = moment.utc(a.date).date();
+                    attendance["day_" + day] = a.status;
+                });
+
+                // 🔥 FIX: Single row route calculation loop sync
+                const currentMoment = moment();
+                let loopUpToDay = daysInMonth;
+                if (month === parseInt(currentMoment.format("MM")) && year === parseInt(currentMoment.format("YYYY"))) {
+                    loopUpToDay = parseInt(currentMoment.format("D"));
+                }
+
+                const dailySalary = Math.round(s.salary / daysInMonth);
+                let absentDays = 0;
+                let lateCount = 0;
+                let paidDays = 0;
+                let hasAttendanceData = false;
+
+                for (let day = 1; day <= loopUpToDay; day++) {
+                    const status = attendance["day_" + day];
+                    if (status === "P" || status === "A" || status === "L") {
+                        hasAttendanceData = true;
+                        break;
+                    }
+                }
+
+                if (hasAttendanceData) {
+                    for (let day = 1; day <= loopUpToDay; day++) {
+                        const status = attendance["day_" + day];
+                        const isSundayOrHoliday = sundays.includes(day) || holidayDates.includes(day);
+
+                        if (isSundayOrHoliday) {
+                            if (status !== "A") paidDays++;
+                            else absentDays++;
+                        } else {
+                            if (status === "P" || status === "L") paidDays++;
+                            else if (status === "A") absentDays++;
+                        }
+
+                        if (status === "L" && !isSundayOrHoliday) lateCount++;
+                    }
+                }
+
+                const lateDeductionDays = Math.floor(lateCount / 2);
+                let finalWorkingDays = hasAttendanceData ? (paidDays - lateDeductionDays) : 0;
+
+                if (finalWorkingDays < 0) finalWorkingDays = 0;
+                if (finalWorkingDays > daysInMonth) finalWorkingDays = daysInMonth;
+
+                const payableSalary = hasAttendanceData ? Math.round(finalWorkingDays * dailySalary) : 0;
+
+                await createSalaryExpense({
+                    name: s.name,
+                    amount: payableSalary,
+                    month,
+                    year,
+                    personId: s._id,
+                    role: "staff",
+                    schoolCode
+                });
             }
         }
-    );
 
-    res.redirect(`/view-attendance-staffs?month=${month}&year=${year}`);
+        res.redirect(`/view-attendance-staffs?month=${month}&year=${year}`);
+    } catch (error) {
+        console.error("Error in single row salary update:", error);
+        res.status(500).send("Internal Server Error");
+    }
 });
 
 module.exports = router;

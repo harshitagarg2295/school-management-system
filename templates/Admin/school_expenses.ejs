@@ -436,6 +436,11 @@
 
     }
 
+    .print-month-title {
+        display: none;
+    }
+
+
     @media print {
         body {
             background: white !important;
@@ -444,14 +449,26 @@
             font-size: 12px;
         }
 
-       .menu-section,
+        .print-month-title {
+            display: block !important;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: black !important;
+        }
+
+        .menu-section,
         .hamburger,
         .no-print,
         .expense-graph,
         .expense-nav,
         .expense-form-wrapper,
         .pdf-btn,
-        .notification {
+        .notification-wrapper,
+        .notification-icon-btn,
+        .notification-dropdown,
+        .dot {
             display: none !important;
         }
 
@@ -578,6 +595,11 @@
 
                     <div class="expense-card">
 
+                        <h4 class="print-month-title">
+                            <%= selectedMonthYear ? new Date(selectedMonthYear + "-01" ).toLocaleString('default', {
+                                month: 'long' , year: 'numeric' }) + " Expense Report" : "All Months Expense Report" %>
+                        </h4>
+
                         <div class="expense-nav">
                             <h1>School Expenses</h1>
 
@@ -594,10 +616,11 @@
                                     <select name="month-year" class="month-year select_class"
                                         onchange="this.form.submit()">
                                         <option value="">All Months</option>
-                                        <% for(let y=2025; y <=new Date().getFullYear(); y++) { for(let m=1; m <=12;
-                                            m++) { let value=`${y}-${m.toString().padStart(2, '0' )}`; let label=new
-                                            Date(y, m - 1).toLocaleString('default', { month: 'long' , year: 'numeric'
-                                            }); %>
+                                        <%const currentYear=new Date().getFullYear(); for(let y=2026; y <=currentYear +
+                                            5; y++) { for(let m=1; m <=12; m++) { let
+                                            value=`${y}-${m.toString().padStart(2, '0' )}`; let label=new Date(y, m -
+                                            1).toLocaleString('default', { month: 'long' , year: 'numeric' }); %>
+
                                             <option value="<%= value %>" <%=selectedMonthYear===value ? "selected" : ""
                                                 %>>
                                                 <%= label %>
@@ -664,7 +687,8 @@
                                     <input type="text" name="quantity" placeholder="Quantity" required
                                         style="text-transform: capitalize;">
                                     <input type="text" name="amount" placeholder="Amount" required>
-                                    <input type="text" onfocus="(this.type='date')"  name="paymentDate" placeholder="Payment Date" required>
+                                    <input type="text" onfocus="(this.type='date')" name="paymentDate"
+                                        placeholder="Payment Date" required>
                                     <button type="submit">Save</button>
                                 </form>
                             </div>

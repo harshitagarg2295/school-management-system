@@ -431,6 +431,9 @@
         color: white;
 
     }
+    .print-report-title{
+    display: none;
+}
 
     @media print {
         body {
@@ -439,6 +442,14 @@
             print-color-adjust: exact !important;
             font-size: 12px;
         }
+         .print-report-title{
+        display: block !important;
+        text-align: center;
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        color: black !important;
+    }
 
         /* 1. Hide Unwanted Elements */
         .menu-section,
@@ -447,7 +458,10 @@
         .fees-card,
         .fees-header,
         .pdf-btn,
-        .notification {
+        .notification-wrapper,
+        .notification-icon-btn,
+        .notification-dropdown,
+        .dot {
             display: none !important;
         }
 
@@ -536,7 +550,8 @@
                                 <p>Total Amount</p>
                             </div>
                             <div class="box box2">
-                                <h1>₹<%= totalProfit.toLocaleString('en-IN') %></h1>
+                                <h1>₹<%= totalProfit.toLocaleString('en-IN') %>
+                                </h1>
                                 <p>Total Profit</p>
                             </div>
                             <div class="box box3">
@@ -554,6 +569,10 @@
 
                     <div class="fees-collection-data">
 
+                        <h4 class="print-report-title">
+                            <%= classFilter && classFilter !=="All Classes" ? `Class : ${classFilter} Fees Collection Report`
+                                : "All Classes Fees Collection Report" %>
+                        </h4>
                         <div class="fees-header">
                             <h2>Fees Collection</h2>
 

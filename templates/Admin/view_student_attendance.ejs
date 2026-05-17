@@ -359,6 +359,7 @@
                 justify-content: space-between;
             }
         }
+
         .print-btn {
             padding: 10px 30px;
             border-radius: 6px;
@@ -373,144 +374,182 @@
             background-color: #2f8ae2;
         }
 
-
-    @media print {
-        /* @page {
-            size: A4 landscape; Page Landscape
-            margin: 5mm;        Margin kam
-        } */
-
-        body {
-            background: white !important;
-            -webkit-print-color-adjust: exact !important;
-            font-size: 10px !important;
-            font-family: sans-serif;
+        .print-header {
+            display: none;
         }
 
-        /* 1. HIDE EVERYTHING UNNECESSARY */
-         .menu-section,.hamburger, .headers, .date_month_year, .holiday-popup, .button-container, .search-stud{
-            display: none !important;
-        }
-        
-        /* 2. RESET LAYOUT CONTAINERS */
-        .attendance_card, .attendance_table {
-            display: block !important;
-            width: 100% !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            box-shadow: none !important;
-            overflow: visible !important;
-            border: none !important;
-        }
+        @media print {
+            @page {
+                size: landscape;
+                margin: 8mm;
+            }
 
-        /* 3. TABLE GRID STRUCTURE (Excel Style) */
-        .attend_list_header, .attend_list {
-            display: flex !important;
-            width: 100% !important;
-            min-width: 100% !important;
-            justify-content: flex-start;
-            border: none !important; /* Outer borders hataye, internal cells me lagayenge */
-        }
+            body {
+                background: white !important;
+                -webkit-print-color-adjust: exact !important;
+                font-size: 10px !important;
+                font-family: sans-serif;
+            }
 
-        /* Header Specifics */
-        .attend_list_header {
-            height: 60px !important; /* Header thoda lamba taaki dates fit aaye */
-            background-color: #ddd !important; /* Grey Background */
-            border-bottom: 2px solid #000 !important; /* Header ke neeche dark line */
-        }
-        
-        /* Data Row Specifics */
-        .attend_list {
-            height: 25px !important; /* Row height compact */
-            border-bottom: 1px solid #ccc !important;
-        }
+            .print-header {
+                display: block !important;
+                width: 100% !important;
+                margin-bottom: 25px !important;
+            }
 
-        /* 4. COMMON CELL STYLES (Borders & Alignment) */
-        .attend_list ul, .attend_list_header ul {
-            display: flex !important;
-            width: 100% !important;
-            padding: 0 !important;
-            margin: 0 !important;
-        }
+            .print-class-title {
+                color: black !important;
+                font-size: 15px !important;
+                margin-top: 4px !important;
+            }
 
-        .list ul li {
-            display: flex !important;
-            align-items: center;
-            justify-content: center;
-            border-right: 1px solid #999 !important; /* Right border grid ke liye */
-            border-left: 1px solid #999 !important;  /* Left border */
-            height: 100% !important;
-            padding: 0 2px !important;
-            box-sizing: border-box !important;
-        }
+            .print-main-title {
+                font-size: 26px !important;
+                font-weight: bold !important;
+                margin: 0 !important;
+                color: black !important;
+            }
 
-        /* 5. NAME COLUMN (Fixed Width) */
-        .students_name {
-            position: static !important;
-            width: 180px !important;
-            min-width: 180px !important;
-            justify-content: flex-start !important; /* Name Left Align */
-            padding-left: 8px !important;
-            font-weight: bold !important;
-            text-align: left !important;
-            background: white !important;
-            color: black !important;
-            border-right: 2px solid #000 !important; /* Name ke baad dark line */
-        }
-        
-        .attend_list_header .students_name {
-            background-color: #ddd !important;
-        }
+            .print-month-title {
+                font-size: 16px !important;
+                font-weight: normal !important;
+                margin-top: 5px !important;
+                color: #555 !important;
+            }
 
-        /* 6. DATE COLUMNS (1-31) - FIXED ROTATION HERE */
-        .list ul li:not(.students_name):not(.extra-col) {
-            width: 20px !important; /* Column width fix */
-            min-width: 20px !important;
-            flex-grow: 1; /* Space barabar baato */
-            font-size: 9px !important;
-        }
+            /* 1. HIDE EVERYTHING UNNECESSARY */
+            .menu-section,
+            .hamburger,
+            .headers,
+            .date_month_year,
+            .holiday-popup,
+            .button-container,
+            .search-stud {
+                display: none !important;
+            }
 
-        /* HEADER DATE ROTATION (The Main Fix) */
-        .attend_list_header ul li:not(.students_name):not(.extra-col) {
-            writing-mode: horizontal-tb !important; /* Reset any weird mode */
-            height: 100% !important;
-            white-space: nowrap;
-            border: none !important; 
-        }
-        
-        /* Date Header ke liye ek chota wrapper taaki border dikhe (Optional hack) */
-        /* Humne upar .list ul li me border diya hai, wo sambhal lega */
+            /* 2. RESET LAYOUT CONTAINERS */
+            .attendance_card,
+            .attendance_table {
+                display: block !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+                overflow: visible !important;
+                border: none !important;
+            }
 
-        /* 7. ICONS & BADGES FIX */
-        img.status-icon {
-            width: 14px !important;
-            height: 14px !important;
-        }
+            /* 3. TABLE GRID STRUCTURE (Excel Style) */
+            .attend_list_header,
+            .attend_list {
+                display: flex !important;
+                width: 100% !important;
+                min-width: 100% !important;
+                justify-content: flex-start;
+                border: none !important;
+            }
 
-        .holiday-cell {
-            background-color: #eee !important;
-            width: 100% !important;
-            height: 100% !important;
-        }
-        
-        /* Dropdowns chupana */
-        .dropdown-wrapper, .custom-arrow { display: none !important; }
+            /* Header Specifics */
+            .attend_list_header {
+                height: 60px !important;
+                background-color: #ddd !important;
+                border-bottom: 2px solid #000 !important;
+            }
 
-        /* 8. EXTRA COLUMNS (Salary etc) */
-        .extra-col {
-            width: 65px !important;
-            min-width: 65px !important;
-            font-size: 9px !important;
-            flex-direction: column;
-            line-height: 1.1;
-        }
+            /* Data Row Specifics */
+            .attend_list {
+                height: 25px !important;
+                border-bottom: 1px solid #ccc !important;
+            }
 
-        /* Page Break Prevention */
-        .student-row {
-            break-inside: avoid;
-            page-break-inside: avoid;
+            /* 4. COMMON CELL STYLES (Borders & Alignment) */
+            .attend_list ul,
+            .attend_list_header ul {
+                display: flex !important;
+                width: 100% !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            .list ul li {
+                display: flex !important;
+                align-items: center;
+                justify-content: center;
+                border-right: 1px solid #999 !important;
+                border-left: 1px solid #999 !important;
+                height: 100% !important;
+                padding: 0 2px !important;
+                box-sizing: border-box !important;
+            }
+
+            /* 5. NAME COLUMN (Fixed Width) */
+            .students_name {
+                position: static !important;
+                width: 180px !important;
+                min-width: 180px !important;
+                justify-content: flex-start !important;
+                padding-left: 8px !important;
+                font-weight: bold !important;
+                text-align: left !important;
+                background: white !important;
+                color: black !important;
+                border-right: 2px solid #000 !important;
+            }
+
+            .attend_list_header .students_name {
+                background-color: #ddd !important;
+            }
+
+            /* 6. DATE COLUMNS (1-31) - FIXED ROTATION HERE */
+            .list ul li:not(.students_name):not(.extra-col) {
+                width: 20px !important;
+                min-width: 20px !important;
+                flex-grow: 1;
+                font-size: 9px !important;
+            }
+
+            /* HEADER DATE ROTATION (The Main Fix) */
+            .attend_list_header ul li:not(.students_name):not(.extra-col) {
+                writing-mode: horizontal-tb !important;
+                height: 100% !important;
+                white-space: nowrap;
+                border: none !important;
+            }
+
+            /* 7. ICONS & BADGES FIX */
+            img.status-icon {
+                width: 14px !important;
+                height: 14px !important;
+            }
+
+            .holiday-cell {
+                background-color: #eee !important;
+                width: 100% !important;
+                height: 100% !important;
+            }
+
+            /* Dropdowns chupana */
+            .dropdown-wrapper,
+            .custom-arrow {
+                display: none !important;
+            }
+
+            /* 8. EXTRA COLUMNS (Salary etc) */
+            .extra-col {
+                width: 65px !important;
+                min-width: 65px !important;
+                font-size: 9px !important;
+                flex-direction: column;
+                line-height: 1.1;
+            }
+
+            /* Page Break Prevention */
+            .student-row {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
         }
-    }
     </style>
 </head>
 
@@ -554,7 +593,8 @@
                     <form method="POST" action="/mark-student-holiday"
                         style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
                         <label style="font-size: 14px;">Declare Holiday:</label>
-                        <input type="text" onfocus="(this.type='date')"  name="date" placeholder="Select Date" required class="btn">
+                        <input type="text" onfocus="(this.type='date')" name="date" placeholder="Select Date" required
+                            class="btn">
                         <input type="text" name="reason" placeholder="Reason" class="btn">
                         <button type="submit" class="save_month_year" style="padding: 6px 15px;">Mark</button>
                     </form>
@@ -581,7 +621,31 @@
                         <button class="save_month_year" type="submit">Go</button>
                     </form>
                 </div>
+                <div class="print-header" style="position: relative; margin-bottom: 30px;">
 
+                    <!-- Left side me automatic live date aur time -->
+                    <div id="print-live-datetime"
+                        style="position: absolute; left: 0; top: 0; text-align: left; font-size: 12px; font-family: sans-serif; color: #333;">
+                    </div>
+
+                    <!-- Center me headings -->
+                    <div style="text-align: center; width: 100%;">
+                        <h1 class="print-main-title" style="margin: 0; font-size: 26px; font-weight: bold;">Student
+                            Attendance</h1>
+
+                        <!-- Class Name Display (Agar backend se className variable khali ya undefined milega toh automatic 'All Classes' dikhayega) -->
+                        <h4 class="print-class-title"
+                            style="margin: 5px 0 0 0; font-size: 15px; font-weight: 600; color: #222;">
+                            Class: <%= (typeof classFilter !=='undefined' && classFilter) ? classFilter : 'All Classes' %>
+                        </h4>
+
+                        <h3 class="print-month-title"
+                            style="margin: 5px 0 0 0; font-size: 14px; font-weight: normal; color: #555 !important;">
+                            <%= moment().month(month - 1).format("MMMM") %>
+                                <%= year %> Attendance Report
+                        </h3>
+                    </div>
+                </div>
                 <div class="attendance_table">
 
                     <!-- HEADER -->
@@ -615,7 +679,7 @@
                                         <% let status=(attendanceMap[student._id?.toString()] || {})['day_' + i]; %>
 
                                             <li class="<%= (sundays.includes(i) || holidays.includes(i)) ? 'holiday-cell' : '' %>"
-                                               data-full-date="<%= `${year}-${String(month).padStart(2,'0')}-${String(i).padStart(2,'0')}` %>"
+                                                data-full-date="<%= `${year}-${String(month).padStart(2,'0')}-${String(i).padStart(2,'0')}` %>"
                                                 data-day="<%= i %>" data-month="<%= month %>" data-year="<%= year %>"
                                                 data-reason="<%= holidayReasons[i] || (sundays.includes(i) ? 'Sunday' : '') %>">
 
@@ -649,15 +713,16 @@
                 </div>
 
                 <!-- Save Button -->
-                  <div class="button-container" style="margin-top: 40px; text-align: center; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
-                    
+                <div class="button-container"
+                    style="margin-top: 40px; text-align: center; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+
                     <button type="submit" form="attendance-form" class="save_month_year"
                         style="font-size: 18px; padding: 10px 30px;">Save Attendance</button>
 
                     <button onclick="window.print()" class="print-btn no-print">
                         Download PDF
                     </button>
-                    
+
                 </div>
 
             </div>
@@ -689,7 +754,7 @@
             });
         });
 
-         // Dropdown -> Icon (only for past and today dates not open for future dates)
+        // Dropdown -> Icon (only for past and today dates not open for future dates)
 
         document.querySelectorAll(".attendance_dropdown").forEach(dd => {
 
@@ -724,7 +789,7 @@
                 else if (val === 'L') { img.src = '/images/late-image.png'; img.style.display = 'inline-block'; wrapper.style.display = 'none'; }
             });
         });
-        
+
         // Icon -> Dropdown
         const today = new Date().getDate();
 
@@ -767,7 +832,15 @@
                 }
             });
         });
-        document.getElementById("closePopup").addEventListener("click", () => document.getElementById("holidayPopup").style.display = 'none');
+        document.getElementById("closePopup").addEventListener("click", () =>
+            document.getElementById("holidayPopup").style.display = 'none');
+
+        // For printing live date time on pdf report
+        window.onbeforeprint = function () {
+            const now = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            document.getElementById('print-live-datetime').innerHTML = "<b>Generated on:</b><br>" + now.toLocaleDateString('en-IN', options);
+        };
     </script>
 
 </body>

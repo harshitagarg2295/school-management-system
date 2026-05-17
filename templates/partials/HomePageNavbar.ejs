@@ -4,11 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SchoolFlow Navbar</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <style>
         :root {
             --primary-color: #2563eb;
-            /* Modern Blue */
             --dark-color: #0f172a;
             --text-gray: #475569;
             --white: #ffffff;
@@ -26,13 +26,19 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 8%;
+            padding: 0 5%;
             height: 80px;
             background: var(--white);
             box-shadow: var(--shadow);
             position: sticky;
             top: 0;
             z-index: 1000;
+        }
+
+        @media (min-width: 1200px) {
+            .navbar {
+                padding: 0 8%;
+            }
         }
 
         /* Logo Style */
@@ -44,6 +50,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            white-space: nowrap;
         }
 
         .logo span {
@@ -55,7 +62,20 @@
             display: flex;
             list-style: none;
             align-items: center;
-            gap: 35px;
+            gap: 24px;
+        }
+
+        /* Desktop Optimization (901px to 1100px) to prevent layout break */
+        @media (min-width: 901px) and (max-width: 1100px) {
+            .nav {
+                gap: 14px; 
+            }
+            .nav a {
+                font-size: 14px !important;
+            }
+            .login-btn {
+                padding: 8px 18px !important;
+            }
         }
 
         .nav a {
@@ -65,6 +85,7 @@
             font-size: 15px;
             transition: 0.3s;
             cursor: pointer;
+            white-space: nowrap;
         }
 
         .nav a:hover {
@@ -86,7 +107,6 @@
             border-radius: 12px;
             padding: 10px 0;
             display: none;
-            /* Hidden by default */
             border: 1px solid #f1f5f9;
             animation: slideUp 0.3s ease;
         }
@@ -96,15 +116,16 @@
                 opacity: 0;
                 transform: translateY(10px);
             }
-
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
 
-        .dropdown:hover .dropdown-menu {
-            display: block;
+        @media (min-width: 901px) {
+            .dropdown:hover .dropdown-menu {
+                display: block;
+            }
         }
 
         .dropdown-menu li {
@@ -129,7 +150,6 @@
             color: white !important;
             padding: 10px 25px;
             border-radius: 50px;
-            /* Capsule shape */
             font-weight: 600 !important;
             box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);
         }
@@ -139,7 +159,6 @@
             transform: translateY(-2px);
         }
 
-        /* Mobile Menu Icon */
         #menuToggle {
             display: none;
             font-size: 24px;
@@ -147,18 +166,8 @@
             color: var(--dark-color);
         }
 
-        /* Responsive Design */
-        @media (max-width: 992px) {
-            .navbar {
-                padding: 0 5%;
-            }
-
-            .nav {
-                gap: 20px;
-            }
-        }
-
-        @media (max-width: 810px) {
+        /* 📱 MOBILE RESPONSIVE DESIGN (Hamburger Activates strictly at 900px) */
+        @media (max-width: 900px) {
             #menuToggle {
                 display: block;
             }
@@ -167,32 +176,66 @@
                 position: absolute;
                 top: 80px;
                 left: -100%;
-                /* Hidden off-screen */
                 width: 100%;
                 height: calc(100vh - 80px);
                 background: white;
                 flex-direction: column;
-                padding: 40px 20px;
-                gap: 25px;
-                transition: 0.4s;
+                padding: 25px 20px; /* Padding kam kar di aur gap tight kiya */
+                gap: 12px;          /* Elements ke beech ka gap 25px se ghatakar 12px kiya */
+                transition: 0.4s ease-in-out;
                 text-align: center;
                 overflow-y: auto;
+                box-shadow: 0 15px 30px rgba(0,0,0,0.1);
             }
 
             .nav.active {
                 left: 0;
             }
 
+            .nav li {
+                width: 100%;
+            }
+
+            .nav a {
+                display: block;
+                padding: 6px 0; /* Links ka vertical space tight kar diya */
+                font-size: 16px;
+            }
+
+            .login-btn {
+                display: inline-block;
+                width: auto;
+                padding: 10px 40px;
+                margin-top: 5px;
+            }
+
+            /* Mobile Dropdown Custom Settings */
             .dropdown-menu {
                 position: static;
                 box-shadow: none;
                 border: none;
                 display: none;
                 background: #f8fbff;
+                margin-top: 8px;
+                border-radius: 8px;
+            }
+
+            /* Dropdown links ke beech ka gap bhi compress kar diya */
+            .dropdown-menu a {
+                padding: 6px 20px !important;
+                font-size: 14px !important;
             }
 
             .dropdown.active .dropdown-menu {
                 display: block;
+            }
+
+            .dropdown > a i {
+                transition: 0.3s;
+            }
+
+            .dropdown.active > a i {
+                transform: rotate(180deg);
             }
         }
     </style>
@@ -224,17 +267,12 @@
             </li>
 
             <li><a href="/contact-us">Contact & Support</a></li>
-
-            <li>
-                <a href="/try-demo">Try Demo</a>
-            </li>
-
+            <li><a href="/try-demo">Try Demo</a></li>
             <li>
                 <a href="/login" class="login-btn">
                     <i class="fa-solid fa-user-lock"></i> Login
                 </a>
             </li>
-
         </ul>
 
         <i class="fa-solid fa-bars" id="menuToggle"></i>
@@ -249,7 +287,6 @@
         menuIcon.addEventListener("click", () => {
             navMenu.classList.toggle("active");
 
-            // Toggle Icon Animation
             if (navMenu.classList.contains("active")) {
                 menuIcon.classList.replace("fa-bars", "fa-xmark");
             } else {
@@ -257,13 +294,23 @@
             }
         });
 
-        // Mobile Dropdown Toggle
+        // Mobile Dropdown Click Logic (Strictly under 900px)
         dropdowns.forEach(drop => {
             drop.addEventListener("click", (e) => {
-                if (window.innerWidth <= 768) {
+                if (window.innerWidth <= 900) {
+                    e.stopPropagation();
                     drop.classList.toggle("active");
                 }
             });
+        });
+
+        // Safe Reset on Desktop Resize
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 900) {
+                navMenu.classList.remove("active");
+                menuIcon.classList.replace("fa-xmark", "fa-bars");
+                dropdowns.forEach(drop => drop.classList.remove("active"));
+            }
         });
     </script>
 </body>

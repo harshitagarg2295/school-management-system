@@ -493,154 +493,190 @@
             background-color: #2f8ae2;
         }
 
-
-    @media print {
-        /* @page {
-            size: A4 landscape; Page Landscape
-            margin: 5mm;        Margin kam
-        } */
-
-        body {
-            background: white !important;
-            -webkit-print-color-adjust: exact !important;
-            font-size: 10px !important;
-            font-family: sans-serif;
+        .print-header {
+            display: none;
         }
 
-        /* 1. HIDE EVERYTHING UNNECESSARY */
-         .menu-section,.hamburger, .headers, .date_month_year, .bio-modal, .holiday-popup, .button-container, .search-teach, .payment_dropdown {
-            display: none !important;
-        }
-        
-        /* 2. RESET LAYOUT CONTAINERS */
-        .attendance_card, .attendance_table {
-            display: block !important;
-            width: 100% !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            box-shadow: none !important;
-            overflow: visible !important;
-            border: none !important;
-        }
 
-        /* 3. TABLE GRID STRUCTURE (Excel Style) */
-        .attend_list_header, .attend_list {
-            display: flex !important;
-            width: 100% !important;
-            min-width: 100% !important;
-            justify-content: flex-start;
-            border: none !important; /* Outer borders hataye, internal cells me lagayenge */
-        }
+        @media print {
 
-        /* Header Specifics */
-        .attend_list_header {
-            height: 60px !important; /* Header thoda lamba taaki dates fit aaye */
-            background-color: #ddd !important; /* Grey Background */
-            border-bottom: 2px solid #000 !important; /* Header ke neeche dark line */
-        }
-        
-        /* Data Row Specifics */
-        .attend_list {
-            height: 25px !important; /* Row height compact */
-            border-bottom: 1px solid #ccc !important;
-        }
+            @page {
+                size: landscape;
+                margin: 8mm;
+            }
 
-        /* 4. COMMON CELL STYLES (Borders & Alignment) */
-        .attend_list ul, .attend_list_header ul {
-            display: flex !important;
-            width: 100% !important;
-            padding: 0 !important;
-            margin: 0 !important;
-        }
+            body {
+                background: white !important;
+                -webkit-print-color-adjust: exact !important;
+                font-size: 10px !important;
+                font-family: sans-serif;
+                overflow: visible !important;
+            }
 
-        .list ul li {
-            display: flex !important;
-            align-items: center;
-            justify-content: center;
-            border-right: 1px solid #999 !important; /* Right border grid ke liye */
-            border-left: 1px solid #999 !important;  /* Left border */
-            height: 100% !important;
-            padding: 0 2px !important;
-            box-sizing: border-box !important;
-        }
+            /* 1. HIDE EVERYTHING UNNECESSARY */
+            .menu-section,
+            .hamburger,
+            .headers,
+            .date_month_year,
+            .bio-modal,
+            .holiday-popup,
+            .button-container,
+            .search-teach,
+            .payment_dropdown {
+                display: none !important;
+            }
 
-        /* 5. NAME COLUMN (Fixed Width) */
-        .teachers_name {
-            position: static !important;
-            width: 180px !important;
-            min-width: 180px !important;
-            justify-content: flex-start !important; /* Name Left Align */
-            padding-left: 8px !important;
-            font-weight: bold !important;
-            text-align: left !important;
-            background: white !important;
-            color: black !important;
-            border-right: 2px solid #000 !important; /* Name ke baad dark line */
-        }
-        
-        .attend_list_header .teachers_name {
-            background-color: #ddd !important;
-        }
+            .print-header {
+                display: block !important;
+                width: 100% !important;
+                margin-bottom: 25px !important;
+            }
 
-        /* 6. DATE COLUMNS (1-31) - FIXED ROTATION HERE */
-        .list ul li:not(.teachers_name):not(.extra-col) {
-            width: 20px !important; /* Column width fix */
-            min-width: 20px !important;
-            flex-grow: 1; /* Space barabar baato */
-            font-size: 9px !important;
-        }
+            .print-main-title {
+                font-size: 26px !important;
+                font-weight: bold !important;
+                margin: 0 !important;
+                color: black !important;
+            }
 
-        /* HEADER DATE ROTATION (The Main Fix) */
-        .attend_list_header ul li:not(.teachers_name):not(.extra-col) {
-            writing-mode: horizontal-tb !important; /* Reset any weird mode */
-            height: 100% !important;
-            white-space: nowrap;
-            border: none !important; 
-        
-        /* Date Header ke liye ek chota wrapper taaki border dikhe (Optional hack) */
-        /* Humne upar .list ul li me border diya hai, wo sambhal lega */
+            .print-month-title {
+                font-size: 16px !important;
+                font-weight: normal !important;
+                margin-top: 5px !important;
+                color: #555 !important;
+            }
 
-        /* 7. ICONS & BADGES FIX */
-        img.status-icon {
-            width: 14px !important;
-            height: 14px !important;
-        }
+            .attendance_card,
+            .attendance_table {
+                display: block !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+                overflow: visible !important;
+                width: max-content !important;
+                border: none !important;
+            }
 
-        .holiday-cell {
-            background-color: #eee !important;
-            width: 100% !important;
-            height: 100% !important;
-        }
-        
-        /* Dropdowns chupana */
-        .dropdown-wrapper, .custom-arrow { display: none !important; }
+            .attend_list_header,
+            .attend_list {
+                display: flex !important;
+                width: 100% !important;
+                min-width: 100% !important;
+                justify-content: flex-start;
+                border: none !important;
+                page-break-inside: avoid !important;
+            }
 
-        /* 8. EXTRA COLUMNS (Salary etc) */
-        .extra-col {
-            width: 65px !important;
-            min-width: 65px !important;
-            font-size: 9px !important;
-            flex-direction: column;
-            line-height: 1.1;
-        }
+            .attend_list_header {
+                height: 60px !important;
+                background-color: #ddd !important;
+                border-bottom: 2px solid #000 !important;
+            }
 
-        /* Page Break Prevention */
-        .teacher-row {
-            break-inside: avoid;
-            page-break-inside: avoid;
-        }
-        .status {
-            padding: 5px 5px;
-            border-radius: 7px;
-            font-size: 10px;
-            font-weight: 400;
-        }
+            .attend_list {
+                height: 25px !important;
+                border-bottom: 1px solid #ccc !important;
+            }
 
-        .status .dot {
-            width: 5px;
-            height: 5px;
+            .attend_list ul,
+            .attend_list_header ul {
+                display: flex !important;
+                width: 100% !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            .list ul li {
+                display: flex !important;
+                align-items: center;
+                justify-content: center;
+                border-right: 1px solid #999 !important;
+                border-left: 1px solid #999 !important;
+                height: 100% !important;
+                padding: 0 2px !important;
+                box-sizing: border-box !important;
+                flex-shrink: 0 !important;
+            }
+
+            .teachers_name {
+                position: static !important;
+                width: 180px !important;
+                min-width: 180px !important;
+                justify-content: flex-start !important;
+                padding-left: 8px !important;
+                font-weight: bold !important;
+                text-align: left !important;
+                background: white !important;
+                color: black !important;
+                border-right: 2px solid #000 !important;
+            }
+
+            .attend_list_header .teachers_name {
+                background-color: #ddd !important;
+            }
+
+            .list ul li:not(.teachers_name):not(.extra-col) {
+                width: 20px !important;
+                min-width: 20px !important;
+                flex-grow: 1;
+                font-size: 9px !important;
+            }
+
+            .attend_list_header ul li:not(.teachers_name):not(.extra-col) {
+                writing-mode: horizontal-tb !important;
+                height: 100% !important;
+                white-space: nowrap;
+                border: none !important;
+            }
+
+            img.status-icon {
+                width: 14px !important;
+                height: 14px !important;
+                display: block !important;
+                margin: auto !important;
+                object-fit: contain !important;
+            }
+
+            .holiday-cell {
+                background-color: #eee !important;
+                width: 100% !important;
+                height: 100% !important;
+            }
+
+            /* Dropdowns chupana */
+            .dropdown-wrapper,
+            .custom-arrow {
+                display: none !important;
+            }
+
+            /* 8. EXTRA COLUMNS (Salary etc) */
+            .extra-col {
+                width: 65px !important;
+                min-width: 65px !important;
+                font-size: 9px !important;
+                flex-direction: column;
+                line-height: 1.1;
+            }
+
+            /* Page Break Prevention */
+            .teacher-row {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+
+            .status {
+                padding: 5px 5px;
+                border-radius: 7px;
+                font-size: 10px;
+                font-weight: 400;
+            }
+
+            .status .dot {
+                width: 5px;
+                height: 5px;
+            }
         }
-    }
     </style>
 </head>
 
@@ -664,7 +700,8 @@
                     <form method="POST" action="/mark-teacher-holiday"
                         style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
                         <label style="font-size: 14px;">Declare Holiday:</label>
-                        <input type="text" onfocus="(this.type='date')"  name="date" placeholder="Select Date" required class="btn">
+                        <input type="text" onfocus="(this.type='date')" name="date" placeholder="Select Date" required
+                            class="btn">
                         <input type="text" name="reason" placeholder="Reason" class="btn">
                         <button type="submit" class="save_month_year" style="padding: 6px 15px;">Mark</button>
                     </form>
@@ -693,6 +730,23 @@
                         style="padding: 7px 20px; height: 38px; background:#2563eb;">
                         Upload Biometric File
                     </button>
+                </div>
+
+                <div class="print-header" style="position: relative; margin-bottom: 30px;">
+
+                    <div id="print-live-datetime"
+                        style="position: absolute; left: 0; top: 0; text-align: left; font-size: 12px; font-family: sans-serif; color: #333;">
+                    </div>
+
+                    <div style="text-align: center; width: 100%;">
+                        <h1 class="print-main-title" style="margin: 0; font-size: 26px; font-weight: bold;">Teacher
+                            Attendance</h1>
+                        <h3 class="print-month-title"
+                            style="margin: 5px 0 0 0; font-size: 16px; font-weight: normal; color: #555 !important;">
+                            <%= moment().month(month - 1).format("MMMM") %>
+                                <%= year %> Attendance Report
+                        </h3>
+                    </div>
                 </div>
 
                 <div class="attendance_table">
@@ -774,18 +828,26 @@
                                                 </li>
 
                                                 <li class="extra-col payment-status">
+                                                    <!-- ✔ Yeh data backend bhegda -->
                                                     <input type="hidden" name="paymentStatus[<%= teacher._id %>]"
                                                         value="<%= salaryData[teacher._id].status %>"
                                                         class="payment-status-input" />
+
                                                     <% if (salaryData[teacher._id].status==="paid" ) { %>
                                                         <span class="status paid"><span class="dot"></span> Paid</span>
                                                         <% } else { %>
                                                             <span class="status pending"><span class="dot"></span>
                                                                 Pending</span>
                                                             <% } %>
+
+                                                                <!-- ✔ Yahan se name="" attribute hata diya hai kyunki hidden input kaam kar raha hai -->
                                                                 <select class="payment_dropdown" style="display:none;">
-                                                                    <option value="pending">Pending</option>
-                                                                    <option value="paid">Paid</option>
+                                                                    <option value="pending"
+                                                                        <%=salaryData[teacher._id.toString()].status==='pending'
+                                                                        ? 'selected' : '' %>>Pending</option>
+                                                                    <option value="paid"
+                                                                        <%=salaryData[teacher._id.toString()].status==='paid'
+                                                                        ? 'selected' : '' %>>Paid</option>
                                                                 </select>
                                                 </li>
                                 </ul>
@@ -794,15 +856,16 @@
                     </form>
                 </div>
 
-                <div class="button-container" style="margin-top: 40px; text-align: center; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
-                    
+                <div class="button-container"
+                    style="margin-top: 40px; text-align: center; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+
                     <button type="submit" form="attendance-form" class="save_month_year"
                         style="font-size: 18px; padding: 10px 30px;">Save Attendance</button>
 
                     <button onclick="window.print()" class="print-btn no-print">
                         Download PDF
                     </button>
-                    
+
                 </div>
 
             </div>
@@ -930,8 +993,8 @@
         // Payment Status Logic
         document.querySelectorAll(".payment-status").forEach(cell => {
             const badge = cell.querySelector(".status");
-            const select = cell.querySelector("select");
-            const input = cell.querySelector("input");
+            const select = cell.querySelector(".payment_dropdown");
+            const input = cell.querySelector(".payment-status-input");
 
             badge.addEventListener("click", () => { badge.style.display = 'none'; select.style.display = 'block'; });
             select.addEventListener("change", function () {
@@ -964,6 +1027,13 @@
         document.getElementById("closeModal").addEventListener("click", () => {
             document.getElementById("uploadModal").style.display = "none";
         });
+
+        // For printing live date time on pdf report
+        window.onbeforeprint = function () {
+            const now = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            document.getElementById('print-live-datetime').innerHTML = "<b>Generated on:</b><br>" + now.toLocaleDateString('en-IN', options);
+        };
     </script>
 </body>
 

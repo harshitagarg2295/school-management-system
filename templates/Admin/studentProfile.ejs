@@ -405,6 +405,11 @@
             <div class="meta-item"><span>Class</span><span>
                 <%= student.class %>-<%= student.section %>
               </span></div>
+
+               <div class="meta-item"><span>Fees</span><span>
+                <%= student.fees.toLocaleString('en-IN') || 'N/A' %>
+              </span></div>
+
             <div class="meta-item"><span>Roll No</span><span>
                 <%= student.rollNo || 'N/A' %>
               </span></div>

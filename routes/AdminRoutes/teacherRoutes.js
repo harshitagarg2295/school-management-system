@@ -118,14 +118,14 @@ router.post("/delete-teacher/:id", adminAuth, async (req, res) => {
   const schoolCode = req.session.schoolCode;
   const teacher = await Teacher.findById(req.params.id);
 
-    if (teacher && teacher.username === "teacher_demo") {
-         return res.send(`
+  if (teacher && teacher.username === "teacher_demo") {
+    return res.send(`
                 <script>
                     alert('Notice: This is a default Demo Teacher. You cannot delete it, but you can delete any new teacher you create.');
                     window.history.back();
                 </script>
             `);
-    }
+  }
 
   await Teacher.findOneAndDelete({
     _id: req.params.id,
@@ -293,31 +293,77 @@ router.get("/view-attendance-teachers", adminAuth, async (req, res) => {
       const attendance = attendanceMap[tid] || {};
 
       // Get absent days + late count
-
-      let absentDays = 0;
+    let absentDays = 0;
       let lateCount = 0;
-      let presentDays = 0;
+      let paidDays = 0; 
+      let hasAttendanceData = false; // 🔥 CHECK: Kya is mahine me koi bhi attendance bhari gayi hai?
 
-      for (let day = 1; day <= daysInMonth; day++) {
-        const status = attendance["day_" + day];
+      // Pata karo loop kahan tak chalana hai
+      const currentMoment = moment();
+      let loopUpToDay = daysInMonth; 
 
-        if (status === "A" && !sundays.includes(day) && !holidayDates.includes(day)) {
-          absentDays++;
-        }
-        if (status === "L" && !sundays.includes(day) && !holidayDates.includes(day)) {
-          lateCount++;
-        }
-        if (status === "P" || status === "L") presentDays++;
+      // Agar selected month aur year AAJ KA chal raha mahina hai:
+      if (month === parseInt(currentMoment.format("MM")) && year === parseInt(currentMoment.format("YYYY"))) {
+        loopUpToDay = parseInt(currentMoment.format("D")); // Toh loop sirf AAJ KI DATE tak hi chalega
       }
 
-      // हर 2 leave = 1 absent
-      const totalAbsent = absentDays + Math.floor(lateCount / 2);
+      // First Pass: Pehle check karo kya pure loop me kahin bhi P, A, ya L bhara hua hai?
+      for (let day = 1; day <= loopUpToDay; day++) {
+        const status = attendance["day_" + day];
+        if (status === "P" || status === "A" || status === "L") {
+          hasAttendanceData = true; // Haan, attendance bhari hui hai!
+          break;
+        }
+      }
 
-      // const totalSalary = teacher.salary - absentDays * dailySalary;
+      // Second Pass: Agar attendance data hai, tabhi salary calculate karo, nahi toh sab 0 rahega
+      if (hasAttendanceData) {
+        for (let day = 1; day <= loopUpToDay; day++) {
+          const status = attendance["day_" + day];
+          const isSundayOrHoliday = sundays.includes(day) || holidayDates.includes(day);
 
-      const deduction = totalAbsent * dailySalary;
-      const payableSalary = teacher.salary - deduction;
+          // 1. Agar Sunday ya School Holiday hai
+          if (isSundayOrHoliday) {
+            if (status !== "A") {
+              paidDays++; // Sunday/Holiday ka paisa mil gaya
+            } else {
+              absentDays++;
+            }
+          } 
+          // 2. Agar normal working day hai
+          else {
+            if (status === "P" || status === "L") {
+              paidDays++;
+            } else if (status === "A") {
+              absentDays++;
+            }
+          }
 
+          // Late count calculation
+          if (status === "L" && !isSundayOrHoliday) {
+            lateCount++;
+          }
+        }
+      }
+
+      // Har 2 Late = 1 extra absent deduction
+      const lateDeductionDays = Math.floor(lateCount / 2);
+      const totalAbsent = absentDays + lateDeductionDays;
+
+      // FINAL SALARY FORMULA
+      let finalWorkingDays = hasAttendanceData ? (paidDays - lateDeductionDays) : 0;
+      if (finalWorkingDays < 0) finalWorkingDays = 0;
+
+      // Final Calculation (Agar data hi nahi h toh payable b 0 aur deduction b 0)
+      const payableSalary = hasAttendanceData ? Math.round(finalWorkingDays * dailySalary) : 0;
+      const deduction = hasAttendanceData ? Math.round(totalAbsent * dailySalary) : 0;
+
+      // Present days count (jo screen par dikhane k liye chahiye)
+      let presentDays = 0;
+      for (let day = 1; day <= daysInMonth; day++) {
+        if (attendance["day_" + day] === "P" || attendance["day_" + day] === "L") presentDays++;
+      }
+      
       // Fetch salary status for this teacher, month, year
       let statusDoc = await SalaryStatus.findOne({
         teacherId: teacher._id,
@@ -451,29 +497,53 @@ router.post("/submit-attendance-teachers", adminAuth, async (req, res) => {
       const newStatus = paymentStatus[teacherId];
 
       await SalaryStatus.findOneAndUpdate(
-        { teacherId, month, year },
-        { status: newStatus },
-        { upsert: true }
+        { teacherId, month: Number(month), year: Number(year), schoolCode },
+        { status: newStatus, schoolCode },
+        { upsert: true, new: true }
       );
 
+      const uniqueKey = `teacher_${teacherId}_${year}_${month}`;
+
       if (newStatus === "pending") {
-        const uniqueKey = `teacher_${teacherId}_${year}_${month}`;
+        // Agar status pending ho gaya toh purana Expense delete karo
         await Expense.findOneAndDelete({ uniqueKey, schoolCode });
       }
     }
 
     // Create expense for all PAID teachers only
-    const paidTeachers = await SalaryStatus.find({ month, year, status: "paid", schoolCode });
+    const paidTeachers = await SalaryStatus.find({
+      month: Number(month),
+      year: Number(year),
+      status: "paid",
+      schoolCode
+    });
     for (let t of paidTeachers) {
       const teacher = await Teacher.findOne({ _id: t.teacherId, schoolCode });
-      await createSalaryExpense({
-        name: teacher.name,
-        amount: t.payableSalary,
-        month: Number(month),
-        year: Number(year),
-        personId: t.teacherId,
-        role: "teacher"
-      });
+
+
+      if (teacher) {
+        // ⭐ FIX: Pehle check karo ki is teacher ka is month ka expense pehle se toh nahi bana?
+        const uniqueKey = `teacher_${t.teacherId}_${year}_${month}`;
+        const existingExpense = await Expense.findOne({ uniqueKey, schoolCode });
+
+        if (!existingExpense) {
+          // Agar pehle se expense nahi hai, tabhi naya banao!
+          await createSalaryExpense({
+            name: teacher.name,
+            amount: t.payableSalary || 0,
+            month: Number(month),
+            year: Number(year),
+            personId: t.teacherId,
+            role: "teacher",
+            schoolCode: schoolCode,
+            uniqueKey: uniqueKey // uniqueKey pass karna mat bhoolna agar aapke function me use hoti hai
+          });
+        } else {
+          // (Optional) Agar amount change hua ho toh update kar do
+          existingExpense.amount = t.payableSalary || 0;
+          await existingExpense.save();
+        }
+      }
     }
 
     res.redirect(`/view-attendance-teachers?month=${month}&year=${year}`);
@@ -489,7 +559,7 @@ router.post("/update-salary-status/:teacherId", adminAuth, async (req, res) => {
   const schoolCode = req.session.schoolCode;
   try {
     const { teacherId } = req.params;
-    const { month, year, status } = req.body;
+    let { month, year, status } = req.body;
 
     month = Number(month);
     year = Number(year);
