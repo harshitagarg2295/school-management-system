@@ -4,7 +4,7 @@ const Student = require("../../models/StudentSchema");
 const StudyMaterial = require("../../models/StudyMaterial");
 const { teacherAuth } = require("../../middlewares/auth");
 
-const { cloudinary, uploadMaterial } = require("../../config/CloudinaryConfig"); 
+const {cloudinary, uploadMaterial } = require("../../config/cloudinaryConfig"); 
 
 // ----------------------------------------
 // Function to prepare class list
