@@ -171,6 +171,7 @@ router.post("/edit-teacher/:id", adminAuth, async (req, res) => {
 
   res.redirect(`/teacher/${req.params.id}`);
 });
+
 router.post("/teacher/upload-image/:id", adminAuth, async (req, res) => {
   try {
     const base64 = req.body.croppedImage;

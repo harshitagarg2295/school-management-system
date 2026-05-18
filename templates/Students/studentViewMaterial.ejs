@@ -221,104 +221,89 @@
 
 <body>
 
-    <div class="teacher-dash">
+  <div class="teacher-dash">
 
-        <%- include("partials/StudentPageSidebar") %>
+    <%- include("partials/StudentPageSidebar") %>
 
-            <div class="material-card">
+    <div class="material-card">
 
-                <h2>Access Your Learning Resources</h2>
+        <h2>Access Your Learning Resources</h2>
 
-                <div class="search-stud">
-                    <div class="search-container">
-                        <i class="fas fa-search"></i>
-                        <input type="text" name="search" id="searchInput" placeholder="Search by Title or Teacher">
-                    </div>
-                </div>
+        <div class="search-stud">
+            <div class="search-container">
+                <i class="fas fa-search"></i>
+                <input type="text" name="search" id="searchInput" placeholder="Search by Title or Teacher">
+            </div>
+        </div>
 
-                <div class="material-grid">
+        <div class="material-grid">
 
-                    <% if (materials && materials.length> 0) { %>
-                        <% materials.forEach(material=> { %>
+            <% if (materials && materials.length > 0) { %>
+                <% materials.forEach(material => { %>
 
-                            <div class="material-box">
-                                <div class="title">
-                                    <%= material.title %>
-                                </div>
-                                <div class="description">
-                                    <%= material.description %>
-                                </div>
+                    <div class="material-box">
+                        <div class="title">
+                            <%= material.title %>
+                        </div>
+                        <div class="description">
+                            <%= material.description %>
+                        </div>
 
-                                <div class="material-footer">
-                                    <div class="meta-info">
-                                        <span class="meta-item">
-                                            <i class="fas fa-user-tie"></i>
-                                            <p>
-                                                <%= material.uploadedBy %>
-                                            </p>
-                                        </span>
-                                        <span class="meta-item">
-                                            <i class="far fa-clock"></i>
-                                            <p>
-                                                <%= new Date(material.uploadedAt).toISOString().split('T')[0] %>
-                                            </p>
-                                        </span>
-                                    </div>
-
-                                    <a href="<%= material.fileUrl %>" download="<%= material.title %>">
-                                        <button class="download-btn">
-                                            <i class="fas fa-download"></i> Download
-                                        </button>
-                                    </a>
-                                </div>
+                        <div class="material-footer">
+                            <div class="meta-info">
+                                <span class="meta-item">
+                                    <i class="fas fa-user-tie"></i>
+                                    <p>
+                                        <%= material.uploadedBy %>
+                                    </p>
+                                </span>
+                                <span class="meta-item">
+                                    <i class="far fa-clock"></i>
+                                    <p>
+                                        <%= new Date(material.uploadedAt).toISOString().split('T')[0] %>
+                                    </p>
+                                </span>
                             </div>
 
-                            <% }) %>
-                                <% } else { %>
-                                    <p style="grid-column: 1 / -1; text-align: center; padding: 50px; color: #7f8c8d;">
-                                        No study material found for your class (<%= studentClass %>) yet. Check back
-                                            later!
-                                    </p>
-                                    <% } %>
-                </div>
-            </div>
+                            <!-- Cloudinary compatibility secure link -->
+                            <a href="<%= material.fileUrl %>" target="_blank">
+                                <button class="download-btn">
+                                    <i class="fas fa-download"></i> Download
+                                </button>
+                            </a>
+                        </div>
+                    </div> <!-- ✅ LOOP SE PEHLE BOX DIV SAHI SE BAND KIYA -->
+
+                <% }) %>
+            <% } else { %>
+                <p style="grid-column: 1 / -1; text-align: center; padding: 50px; color: #7f8c8d;">
+                    No study material found for your class (<%= studentClass %>) yet. Check back later!
+                </p>
+            <% } %>
+        </div>
     </div>
-</body>
+</div>
 
 <script>
-  
     const searchInput = document.getElementById('searchInput');
     const materialGrid = document.querySelector('.material-grid');
-    
-   
     const materialCards = materialGrid ? materialGrid.querySelectorAll('.material-box') : [];
 
     searchInput.addEventListener('keyup', function() {
-       
         const searchTerm = this.value.toLowerCase().trim();
 
-       
         materialCards.forEach(card => {
-            
-            // Card के अंदर से Title और Teacher Name का टेक्स्ट प्राप्त करें
-  
             const titleElement = card.querySelector('.title');
-            const teacherElement = card.querySelector('.fa-user-tie').nextElementSibling; // i.fa-user-tie के बाद वाला <p>
+            const teacherElement = card.querySelector('.fa-user-tie').nextElementSibling;
 
             const titleText = titleElement ? titleElement.textContent.toLowerCase() : '';
             const teacherText = teacherElement ? teacherElement.textContent.toLowerCase() : '';
 
-            // Search Term की जाँच Title या Teacher Name दोनों में करें
             if (titleText.includes(searchTerm) || teacherText.includes(searchTerm)) {
-                // अगर match करता है, तो card को दिखाओ
-                card.style.display = 'flex'; // Card एक flex item है
+                card.style.display = 'flex';
             } else {
-                // अगर match नहीं करता है, तो card को छुपाओ
                 card.style.display = 'none';
             }
         });
     });
-
-   
 </script>
-</html>

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View Material Uploaded By You </title>
+    <title>View Material Uploaded By You</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 
@@ -232,99 +232,90 @@
 
         <%- include("partials/TeacherPageSidebar") %>
 
-            <div class="material-card">
+        <div class="material-card">
 
-                <h2>Materials Uploaded By You</h2>
+            <h2>Materials Uploaded By You</h2>
 
-                <div class="search-stud">
-                    <div class="search-container">
-                        <i class="fas fa-search"></i>
-                        <input type="text" name="search" id="searchInput" placeholder="Search by Title">
-                    </div>
-
-                    <div class="class-select">
-                        <select id="classSelect" name="className" class="select_class">
-                            <option value="">Select Class</option>
-                            <% classList.forEach(c=> { %>
-                                <option value="<%= c %>" <%=c===selectedClass ? "selected" : "" %>>
-                                    <%= c %>
-                                </option>
-                                <% }) %>
-                        </select>
-                    </div>
+            <div class="search-stud">
+                <div class="search-container">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="search" id="searchInput" placeholder="Search by Title">
                 </div>
 
-                <div class="material-grid">
-
-                    <% if (materials && materials.length> 0) { %>
-                        <% materials.forEach(material=> { %>
-
-                            <div class="material-box">
-                                <div class="title">
-                                    <%= material.title %>
-                                </div>
-                                <div class="description">
-                                    <%= material.description %>
-                                </div>
-
-                                <div class="material-footer">
-                                    <div class="meta-info">
-                                        <span class="meta-item">
-                                            <i class="fas fa-user-tie"></i>
-                                            <p>
-                                                <%= material.uploadedBy %>
-                                            </p>
-                                        </span>
-                                        <span class="meta-item">
-                                            <i class="far fa-clock"></i>
-                                            <p>
-                                                <%= new Date(material.uploadedAt).toISOString().split('T')[0] %>
-                                            </p>
-                                        </span>
-                                    </div>
-
-                                    <div style="display: flex; gap: 10px; align-items: center;">
-                                        <a href="/teachers/delete-material/<%= material._id %>"
-                                            onclick="return confirm('Are you sure you want to delete this material?')"
-                                            style="color: #e74c3c; font-size: 1.2rem;">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </a>
-
-                                        <a href="<%= material.fileUrl %>" download="<%= material.title %>">
-                                            <button class="download-btn">
-                                                <i class="fas fa-download"></i> Download
-                                            </button>
-                                        </a>
-                                    </div>
-                                </div>
-
-                                <% }) %>
-                                    <% } else { %>
-                                        <p
-                                            style="grid-column: 1 / -1; text-align: center; padding: 50px; color: #7f8c8d;">
-                                            You haven't uploaded any study material yet.
-                                        </p>
-                                        <% } %>
-                            </div>
+                <div class="class-select">
+                    <select id="classSelect" name="className" class="select_class">
+                        <option value="">Select Class</option>
+                        <% classList.forEach(c => { %>
+                            <option value="<%= c %>" <%= c === selectedClass ? "selected" : "" %>>
+                                <%= c %>
+                            </option>
+                        <% }) %>
+                    </select>
                 </div>
             </div>
+
+            <div class="material-grid">
+                <% if (materials && materials.length > 0) { %>
+                    <% materials.forEach(material => { %>
+                        <!-- Fixed Loop placement: Card div dynamically repeats inside the grid -->
+                        <div class="material-box">
+                            <div class="title">
+                                <%= material.title %>
+                            </div>
+                            <div class="description">
+                                <%= material.description %>
+                            </div>
+
+                            <div class="material-footer">
+                                <div class="meta-info">
+                                    <span class="meta-item">
+                                        <i class="fas fa-user-tie"></i>
+                                        <%= material.uploadedBy %>
+                                    </span>
+                                    <span class="meta-item">
+                                        <i class="far fa-clock"></i>
+                                        <%= new Date(material.uploadedAt).toISOString().split('T')[0] %>
+                                    </span>
+                                </div>
+
+                                <div style="display: flex; gap: 10px; align-items: center;">
+                                    <a href="/teachers/delete-material/<%= material._id %>"
+                                       onclick="return confirm('Are you sure you want to delete this material?')"
+                                       style="color: #e74c3c; font-size: 1.2rem;">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+
+                                    <!-- Cloudinary compatibility fixed: opens/downloads securely in a new tab -->
+                                    <a href="<%= material.fileUrl %>" target="_blank">
+                                        <button class="download-btn">
+                                            <i class="fas fa-download"></i>Download
+                                        </button>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <p style="grid-column: 1 / -1; text-align: center; padding: 50px; color: #7f8c8d;">
+                        You haven't uploaded any study material yet.
+                    </p>
+                <% } %>
+            </div>
+        </div>
+    </div>
 </body>
 
 <script>
-
     const searchInput = document.getElementById('searchInput');
     const materialGrid = document.querySelector('.material-grid');
     const materialCards = materialGrid ? materialGrid.querySelectorAll('.material-box') : [];
 
     searchInput.addEventListener('keyup', function () {
-
         const searchTerm = this.value.toLowerCase().trim();
 
         materialCards.forEach(card => {
-
             const titleElement = card.querySelector('.title');
             const titleText = titleElement ? titleElement.textContent.toLowerCase() : '';
-
 
             if (titleText.includes(searchTerm)) {
                 card.style.display = 'flex';
@@ -334,22 +325,19 @@
         });
     });
 
-    // ✅ Class Filter Logic
+    // Class Filter Logic
     const classSelect = document.getElementById('classSelect');
 
     classSelect.addEventListener('change', function () {
         const selectedClass = this.value;
         let redirectUrl = '/teachers/view-material';
 
-        // अगर कोई क्लास select की गई है, तो उसे query parameter के रूप में जोड़ें
         if (selectedClass) {
             redirectUrl += '?class=' + selectedClass;
         }
 
         window.location.href = redirectUrl;
     });
-
-
 </script>
 
 </html>

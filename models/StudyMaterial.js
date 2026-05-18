@@ -8,7 +8,8 @@ const StudyMaterialSchema = new mongoose.Schema({
     class: String,
     title: String,
     description: String,
-    fileUrl: String,     // e.g., "/uploads/chapter1.pdf" or Cloudinary URL
+    fileUrl: String,     
+    publicId: String,    // Cloudinary se file delete karne ke liye zaroori hai
     uploadedBy: String,  // Teacher ID/Name
     uploadedAt: { type: Date, default: Date.now }
 });

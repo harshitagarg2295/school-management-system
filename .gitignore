@@ -1,10 +1,4 @@
 node_modules/
 .env
 
-# Har folder ke andar ki files ignore karo
-uploads/**
-# Lekin folders aur .gitkeep ko aane do
-!uploads/**/
-!uploads/**/.gitkeep
-
 password of mongo uri

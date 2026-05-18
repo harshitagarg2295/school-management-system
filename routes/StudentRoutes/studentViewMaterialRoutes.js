@@ -1,26 +1,32 @@
 const express = require('express');
 const router = express.Router();
-const StudyMaterial = require("../../models/StudyMaterial")
+const StudyMaterial = require("../../models/StudyMaterial");
 const { studentAuth } = require("../../middlewares/auth");
 
 router.get("/students/view-study-material", studentAuth, async (req, res) => {
-    const schoolCode = req.session.schoolCode;
-    const studentClass = req.session.studentId.class
+    try {
+        const schoolCode = req.session.schoolCode;
+        
+        // Safe check: Aapke session architecture ke hisab se class fetch karna
+        const studentClass = req.session.class || (req.session.studentId ? req.session.studentId.class : null);
 
-    if (!studentClass) {
-        return res.redirect("/login");
+        if (!studentClass) {
+            console.log("Student class not found in session");
+            return res.redirect("/login");
+        }
+
+        // Only fetch material of that class and school
+        const materials = await StudyMaterial.find({ class: studentClass, schoolCode }).sort({ uploadedAt: -1 });
+
+        res.render("Students/studentViewMaterial", {
+            materials: materials,
+            studentClass: studentClass,
+        });
+        
+    } catch (error) {
+        console.error("Error fetching student materials:", error);
+        res.status(500).send("Internal Server Error");
     }
+});
 
-    // केवल उस Class के लिए Material Fetch करें
-
-    const materials = await StudyMaterial.find({ class: studentClass, schoolCode }).sort({ uploadedAt: -1 }); // नए अपलोड किए गए मटेरियल को पहले दिखाएं
-
-    res.render("Students/studentViewMaterial", {
-        materials: materials,
-        studentClass: studentClass,
-        // अन्य आवश्यक variables, जैसे studentName, आदि
-    });
-
-})
-
-module.exports = router
+module.exports = router;
