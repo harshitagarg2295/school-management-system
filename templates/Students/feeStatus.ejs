@@ -294,7 +294,7 @@
                             <%= student.phone %>
                         </p>
                         <p><strong>Date of Birth :</strong>
-                            <%= student.DOB.toDateString() %>
+                            <%= student.DOB ? new Date(student.DOB).toLocaleDateString('en-GB') : 'N/A' %>
                         </p>
                         <p><strong>Address :</strong>
                             <%= student.address %>

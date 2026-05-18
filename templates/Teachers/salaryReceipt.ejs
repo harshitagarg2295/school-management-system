@@ -189,7 +189,7 @@
 
         <div class="info-item">
           <span class="label"><i class="fa-solid fa-clock"></i> Paid On:</span>
-          <span><%= paidOn ? paidOn.toDateString() : "-" %></span>
+         <span><%= paidOn %></span>
         </div>
       </div>
 
@@ -212,8 +212,11 @@
         <div class="label">Total Absent (Absent + Late/2):</div>
         <div><%= totalAbsent %></div>
 
-        <div class="label">Payable Salary:</div>
-        <div><strong>₹<%= payableSalary %></strong></div>
+      <div class="label text-danger">Total Deduction:</div>
+        <div class="text-danger"><strong>- ₹<%= Math.round(deduction) %></strong></div>
+
+        <div class="label" style="font-size: 19px; border-top: 1px solid var(--border); padding-top: 10px;">Net Payable Salary:</div>
+        <div style="font-size: 19px; border-top: 1px solid var(--border); padding-top: 10px;"><strong>₹<%= Math.round(payableSalary) %></strong></div>
       </div>
 
       <div class="footer">This is a system-generated salary receipt.</div>

@@ -551,32 +551,57 @@
                 <!-- ATTENDANCE TABLE END -->
 
                 <div class="attendance-summary">
-                    <h3>Attendance Summary</h3>
+                    <h3>Attendance & Salary Summary</h3>
+
+                    <!-- 1. Attendance Counts Rows -->
                     <div class="summary-row">
                         <div class="summary-card present">
-                            <span>✅ Present</span>
+                            <span>✅ Present Days</span>
                             <strong>
                                 <%= presentCount %>
                             </strong>
                         </div>
                         <div class="summary-card absent">
-                            <span>❌ Absent</span>
+                            <span>❌ Absent Days</span>
                             <strong>
                                 <%= absentCount %>
                             </strong>
                         </div>
                         <div class="summary-card late">
-                            <span>⏰ Late</span>
+                            <span>⏰ Late Count</span>
                             <strong>
                                 <%= lateCount %>
                             </strong>
                         </div>
+                        <!-- Extra Master Card for Total Effective Absents -->
+                        <div class="summary-card absent" style="border-left-color: #6c757d;">
+                            <span>📊 Total Deduct Days</span>
+                            <strong>
+                                <%= totalAbsent %>
+                            </strong>
+                        </div>
                     </div>
 
-                    <div class="flex-card">
+                    <!-- 2. Salary & Status Cards -->
+                    <div class="summary-row" style="justify-content: center; gap: 10px;">
+
+                        <!-- Total Salary Cut -->
+                        <div class="salary-card" style="background: linear-gradient(135deg, #fe4f4f, #ff7272);">
+                            <span>📉 Salary Deduction</span>
+                            <strong>₹ <%= Math.round(deduction) %></strong>
+                        </div>
+
+                        <!-- Final Net Payable Salary -->
                         <div class="salary-card">
-                            <span>💰 Payable Salary</span>
-                            <strong>₹ <%= payableSalary.toFixed(2) %></strong>
+                            <span>💰 Net Payable Salary</span>
+                            <strong>₹ <%= Math.round(payableSalary) %></strong>
+                        </div>
+
+                        <div class="salary-card"style="background: <%= salaryStatus === 'paid' ? 'linear-gradient(135deg, #28a745, #5cd870)' : 'linear-gradient(135deg, #ffc107, #ffdb6d)' %>; color: <%= salaryStatus === 'paid' ? 'white' : '#333' %>;">
+                            <span> Payment Status</span>
+                            <strong style="text-transform: uppercase; font-size: 24px;">
+                                <%= salaryStatus %>
+                            </strong>
                         </div>
                     </div>
                 </div>

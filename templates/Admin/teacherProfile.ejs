@@ -517,8 +517,8 @@
 
           <div class="image" aria-label="profile-picture">
             <img id="previewImg" class="preview"
-              src="<%= teacher.photo ? '/uploads/teachers/' + teacher.photo : '/images/default-profile.png' %>">
-
+              src="<%= teacher?.photo ? (teacher.photo.startsWith('http') ? teacher.photo : '/uploads/teachers/' + teacher.photo) : '/images/default-profile.png' %>"
+              alt="Teacher Profile">
             <input id="fileInput" type="file" accept="image/*" capture="environment" style="display:none;">
           </div>
 

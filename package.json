@@ -19,6 +19,7 @@
   "homepage": "https://github.com/harshitagarg2295/School-Management#readme",
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "cloudinary": "^1.41.3",
     "connect-mongo": "^6.0.0",
     "dotenv": "^17.2.3",
     "ejs": "^3.1.10",
@@ -27,7 +28,8 @@
     "moment": "^2.30.1",
     "moment-timezone": "^0.6.0",
     "mongoose": "^8.15.1",
-    "multer": "^2.0.2",
+    "multer": "^2.1.1",
+    "multer-storage-cloudinary": "^4.0.0",
     "node-cron": "^4.2.1",
     "puppeteer": "^24.32.1",
     "razorpay": "^2.9.6",

@@ -5,6 +5,7 @@ const router = express.Router();
 const Teacher = require("../../models/TeacherSchema");
 const Attendance = require("../../models/TeacherAttendance");
 const Holiday = require("../../models/Holiday");
+const SalaryStatus = require("../../models/TeacherSalaryStatus");
 const { teacherAuth } = require("../../middlewares/auth");
 
 // Teacher Attendance View
@@ -51,18 +52,43 @@ router.get("/teachers/view-own-attendance", teacherAuth, async (req, res) => {
     attendanceMap[`day_${day}`] = att.status; // "P" / "A"
   });
 
-  const presentCount = attendanceDocs.filter(a => a.status === "P").length;
-  const absentCount = attendanceDocs.filter(a => a.status === "A").length;
-  const lateCount = attendanceDocs.filter(a => a.status === "L").length;
+  // Salary Calculation 
+  let statusDoc = await SalaryStatus.findOne({
+    teacherId: teacherId,
+    month: Number(month),
+    year: Number(year),
+    schoolCode
+  });
 
-  // Salary calculation:
+  // Variables initialize karo default values ke sath (agar is mahine ki attendance abhi tak nahi bani)
+  let presentCount = 0;
+  let absentCount = 0;
+  let lateCount = 0;
+  let totalAbsent = 0;
+  let payableSalary = 0;
+  let deduction = 0;
+  let perDaySalary = Math.round(teacher.salary / daysInMonth);
+  let salaryStatus = "pending"; // Paid/Pending batane ke liye
 
-  const totalAbsent = absentCount + Math.floor(lateCount / 2);
+  if (statusDoc) {
+    // Agar admin portal par attendance generate ho chuki hai, toh exact real data nikal lo
+    presentCount = statusDoc.presentDays || 0;
+    absentCount = statusDoc.absentDays || 0;
+    lateCount = statusDoc.lateCount || 0;
+    totalAbsent = statusDoc.totalAbsent || 0;
+    payableSalary = statusDoc.payableSalary || 0;
+    deduction = statusDoc.deduction || 0;
+    salaryStatus = statusDoc.status || "pending";
+  } else {
+    // Fallback: Agar is month ki attendance admin ne abhi tak touch nahi ki, toh live calculation se counts nikal lo
+    presentCount = attendanceDocs.filter(a => a.status === "P" || a.status === "L").length;
+    absentCount = attendanceDocs.filter(a => a.status === "A").length;
+    lateCount = attendanceDocs.filter(a => a.status === "L").length;
 
-  const perDaySalary = Math.round(teacher.salary / daysInMonth);
-
-  const payableSalary = teacher.salary - totalAbsent * perDaySalary;
-
+    // Note: Naye month me jab tak admin view nahi karega tab tak salary 0 dikhegi jaisa admin panel pe chal raha hai
+    payableSalary = 0;
+    deduction = 0;
+  }
 
   // Holidays fetch
   const holidayDocs = await Holiday.find({
@@ -105,10 +131,15 @@ router.get("/teachers/view-own-attendance", teacherAuth, async (req, res) => {
     sundays,
     holidayDocs,
     today,
+    today,
     presentCount,
     absentCount,
     lateCount,
+    totalAbsent,      
+    perDaySalary,    
     payableSalary,
+    deduction,       
+    salaryStatus,
   });
 });
 

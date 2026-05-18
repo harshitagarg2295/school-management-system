@@ -123,7 +123,7 @@
                 text-align: center;
             }
 
-           
+
         }
 
         @media (max-width: 480px) {
@@ -131,7 +131,8 @@
                 width: 80px;
                 height: 80px;
             }
-             .profile-grid {
+
+            .profile-grid {
                 grid-template-columns: 1fr;
             }
 
@@ -150,19 +151,15 @@
             <div class="profile-card">
                 <div class="profile-header">
                     <div class="header-info">
-                        <% if (student.photo) { %>
-                            <img src="/uploads/students/<%= student.photo %>" class="profile-img">
-                            <% } else { %>
-                                <img src="/images/default-student.png" class="profile-img">
-                                <% } %>
-
-                                    <div>
-                                        <h2>
-                                            <%= student.name %>
-                                        </h2>
-                                        <p>Class: <%= student.class %> - <%= student.section %>
-                                        </p>
-                                    </div>
+                        <img src="<%= student?.photo ? (student.photo.startsWith('http') ? student.photo : '/uploads/students/' + student.photo) : '/images/default-student.png' %>"
+                            class="profile-img" alt="Student Profile">
+                        <div>
+                            <h2>
+                                <%= student.name %>
+                            </h2>
+                            <p>Class: <%= student.class %> - <%= student.section %>
+                            </p>
+                        </div>
                     </div>
                 </div>
 

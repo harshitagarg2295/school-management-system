@@ -12,8 +12,7 @@ const createSalaryExpense = require("../../utils/createSalaryExpense");
 const { adminAuth } = require("../../middlewares/auth");
 const Student = require("../../models/StudentSchema");
 const bcrypt = require("bcrypt");
-const fs = require("fs");
-const path = require("path");
+const { cloudinary } = require("../../config/cloudinaryConfig");
 
 
 // List all teachers
@@ -172,49 +171,42 @@ router.post("/edit-teacher/:id", adminAuth, async (req, res) => {
 
   res.redirect(`/teacher/${req.params.id}`);
 });
-
 router.post("/teacher/upload-image/:id", adminAuth, async (req, res) => {
   try {
     const base64 = req.body.croppedImage;
-    if (!base64) return res.redirect(`/teacher/${req.params.id}`);
-
-    const base64Data = base64.split(";base64,").pop();
-
-    // detect file type
-    const mimeType = base64.match(/data:(image\/\w+);base64/)[1];
-    const ext = mimeType.split("/")[1];
-    const fileName = Date.now() + "." + ext;
-
-    const uploadDir = path.join(__dirname, "../../uploads/teachers");
-
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
+    
+    // Agar image nahi aayi toh chupchap redirect kar do
+    if (!base64 || base64.trim() === "") {
+      return res.redirect(`/teacher/${req.params.id}`);
     }
 
-    // 🔒 secure fetch
+    // 🔒 Secure check: Pehle verify kar lo ki teacher usi school ka hai
     const teacher = await Teacher.findOne({
       _id: req.params.id,
       schoolCode: req.session.schoolCode
     });
 
-    // 🧹 delete old image
-    if (teacher && teacher.photo) {
-      const oldPath = path.join(uploadDir, teacher.photo);
-      if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+    if (!teacher) {
+      return res.status(404).send("Teacher not found or unauthorized");
     }
 
-    fs.writeFileSync(path.join(uploadDir, fileName), base64Data, "base64");
+    // 🔥 CLOUDINARY UPLOAD (No fs, no path, direct base64 string upload!)
+    const uploadResponse = await cloudinary.uploader.upload(base64, {
+      folder: "School_Management_Profiles/Teachers",
+      resource_type: "image"
+    });
 
+    // 🔄 Database me direct online secure URL save karo
     await Teacher.findOneAndUpdate(
       { _id: req.params.id, schoolCode: req.session.schoolCode },
-      { photo: fileName }
+      { photo: uploadResponse.secure_url }
     );
 
     res.redirect(`/teacher/${req.params.id}`);
 
   } catch (err) {
-    console.log(err);
-    res.send("Error uploading image");
+    console.error("Error uploading teacher image to Cloudinary:", err);
+    res.status(500).send("Error uploading image");
   }
 });
 
@@ -293,14 +285,14 @@ router.get("/view-attendance-teachers", adminAuth, async (req, res) => {
       const attendance = attendanceMap[tid] || {};
 
       // Get absent days + late count
-    let absentDays = 0;
+      let absentDays = 0;
       let lateCount = 0;
-      let paidDays = 0; 
+      let paidDays = 0;
       let hasAttendanceData = false; // 🔥 CHECK: Kya is mahine me koi bhi attendance bhari gayi hai?
 
       // Pata karo loop kahan tak chalana hai
       const currentMoment = moment();
-      let loopUpToDay = daysInMonth; 
+      let loopUpToDay = daysInMonth;
 
       // Agar selected month aur year AAJ KA chal raha mahina hai:
       if (month === parseInt(currentMoment.format("MM")) && year === parseInt(currentMoment.format("YYYY"))) {
@@ -329,7 +321,7 @@ router.get("/view-attendance-teachers", adminAuth, async (req, res) => {
             } else {
               absentDays++;
             }
-          } 
+          }
           // 2. Agar normal working day hai
           else {
             if (status === "P" || status === "L") {
@@ -363,7 +355,7 @@ router.get("/view-attendance-teachers", adminAuth, async (req, res) => {
       for (let day = 1; day <= daysInMonth; day++) {
         if (attendance["day_" + day] === "P" || attendance["day_" + day] === "L") presentDays++;
       }
-      
+
       // Fetch salary status for this teacher, month, year
       let statusDoc = await SalaryStatus.findOne({
         teacherId: teacher._id,
@@ -496,9 +488,11 @@ router.post("/submit-attendance-teachers", adminAuth, async (req, res) => {
     for (const teacherId in paymentStatus) {
       const newStatus = paymentStatus[teacherId];
 
+      const paidOnDate = newStatus === "paid" ? new Date() : null;
+
       await SalaryStatus.findOneAndUpdate(
         { teacherId, month: Number(month), year: Number(year), schoolCode },
-        { status: newStatus, schoolCode },
+        { status: newStatus,paidOn: paidOnDate, schoolCode },
         { upsert: true, new: true }
       );
 

@@ -55,7 +55,7 @@
       border-radius: 50%;
       object-fit: cover;
       border: 4px solid var(--primary);
-      box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
     }
 
     .profile-header h2 {
@@ -127,95 +127,119 @@
     <!-- Sidebar -->
     <%- include("partials/TeacherPageSidebar") %>
 
-    <!-- Profile Card -->
-    <div class="profile-card">
+      <!-- Profile Card -->
+      <div class="profile-card">
 
-      <!-- Header -->
-      <div class="profile-header">
+        <!-- Header -->
+        <div class="profile-header">
 
-        <% if (teacher.photo) { %>
-          <img src="/uploads/teachers/<%= teacher.photo %>" class="profile-img">
-        <% } else { %>
-          <img src="/default.png" class="profile-img">
-        <% } %>
+          <img
+            src="<%= teacher?.photo ? (teacher.photo.startsWith('http') ? teacher.photo : '/uploads/teachers/' + teacher.photo) : '/default.png' %>"
+            class="profile-img">
+          <div>
+            <h2>
+              <%= teacher.name %>
+            </h2>
+            <p>
+              <%= teacher.subject %>
+            </p>
+          </div>
 
-        <div>
-          <h2><%= teacher.name %></h2>
-          <p><%= teacher.subject %></p>
+        </div>
+
+        <!-- Details -->
+        <div class="profile-grid">
+
+          <div class="profile-item">
+            <label>Employee ID</label>
+            <span>
+              <%= teacher.empId %>
+            </span>
+          </div>
+
+          <div class="profile-item">
+            <label>Phone</label>
+            <span>
+              <%= teacher.phone %>
+            </span>
+          </div>
+
+          <div class="profile-item">
+            <label>Gender</label>
+            <span>
+              <%= teacher.gender || "N/A" %>
+            </span>
+          </div>
+
+          <div class="profile-item">
+            <label>Date of Birth</label>
+            <span>
+              <%= teacher.dob ? teacher.dob.toISOString().split("T")[0] : "N/A" %>
+            </span>
+          </div>
+
+          <div class="profile-item">
+            <label>Blood Group</label>
+            <span>
+              <%= teacher.bloodGroup || "N/A" %>
+            </span>
+          </div>
+
+          <div class="profile-item">
+            <label>Salary</label>
+            <span>
+              <%= teacher.salary %>
+            </span>
+          </div>
+
+          <div class="profile-item">
+            <label>Education</label>
+            <span>
+              <%= teacher.education || "N/A" %>
+            </span>
+          </div>
+
+          <div class="profile-item">
+            <label>Experience</label>
+            <span>
+              <%= teacher.experience || "N/A" %>
+            </span>
+          </div>
+
+          <div class="profile-item">
+            <label>Classes</label>
+            <span>
+              <%= teacher.class %>
+            </span>
+          </div>
+
+          <div class="profile-item">
+            <label>Assigned Class</label>
+            <span>
+              <%= teacher.assignedClass || "N/A" %>
+            </span>
+          </div>
+
+          <div class="profile-item">
+            <label>Class Teacher</label>
+            <span>
+              <%= teacher.classTeacher==="yes" ? "Yes" : "No" %>
+            </span>
+          </div>
+
+          <div class="profile-item full-width">
+            <label>Address</label>
+            <span>
+              <%= teacher.address || "N/A" %>
+            </span>
+          </div>
+
         </div>
 
       </div>
-
-      <!-- Details -->
-      <div class="profile-grid">
-
-        <div class="profile-item">
-          <label>Employee ID</label>
-          <span><%= teacher.empId %></span>
-        </div>
-
-        <div class="profile-item">
-          <label>Phone</label>
-          <span><%= teacher.phone %></span>
-        </div>
-
-        <div class="profile-item">
-          <label>Gender</label>
-          <span><%= teacher.gender || "N/A" %></span>
-        </div>
-
-        <div class="profile-item">
-          <label>Date of Birth</label>
-          <span>
-            <%= teacher.dob ? teacher.dob.toISOString().split("T")[0] : "N/A" %>
-          </span>
-        </div>
-
-        <div class="profile-item">
-          <label>Blood Group</label>
-          <span><%= teacher.bloodGroup || "N/A" %></span>
-        </div>
-
-         <div class="profile-item">
-          <label>Salary</label>
-          <span><%= teacher.salary %></span>
-        </div>
-
-        <div class="profile-item">
-          <label>Education</label>
-          <span><%= teacher.education || "N/A" %></span>
-        </div>
-
-        <div class="profile-item">
-          <label>Experience</label>
-          <span><%= teacher.experience || "N/A" %></span>
-        </div>
-
-        <div class="profile-item">
-          <label>Classes</label>
-          <span><%= teacher.class %></span>
-        </div>
-
-        <div class="profile-item">
-          <label>Assigned Class</label>
-          <span><%= teacher.assignedClass || "N/A" %></span>
-        </div>
-
-        <div class="profile-item">
-          <label>Class Teacher</label>
-          <span><%= teacher.classTeacher === "yes" ? "Yes" : "No" %></span>
-        </div>
-
-        <div class="profile-item full-width">
-          <label>Address</label>
-          <span><%= teacher.address || "N/A" %></span>
-        </div>
-
-      </div>
-
-    </div>
 
   </div>
 
 </body>
+
 </html>

@@ -321,7 +321,7 @@
         .crop-container {
             width: 90%;
             max-width: 380px;
-      height: 90%;
+            height: 90%;
             background: #111;
             border-radius: 20px;
             overflow: hidden;
@@ -380,7 +380,8 @@
 
                     <div class="image">
                         <img id="previewImg" class="preview"
-                            src="<%= staff.photo ? '/uploads/staffs/' + staff.photo : '/images/default-profile.png' %>">
+                            src="<%= staff?.photo ? (staff.photo.startsWith('http') ? staff.photo : '/uploads/staffs/' + staff.photo) : '/images/default-profile.png' %>"
+                            alt="Staff Profile">
                         <input id="fileInput" type="file" accept="image/*" style="display:none;">
                     </div>
 

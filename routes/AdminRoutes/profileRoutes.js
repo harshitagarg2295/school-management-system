@@ -2,9 +2,7 @@ const express = require('express');
 const router = express.Router();
 const profile = require("../../models/AdminProfileSchema");
 const { adminAuth } = require("../../middlewares/auth");
-
-const path = require("path");
-const fs = require("fs");
+const { cloudinary } = require("../../config/cloudinaryConfig");
 
 // --- GET PROFILE VIEW ---
 router.get("/profile-menu", adminAuth, async (req, res) => {
@@ -18,14 +16,6 @@ router.get("/profile-menu", adminAuth, async (req, res) => {
     }
 });
 
-
-// --- IMAGE UPLOAD FOLDER CONFIG ---
-const uploadPath = path.join(__dirname, "../../uploads/admin");
-if (!fs.existsSync(uploadPath)) {
-    fs.mkdirSync(uploadPath, { recursive: true });
-}
-
-
 // --- FIXED MASTER POST ROUTE (Handles Details + Image Crop together) ---
 router.post("/edit-details", adminAuth, async (req, res) => {
     try {
@@ -37,29 +27,22 @@ router.post("/edit-details", adminAuth, async (req, res) => {
 
         // Check if a new cropped image exists
         if (croppedImage && croppedImage.trim() !== "") {
-            
-            // Clean base64 string metadata
-            const base64Image = croppedImage.replace(/^data:image\/\w+;base64,/, "");
-            
-            // Convert to buffer
-            const buffer = Buffer.from(base64Image, "base64");
 
-            // Generate unique filename
-            const fileName = "profile-" + Date.now() + ".jpg";
-            const filePath = path.join(uploadPath, fileName);
+            // 🔥 CLOUDINARY UPLOAD (No fs, no path, no buffer!)
+            const uploadResponse = await cloudinary.uploader.upload(croppedImage, {
+                folder: "School_Management_Profiles/Admin",
+                resource_type: "image"
+            });
 
-            // Write file to folder
-            fs.writeFileSync(filePath, buffer);
-
-            // Attach filename to database data
-            updateData.image = fileName;
+            // Database data me direct online URL lagao
+            updateData.image = uploadResponse.secure_url;
         }
 
         // Upsert standard dataset inside single MongoDB call
         await profile.findOneAndUpdate(
-            { schoolCode },                     
-            updateData,                         
-            { new: true, upsert: true }         
+            { schoolCode },
+            updateData,
+            { new: true, upsert: true }
         );
 
         res.redirect("/profile-menu");

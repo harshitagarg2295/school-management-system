@@ -5,8 +5,7 @@ const AdminNotification = require("../../models/AdminNotificationSchema");
 const { adminAuth } = require("../../middlewares/auth");
 const bcrypt = require("bcrypt")
 const moment = require("moment-timezone");
-const path = require('path');
-const fs = require('fs');
+const { cloudinary } = require("../../config/cloudinaryConfig");
 
 
 // POST - Mark Holiday for Students
@@ -246,37 +245,39 @@ router.post("/edit-student/:id", adminAuth, async (req, res) => {
 router.post("/student/upload-image/:id", adminAuth, async (req, res) => {
     try {
         const base64 = req.body.croppedImage;
-        if (!base64) return res.redirect(`/student/${req.params.id}`);
+        
+        // Agar image data khali hai toh sidhe redirect karo
+        if (!base64 || base64.trim() === "") {
+            return res.redirect(`/student/${req.params.id}`);
+        }
 
-        const base64Data = base64.split(";base64,").pop();
-
-        const mimeType = base64.match(/data:(image\/\w+);base64/)[1];
-        const ext = mimeType.split("/")[1]; // jpeg, png, etc
-
-        const fileName = Date.now() + "." + ext;
-        const uploadDir = path.join(__dirname, "../../uploads/students"); // Folder path check kar lena
-
-        if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
-        fs.writeFileSync(path.join(uploadDir, fileName), base64Data, "base64");
-
+        // 🔒 Secure check: Kisi aur school ka admin dusre school ke student ki image na badal paye
         const student = await Student.findOne({
             _id: req.params.id,
             schoolCode: req.session.schoolCode
         });
 
-        // 🧹 delete old image
-        if (student && student.photo) {
-            const oldPath = path.join(uploadDir, student.photo);
-            if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+        if (!student) {
+            return res.status(404).send("Student not found or unauthorized");
         }
+
+        // 🔥 CLOUDINARY UPLOAD (Direct base64 upload, zero local storage)
+        const uploadResponse = await cloudinary.uploader.upload(base64, {
+            folder: "School_Management_Profiles/Students",
+            resource_type: "image"
+        });
+
+        // 🔄 Database me Cloudinary ka public url daal do
         await Student.findOneAndUpdate(
             { _id: req.params.id, schoolCode: req.session.schoolCode },
-            { photo: fileName }
+            { photo: uploadResponse.secure_url }
         );
+
         res.redirect(`/student/${req.params.id}`);
+
     } catch (err) {
-        console.log(err);
-        res.send("Error uploading image");
+        console.error("Error uploading student image to Cloudinary:", err);
+        res.status(500).send("Error uploading image");
     }
 });
 

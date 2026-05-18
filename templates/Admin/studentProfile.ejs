@@ -388,7 +388,8 @@
           <input type="hidden" id="croppedImageInput" name="croppedImage">
           <div class="image">
             <img id="previewImg" class="preview"
-              src="<%= student.photo ? '/uploads/students/' + student.photo : '/images/default-student.png' %>">
+              src="<%= student?.photo ? (student.photo.startsWith('http') ? student.photo : '/uploads/students/' + student.photo) : '/images/default-student.png' %>"
+              alt="Student Preview">
             <input id="fileInput" type="file" accept="image/*" style="display:none;">
           </div>
           <div class="student-basic">
@@ -406,7 +407,7 @@
                 <%= student.class %>-<%= student.section %>
               </span></div>
 
-               <div class="meta-item"><span>Fees</span><span>
+            <div class="meta-item"><span>Fees</span><span>
                 <%= student.fees.toLocaleString('en-IN') || 'N/A' %>
               </span></div>
 

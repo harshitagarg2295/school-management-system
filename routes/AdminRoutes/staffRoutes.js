@@ -9,8 +9,7 @@ const AdminNotification = require("../../models/AdminNotificationSchema");
 const Expense = require("../../models/Expense");
 const createSalaryExpense = require("../../utils/createSalaryExpense");
 const { adminAuth } = require("../../middlewares/auth");
-const fs = require("fs");
-const path = require("path");
+const { cloudinary } = require("../../config/cloudinaryConfig");
 
 
 // List all staffs
@@ -128,44 +127,39 @@ router.post("/edit-staff/:id", adminAuth, async (req, res) => {
 router.post("/staff/upload-image/:id", adminAuth, async (req, res) => {
     try {
         const base64 = req.body.croppedImage;
-        if (!base64) return res.redirect(`/staff/${req.params.id}`);
-
-        const base64Data = base64.split(";base64,").pop();
-
-        const mimeType = base64.match(/data:(image\/\w+);base64/)[1];
-        const ext = mimeType.split("/")[1];
-        const fileName = Date.now() + "." + ext;
-
-        const uploadDir = path.join(__dirname, "../../uploads/staffs");
-
-        if (!fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir, { recursive: true });
+        
+        // Agar image data nahi mila toh wapas bhej do
+        if (!base64 || base64.trim() === "") {
+            return res.redirect(`/staff/${req.params.id}`);
         }
 
-        // 🔒 secure fetch
+        // 🔒 Secure check: Ensure staff belongs to the logged-in admin's school
         const staff = await Staff.findOne({
             _id: req.params.id,
             schoolCode: req.session.schoolCode
         });
 
-        // 🧹 delete old image
-        if (staff && staff.photo) {
-            const oldPath = path.join(uploadDir, staff.photo);
-            if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+        if (!staff) {
+            return res.status(404).send("Staff not found or unauthorized");
         }
 
-        fs.writeFileSync(path.join(uploadDir, fileName), base64Data, "base64");
+        // 🔥 CLOUDINARY UPLOAD (Directly uploading base64 string)
+        const uploadResponse = await cloudinary.uploader.upload(base64, {
+            folder: "School_Management_Profiles/Staff",
+            resource_type: "image"
+        });
 
+        // 🔄 Save the online secure_url directly to the database
         await Staff.findOneAndUpdate(
             { _id: req.params.id, schoolCode: req.session.schoolCode },
-            { photo: fileName }
+            { photo: uploadResponse.secure_url }
         );
 
         res.redirect(`/staff/${req.params.id}`);
 
     } catch (err) {
-        console.log(err);
-        res.send("Error uploading image");
+        console.error("Error uploading staff image to Cloudinary:", err);
+        res.status(500).send("Error uploading image");
     }
 });
 
