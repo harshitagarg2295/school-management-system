@@ -1,50 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SchoolFlow | Digital School Management System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <style>
-        :root { 
-            --primary: #2563eb; 
-            --dark: #1e293b; 
-            --light: #f8fafc; 
+        :root {
+            --primary: #2563eb;
+            --dark: #1e293b;
+            --light: #f8fafc;
             --accent: #3b82f6;
         }
 
-        body { 
-            font-family: 'Inter', -apple-system, sans-serif; 
-            margin: 0; 
-            background: var(--light); 
-            color: var(--dark); 
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            margin: 0;
+            background: var(--light);
+            color: var(--dark);
             line-height: 1.6;
         }
-        
+
         /* ---------- HERO SECTION ---------- */
         .hero-section {
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             color: white;
-            padding: 100px 20px; /* Reduced padding for mobile */
+            padding: 100px 20px;
+            /* Reduced padding for mobile */
             text-align: center;
             overflow: hidden;
         }
 
-        .hero-section h1 { 
-            font-size: clamp(2rem, 8vw, 3.5rem); /* Responsive font size */
-            margin-bottom: 20px; 
-            font-weight: 800; 
+        .hero-section h1 {
+            font-size: clamp(2rem, 8vw, 3.5rem);
+            /* Responsive font size */
+            margin-bottom: 20px;
+            font-weight: 800;
             line-height: 1.2;
         }
 
-        .hero-section p { 
-            font-size: clamp(1rem, 4vw, 1.25rem); 
-            opacity: 0.9; 
-            max-width: 700px; 
-            margin: 0 auto 40px; 
+        .hero-section p {
+            font-size: clamp(1rem, 4vw, 1.25rem);
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto 40px;
             padding: 0 10px;
         }
-        
+
         .cta-btn {
             padding: 14px 30px;
             font-size: 1.1rem;
@@ -55,24 +58,26 @@
             display: inline-block;
         }
 
-        .btn-primary { 
-            background: #fff; 
-            color: #1e3c72; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        .btn-primary {
+            background: #fff;
+            color: #1e3c72;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
-        .btn-primary:hover { 
-            transform: translateY(-3px); 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2); 
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
             background: #f8fbff;
         }
 
         /* ---------- FEATURES GRID ---------- */
         .features-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Adjusted min-width */
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            /* Adjusted min-width */
             gap: 25px;
-            padding: 80px 5%; /* Flexible side padding */
+            padding: 80px 5%;
+            /* Flexible side padding */
             max-width: 1200px;
             margin: 0 auto;
         }
@@ -80,9 +85,11 @@
         /* 350px se choti screen ke liye fix */
         @media (max-width: 350px) {
             .features-grid {
-                grid-template-columns: 1fr; /* Force single column */
+                grid-template-columns: 1fr;
+                /* Force single column */
                 padding: 40px 15px;
             }
+
             .feature-card {
                 padding: 25px !important;
             }
@@ -93,19 +100,19 @@
             padding: 40px;
             border-radius: 24px;
             text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
             transition: transform 0.3s ease;
-            border: 1px solid rgba(0,0,0,0.02);
+            border: 1px solid rgba(0, 0, 0, 0.02);
         }
 
         .feature-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.07);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.07);
         }
 
-        .feature-card i { 
-            font-size: 2.5rem; 
-            color: var(--primary); 
+        .feature-card i {
+            font-size: 2.5rem;
+            color: var(--primary);
             margin-bottom: 20px;
             background: #eff6ff;
             width: 80px;
@@ -126,37 +133,55 @@
             font-size: 0.95rem;
         }
 
+        .download-btn {
+            background: transparent;
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.7);
+            margin-top: 18px;
+        }
+
+        .download-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-3px);
+        }
     </style>
 </head>
+
 <body>
     <%- include("partials/HomePageNavbar") %>
 
-    <section class="hero-section">
-        <h1>SchoolFlow: The Future of School Management</h1>
-        <p>Automate attendance, simplify fee collection, and manage results with India's most intuitive school ERP software.</p>
-        <a href="/login" class="cta-btn btn-primary">
-            <i class="fa-solid fa-rocket" style="margin-right: 8px;"></i> Get Started Now
-        </a>
-    </section>
+        <section class="hero-section">
+            <h1>SchoolFlow: The Future of School Management</h1>
+            <p>Automate attendance, simplify fee collection, and manage results with India's most intuitive school ERP
+                software.</p>
+            <a href="/login" class="cta-btn btn-primary">
+                <i class="fa-solid fa-rocket" style="margin-right: 8px;"></i> Get Started Now
+            </a>
+            <a href="/downloads/SchoolFlow.apk" class="cta-btn download-btn" download>
+                <i class="fa-solid fa-mobile-screen-button" style="margin-right: 8px;"></i>
+                Download App
+            </a>
+        </section>
 
-    <div class="features-grid">
-        <div class="feature-card">
-            <i class="fa-solid fa-credit-card"></i>
-            <h3>Smart Fee Payment</h3>
-            <p>Integrated Razorpay for seamless and secure online fee collection with automated receipts.</p>
+        <div class="features-grid">
+            <div class="feature-card">
+                <i class="fa-solid fa-credit-card"></i>
+                <h3>Smart Fee Payment</h3>
+                <p>Integrated Razorpay for seamless and secure online fee collection with automated receipts.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fa-solid fa-user-check"></i>
+                <h3>Attendance Tracking</h3>
+                <p>Track daily attendance of students and staff with detailed monthly real-time reports.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fa-solid fa-bullhorn"></i>
+                <h3>Instant Notices</h3>
+                <p>Send important announcements and digital circulars to parents and staff instantly.</p>
+            </div>
         </div>
-        <div class="feature-card">
-            <i class="fa-solid fa-user-check"></i>
-            <h3>Attendance Tracking</h3>
-            <p>Track daily attendance of students and staff with detailed monthly real-time reports.</p>
-        </div>
-        <div class="feature-card">
-            <i class="fa-solid fa-bullhorn"></i>
-            <h3>Instant Notices</h3>
-            <p>Send important announcements and digital circulars to parents and staff instantly.</p>
-        </div>
-    </div>
 
-    <%- include("partials/HomePageFooter") %>
+        <%- include("partials/HomePageFooter") %>
 </body>
+
 </html>

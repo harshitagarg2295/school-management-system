@@ -12,6 +12,26 @@ const mongoose = require('mongoose')
 
 const app = express();
 
+const helmet = require("helmet");
+app.use(
+  helmet({
+    contentSecurityPolicy: false
+  })
+);
+
+const rateLimit = require("express-rate-limit");
+const limiter = rateLimit({
+
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: "Too many requests. Please try again later."
+});
+app.use("/login", limiter);
+
+app.use("/create-order", limiter);
+
+app.use("/verify-payment", limiter);
+
 app.set("trust proxy", 1);
 
 // Store cookie store sessionId in browser while connect-mongo store sessionId in mongoDB Atlas
@@ -25,7 +45,7 @@ app.use(
   session({
     name: "school.sid",
     secret: process.env.SESSION_SECRET,
-    resave: true,                // Rolling session ke liye true zaroori hai
+    resave: false,
     saveUninitialized: false,
     rolling: true,               // User active hai toh session extend hota rahega
     store: new MongoStore({
@@ -35,7 +55,7 @@ app.use(
     cookie: {
       secure: isProduction,
       httpOnly: true,
-      sameSite: isProduction ? "none" : "lax",
+      sameSite: "lax",
       maxAge: 1000 * 60 * 60 * 4, // Maine ise 4 ghante kar diya hai (School shift ke hisab se)
     },
   })
@@ -164,6 +184,9 @@ app.use(calendarRoute);
 const profileRoute = require("./routes/AdminRoutes/profileRoutes");
 app.use(profileRoute);
 
+const bankSetupRoute = require("./routes/AdminRoutes/bankSetupRoutes");
+app.use(bankSetupRoute);
+
 //  <---- Teaacher Dashboard related routes ---->
 
 
@@ -250,3 +273,19 @@ app.use(paymentRoute);
 
 const studentProfileRoute = require("./routes/StudentRoutes/profileRoutes");
 app.use(studentProfileRoute);
+
+app.use((req, res) => {
+
+  res.status(404).render(
+    "HomePage/404"
+  );
+});
+
+app.use((err, req, res, next) => {
+
+  console.error(err);
+
+  res.status(500).render(
+    "HomePage/500"
+  );
+});

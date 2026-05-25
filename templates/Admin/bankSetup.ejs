@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank Account Setup</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #007bff;
+            --primary-hover: #0056b3;
+            --success: #28a745;
+            --dark: #1e293b;
+            --gray-bg: #f8fafc;
+            --border: #cbd5e1;
+            --text-muted: #64748b;
+            --hint-blue: #0284c7;
+            --hint-bg: #f0f9ff;
+            --hint-border: #bae6fd;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #f1f5f9;
+            margin: 0;
+            padding: 20px;
+            color: var(--dark);
+        }
+
+        .setup-container {
+            max-width: 650px;
+            margin: 40px auto;
+            background: #ffffff;
+            padding: 35px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .brand-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        h2 {
+            color: var(--dark);
+            margin: 0;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+        }
+
+        .school-display-name {
+            font-size: 1.1rem;
+            color: var(--hint-blue);
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding: 10px 14px;
+            background: var(--hint-bg);
+            border: 1px solid var(--hint-border);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .rzp-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #edf4fe;
+            color: #0b67e6;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 1px solid #d2e4fd;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-top: 0;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #334155;
+            font-size: 0.9rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 13px 14px 13px 44px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 0.95rem;
+            color: var(--dark);
+            background-color: #fff;
+            transition: all 0.25s ease;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.15);
+        }
+
+        input::placeholder {
+            color: #94a3b8;
+        }
+
+        .hint-box {
+            margin-top: 12px;
+            padding: 14px;
+            background: var(--hint-bg);
+            border-left: 4px solid var(--hint-blue);
+            border-radius: 6px;
+            font-size: 0.88rem;
+            color: #0369a1;
+            display: none;
+            line-height: 1.5;
+            border-top: 1px solid var(--hint-border);
+            border-right: 1px solid var(--hint-border);
+            border-bottom: 1px solid var(--hint-border);
+        }
+
+        .hint-box i {
+            margin-right: 6px;
+            color: var(--hint-blue);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 15px rgba(0, 123, 255, 0.25);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .rzp-footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #edf2f7;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .success-card {
+            text-align: center;
+            padding: 15px 0 5px 0;
+        }
+
+        .success-icon {
+            font-size: 4rem;
+            color: var(--success);
+            margin-bottom: 15px;
+            animation: scaleUp 0.4s ease-out;
+        }
+
+        @keyframes scaleUp {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .success-card h3 {
+            margin: 0 0 8px 0;
+            color: var(--dark);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 16px;
+            background: #ecfdf5;
+            color: #065f46;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            border: 1px solid #a7f3d0;
+        }
+
+        .details-panel {
+            background: var(--gray-bg);
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: left;
+        }
+
+        .panel-title {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .details-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.95rem;
+        }
+
+        .details-row:last-child {
+            border-bottom: none;
+        }
+
+        .details-label {
+            color: #475569;
+            font-weight: 500;
+        }
+
+        .details-value {
+            color: var(--dark);
+            font-weight: 600;
+        }
+
+        .account-id-box {
+            background: #e2e8f0;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            color: #334155;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="setup-container">
+
+        <% if (admin.bankSetupStatus==="Completed" ) { %>
+
+            <div class="brand-header" style="border-bottom: none; margin-bottom: 10px;">
+                <h2>
+                    <i class="fa-solid fa-building-columns" style="color: var(--success);"></i>
+                    Settlement Settings
+                </h2>
+
+                <div class="rzp-badge">
+                    <i class="fa-solid fa-shield"></i>Razorpay Secured
+                </div>
+            </div>
+
+            <div class="school-display-name">
+                <i class="fa-solid fa-school"></i>Institution: <%= schoolName %>
+            </div>
+
+            <div class="success-card">
+                <div class="success-icon">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+
+                <h3>Settlement Account Linked</h3>
+
+                <span class="status-badge">
+                    <i class="fa-solid fa-circle-patch"></i>Fully Verified & Active
+                </span>
+
+                <div class="details-panel">
+
+                    <div class="panel-title">
+                        Linked Bank Account Details
+                    </div>
+
+                    <div class="details-row">
+                        <span class="details-label">Legal Name</span>
+                        <span class="details-value">
+                            <%= admin.legalName %>
+                        </span>
+                    </div>
+
+                    <div class="details-row">
+                        <span class="details-label">Account Number</span>
+                        <span class="details-value">
+                            <%= admin.accountNumberMasked %>
+                        </span>
+                    </div>
+
+                    <div class="details-row">
+                        <span class="details-label">IFSC Code</span>
+                        <span class="details-value" style="text-transform: uppercase;">
+                            <%= admin.ifscCode %>
+                        </span>
+                    </div>
+
+                    <div class="details-row">
+                        <span class="details-label">Location Details</span>
+                        <span class="details-value">
+                            <%= admin.city %>, <%= admin.state %>
+                        </span>
+                    </div>
+
+                    <div class="details-row">
+                        <span class="details-label">Razorpay Account ID</span>
+                        <span class="details-value account-id-box">
+                            <%= admin.schoolAccountId %>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rzp-footer">
+                <i class="fa-solid fa-shield-halved" style="color: var(--success);"></i>
+                <span> Secured via Razorpay Route Platform Routing Architecture </span>
+            </div>
+
+            <% } else { %>
+                <div class="brand-header">
+                    <h2>
+                        <i class="fa-solid fa-building-columns" style="color: var(--primary);"></i>
+                        Bank Setup
+                    </h2>
+
+                    <div class="rzp-badge">
+                        <i class="fa-solid fa-shield"></i> Razorpay Route
+                    </div>
+                </div>
+
+                <div class="school-display-name">
+                    <i class="fa-solid fa-school"></i> Configuring For: <%= schoolName %>
+                </div>
+
+                <p class="subtitle">
+                    Enter your school's official legal and banking details.
+                    Online fee payments will be settled directly into this verified bank account.
+                </p>
+
+                <form id="bankSetupForm">
+
+                    <div class="form-group">
+                        <label>Business Type</label>
+
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-briefcase"></i>
+                            <select name="businessType" id="businessTypeSelect" required>
+                                <option value="" disabled selected>
+                                    -- Select your School Registration Type --
+                                </option>
+
+                                <option value="educational_trust">Educational Trust / Society (Run by a Trust/NGO) </option>
+                                <option value="proprietorship"> Proprietorship (Owned by a Single Individual)</option>
+                                <option value="partnership"> Partnership (Run by 2 or more Partners)</option>
+                            </select>
+                        </div>
+
+                        <div id="typeHintBox" class="hint-box">
+                            <i class="fa-solid fa-circle-info"></i>
+                            <span id="hintText"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+
+                        <label id="legalNameLabel">
+                            Legal Business Name (As on PAN Card)
+                        </label>
+
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-id-card"></i>
+                            <input type="text" name="legalName" placeholder="e.g., Green Valley Education Trust"
+                                required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>PAN Card Number</label>
+
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-id-card-clip"></i>
+
+                            <input type="text" name="panNumber" placeholder="ABCDE1234F"
+                                style="text-transform: uppercase;" minlength="10" maxlength="10" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>School Email ID</label>
+
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-envelope"></i>
+
+                            <input type="email" name="schoolEmail" value="<%= admin.email %>"
+                                placeholder="school@email.com" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>City / Region</label>
+
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-city"></i>
+
+                            <input type="text" name="city" placeholder="e.g., Mumbai" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>State</label>
+
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-map"></i>
+
+                            <input type="text" name="state" placeholder="e.g., Maharashtra" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>Postal Code (PIN Code)</label>
+
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-location-dot"></i>
+
+                            <input type="text" name="pincode" placeholder="e.g., 400001" minlength="6" maxlength="6"
+                                required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>Bank Account Number</label>
+
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-money-check-dollar"></i>
+
+                            <input type="text" name="accountNumber" placeholder="Enter bank account number" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>IFSC Code</label>
+
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-building"></i>
+
+                            <input type="text" name="ifscCode" placeholder="SBIN0001234"
+                                style="text-transform: uppercase;" minlength="11" maxlength="11" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit">
+                        Verify & Link Account
+                    </button>
+
+                </form>
+
+                <div class="rzp-footer">
+                    <i class="fa-solid fa-lock" style="color: var(--success); font-size: 0.9rem;"></i>
+
+                    <span>
+                        Secure Verification Powered by <strong>Razorpay</strong>
+                    </span>
+                </div>
+
+                <% } %>
+
+    </div>
+
+    <script>
+
+        const typeSelect = document.getElementById("businessTypeSelect");
+        const hintBox = document.getElementById("typeHintBox");
+        const hintText = document.getElementById("hintText");
+        const legalNameLabel = document.getElementById("legalNameLabel");
+
+        const legalNameInput =
+            document.querySelector('input[name="legalName"]');
+
+        if (typeSelect) {
+
+            typeSelect.addEventListener("change", function () {
+
+                hintBox.style.display = "block";
+
+                if (this.value === "educational_trust") {
+
+                    legalNameLabel.textContent = "Trust / Society Name (As on Trust PAN Card)";
+
+                    legalNameInput.placeholder = "e.g., Green Valley Education Trust";
+
+                    hintText.innerHTML = "<strong>Required:</strong> Trust/Society ka official PAN Card aur Trust ka bank account details enter karo. Legal Name PAN Card ke according exact same hona chahiye.";
+
+                }
+
+                else if (this.value === "proprietorship") {
+
+                    legalNameLabel.textContent = "Proprietor Owner Name (As on Personal PAN Card)";
+
+                    legalNameInput.placeholder = "e.g., Ramesh Kumar";
+
+                    hintText.innerHTML = "<strong>Required:</strong> School owner ka personal PAN Card aur bank account details enter karo. Legal Name PAN Card wale owner name ke according hona chahiye.";
+                }
+
+                else if (this.value === "partnership") {
+
+                    legalNameLabel.textContent = "Partnership Firm Name (As on Partnership PAN Card)";
+
+                    legalNameInput.placeholder = "e.g., Green Valley School Partners";
+
+                    hintText.innerHTML = "<strong>Required:</strong> Partnership firm ka registered PAN Card aur firm ka corporate bank account details enter karo.";
+                }
+            });
+        }
+
+        const form = document.getElementById("bankSetupForm");
+
+        if (form) {
+            form.onsubmit = async (e) => {
+                e.preventDefault();
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData.entries());
+
+                try {
+                    const response = await fetch("/bank-setup", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        alert("Success! School bank account successfully linked.");
+                        window.location.reload();
+                    }
+
+                    else {
+                        alert("Error: " + result.message);
+                    }
+
+                }
+
+                catch (err) {
+                    console.error("Bank setup frontend error:", err);
+                    alert("Server error occurred. Please try again.");
+                }
+            };
+        }
+
+    </script>
+
+</body>
+
+</html>

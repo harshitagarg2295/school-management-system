@@ -3,40 +3,53 @@
 
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>
-    <%= success ? "Payment Successful" : "Payment Failed" %>
+    <%= success ? "Payment Status" : "Payment Failed" %>
   </title>
 
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+
   <style>
+    :root {
+      --primary: #1e3a8a;
+      --success: #10b981;
+      --failure: #ef4444;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --bg-gradient: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+    }
+
     body {
-      font-family: "Poppins", sans-serif;
-      background: linear-gradient(135deg, #dce6ff, #f7faff);
+      font-family: "Plus Jakarta Sans", sans-serif;
+      background: var(--bg-gradient);
       margin: 0;
-      padding: 20px;
+      padding: 40px 20px;
       display: flex;
-      justify-content: center;
+      justify-content: flex-start;
       align-items: center;
       min-height: 100vh;
       box-sizing: border-box;
+      flex-direction: column;
     }
 
-    /* MAIN CARD (success / failed) */
     .container {
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(10px);
-      padding: 35px 25px;
-      border-radius: 16px;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
-      max-width: 420px;
+      background: #ffffff;
+      padding: 40px;
+      border-radius: 24px;
+      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+      max-width: 480px;
       width: 100%;
       text-align: center;
-      animation: fadeIn 0.4s ease;
+      animation: slideUp 0.4s ease;
     }
 
-    @keyframes fadeIn {
+    @keyframes slideUp {
       from {
         opacity: 0;
-        transform: translateY(10px);
+        transform: translateY(20px);
       }
 
       to {
@@ -45,202 +58,220 @@
       }
     }
 
-    .icon {
-      font-size: 72px;
-      margin-bottom: 10px;
+    .status-badge {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0 auto 24px;
+      font-size: 36px;
     }
 
-    .success {
-      color: #2ecc71;
-      text-shadow: 0px 0px 8px rgba(46, 204, 112, 0.4);
+    .status-badge.success {
+      background: #ecfdf5;
+      color: var(--success);
+      box-shadow: 0 0 0 8px #f0fdf4;
     }
 
-    .failure {
-      color: #e74c3c;
-      text-shadow: 0px 0px 8px rgba(231, 76, 60, 0.4);
+    .status-badge.failure {
+      background: #fef2f2;
+      color: var(--failure);
+      box-shadow: 0 0 0 8px #fef2f2;
     }
 
     h1 {
-      font-size: 26px;
-      margin: 10px 0;
-      color: #1f2d45;
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--text-main);
     }
 
-    p {
-      color: #555;
-      margin-bottom: 8px;
+    .payment-subtitle {
+      color: var(--text-muted);
       font-size: 15px;
-      line-height: 1.4;
+      margin-bottom: 30px;
     }
 
-    /* BUTTONS */
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
     .btn {
-      background: linear-gradient(135deg, #4a90e2, #3578d3);
-      color: white;
-      border: none;
-      padding: 10px 22px;
-      border-radius: 8px;
+      padding: 12px 24px;
+      border-radius: 12px;
       cursor: pointer;
       font-size: 15px;
       font-weight: 600;
-      margin: 6px;
-      transition: 0.3s ease;
-      box-shadow: 0 5px 14px rgba(53, 120, 211, 0.4);
+      border: none;
+      transition: 0.2s ease;
+      min-width: 160px;
     }
 
-    .btn:hover {
-      transform: translateY(-2px);
-      background: #2f6dc0;
+    .btn-primary {
+      background: var(--primary);
+      color: white;
     }
 
-    /* RECEIPT */
+    .btn-primary:hover {
+      background: #1d4ed8;
+    }
+
+    .btn-secondary {
+      background: #f1f5f9;
+      color: var(--text-main);
+    }
+
+    .btn-secondary:hover {
+      background: #e2e8f0;
+    }
+
     #receipt {
       display: none;
-      margin-top: 25px;
-      background: #ffffff;
-      border-radius: 14px;
-      padding: 25px 20px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-      animation: fadeIn 0.3s ease;
-      max-width: 750px;
+      margin-top: 30px;
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      border: 1px solid #e2e8f0;
       width: 100%;
+      max-width: 850px;
+      box-sizing: border-box;
     }
 
-    #receipt h2 {
+    .receipt-header {
       text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .receipt-header h2 {
+      margin: 0;
       font-size: 24px;
-      color: #1f2d45;
-      margin-bottom: 5px;
+      color: var(--primary);
     }
 
-    .receipt-section {
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      margin: 10px 0;
-      padding-bottom: 8px;
-      border-bottom: 1px dashed #dcdcdc;
+    .receipt-header p {
+      margin-top: 5px;
+      color: var(--text-muted);
+      font-size: 14px;
     }
 
-    strong,
-    span {
-      font-size: 15px;
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+      border-top: 1px dashed #dbe3f0;
+      border-bottom: 1px dashed #dbe3f0;
+      padding: 20px 0;
+      margin-bottom: 24px;
+    }
+
+    .meta-item label {
+      display: block;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    .meta-item span {
+      font-size: 14px;
+      color: var(--text-main);
+      font-weight: 600;
       word-break: break-word;
     }
 
-    /* TABLE */
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 18px;
     }
 
-    th,
-    td {
-      padding: 10px;
-      font-size: 15px;
-      border: 1px solid #ccc;
-      text-align: left;
-      background-color: #ffffff;
-    }
-
     th {
-      background: #eef3ff;
-      font-weight: 600;
-      color: #2c3e50;
+      background: #f8fafc;
+      color: var(--text-muted);
+      font-size: 13px;
+      padding: 12px;
+      text-align: left;
     }
 
-    .total {
+    td {
+      padding: 14px 12px;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 14px;
+    }
+
+    .text-right {
       text-align: right;
-      font-weight: bold;
     }
 
-    /* PRINT RECEIPT */
-    @media print {
 
-      /* Hide everything except receipt */
-      body * {
-        visibility: hidden !important;
+    .row-breakup td {
+      border: none;
+      padding: 8px 12px;
+      color: var(--text-muted);
+    }
+
+    .row-total td {
+      border-top: 1px solid #dbe3f0;
+      font-weight: 700;
+      color: var(--primary);
+      font-size: 16px;
+      padding-top: 14px;
+    }
+
+    .receipt-footer-text {
+      margin-top: 24px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    @media print {
+      @page {
+        margin: 10mm;
       }
 
-      /* Show receipt fully */
-      #receipt,
-      #receipt * {
-        visibility: visible !important;
+      html,
+      body {
+        margin: 0 !important;
+        padding: 0 !important;
+        min-height: auto !important;
+      }
+
+      body {
+        background: white;
+      }
+
+      .container {
+        display: none !important;
       }
 
       #receipt {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100% !important;
-        max-width: 100% !important;
-        padding: 20px !important;
-        box-sizing: border-box !important;
-      }
-
-      /* Table full width (very important) */
-      table {
-        width: 100% !important;
-        table-layout: auto !important;
-      }
-
-      th,
-      td {
-        white-space: normal !important;
-        /* Wrap long text */
-        overflow: visible !important;
-        text-overflow: unset !important;
-        word-break: break-word !important;
-        font-size: 15px !important;
-        padding: 8px !important;
-      }
-
-      /* Receipt sections wrap properly */
-      .receipt-section {
-        flex-direction: row !important;
-        display: flex !important;
-        width: 100% !important;
-        gap: 5px !important;
-      }
-
-      strong,
-      span {
-        font-size: 15px !important;
-        width: auto !important;
-        max-width: 100% !important;
-        white-space: normal !important;
+        display: block !important;
+        border: none;
+        box-shadow: none;
+        max-width: 100%;
+        width: 100%;
+        padding: 0;
       }
     }
 
-    /* RESPONSIVE */
     @media (max-width: 480px) {
 
       .container {
-        padding: 25px 18px;
+        padding: 24px;
       }
 
-      h1 {
-        font-size: 22px;
-      }
-
-      .icon {
-        font-size: 60px;
-      }
-
-      #receipt {
-        padding: 20px 14px;
-      }
-
-      table th,
-      table td {
-        font-size: 13px;
-        padding: 7px;
+      .btn-group {
+        flex-direction: column;
       }
 
       .btn {
         width: 100%;
-        margin-top: 10px;
       }
     }
   </style>
@@ -249,93 +280,223 @@
 <body>
 
   <div class="container">
+
     <% if (success) { %>
 
-      <div class="icon success">✔</div>
+      <div class="status-badge success">✔</div>
+
       <h1>Payment Successful!</h1>
-      <p>Amount: ₹<%= amount %>
-      </p>
-      <p>Order ID: <%= orderId %>
+
+      <p class="payment-subtitle">
+        Your transaction has been processed securely.
       </p>
 
-      <button class="btn" onclick="showReceipt()">Download Receipt</button>
-      <button class="btn" onclick="window.location.href='/studentDashboard'">Go to Dashboard</button>
+      <div class="btn-group">
+
+        <button class="btn btn-primary" onclick="showReceipt()">
+          Download Receipt
+        </button>
+
+        <button class="btn btn-secondary" onclick="window.location.href='/studentDashboard'">
+          Go to Dashboard
+        </button>
+
+      </div>
 
       <% } else { %>
 
-        <div class="icon failure">✖</div>
-        <h1>Payment Failed!</h1>
-        <p>Something went wrong. Please try again.</p>
+        <div class="status-badge failure">✖</div>
 
-        <button class="btn" onclick="window.location.href='/students/checkout-fees'">Try Again</button>
+        <h1>Payment Failed!</h1>
+
+        <p class="payment-subtitle">
+          <%= typeof message !=='undefined' ? message : "Something went wrong." %>
+        </p>
 
         <% } %>
+
   </div>
 
-  <% if (success) { %>
-    <div id="receipt">
-     <h2><%= schoolName %></h2>
-      <hr>
+  <% if (typeof success !=='undefined' && success) { %>
 
-      <div class="receipt-section"><strong>Student Name:</strong> <span>
-          <%= student.name %>
-        </span></div>
-      <div class="receipt-section"><strong>Student ID:</strong> <span>
-          <%= student.id %>
-        </span></div>
-      <div class="receipt-section"><strong>Class:</strong> <span>
-          <%= student.class %>
-        </span></div>
-      <div class="receipt-section"><strong>Date:</strong> <span>
-          <%= new Date().toLocaleDateString() %>
-        </span></div>
-      <div class="receipt-section"><strong>Transaction ID:</strong><span>
-          <%= orderId %>
-        </span></div>
+    <% let parsedInstallments=[]; try { parsedInstallments=typeof installments==="string" ? JSON.parse(installments) :
+      installments || []; } catch (err) { parsedInstallments=[]; } let schoolFees=parsedInstallments.reduce( (sum, i)=>
+      {
 
-      <table>
-        <thead>
-          <tr>
-            <th>Installment</th>
-            <th>Fee Type</th>
-            <th>Amount (₹)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% installments.forEach(i=> { %>
+      return sum +
+      parseFloat(i.amount || 0);
+
+      },
+
+      0
+      );
+
+      let portalCharges = parseFloat((schoolFees * 0.002).toFixed(2));
+      let grandTotal = schoolFees + portalCharges;
+
+      %>
+
+      <div id="receipt">
+
+        <div class="receipt-header">
+
+          <h2>
+            <%= schoolName || "School Fee Receipt" %>
+          </h2>
+
+          <p>
+            Official Digital Payment Invoice
+          </p>
+
+        </div>
+
+        <div class="meta-grid">
+
+          <div class="meta-item">
+            <label>Student Name</label>
+            <span>
+              <%= student?.name || "-" %>
+            </span>
+          </div>
+
+          <div class="meta-item">
+            <label>Student ID</label>
+            <span>
+              <%= student?.id || "-" %>
+            </span>
+          </div>
+
+          <div class="meta-item">
+            <label>Class</label>
+            <span>
+              <%= student?.class || "-" %>
+            </span>
+          </div>
+
+          <div class="meta-item">
+            <label>Date</label>
+            <span>
+              <%= new Date().toLocaleDateString('en-GB') %>
+            </span>
+          </div>
+
+          <div class="meta-item">
+            <label>Order ID</label>
+            <span>
+              <%= orderId || "-" %>
+            </span>
+          </div>
+
+          <div class="meta-item">
+            <label>Transaction ID</label>
+            <span>
+              <%= paymentId || "-" %>
+            </span>
+          </div>
+
+        </div>
+
+        <table>
+
+          <thead>
+
             <tr>
-              <td>
-                <%= i.installment %>
-              </td>
-              <td>
-                <%= i.feeType %>
-              </td>
-              <td>
-                <%= i.amount %>
-              </td>
+              <th>Installment</th>
+              <th>Fee Type</th>
+              <th class="text-right">Amount</th>
             </tr>
-            <% }) %>
-        </tbody>
-        <tfoot>
-          <tr>
-            <td colspan="2" class="total">Total Amount</td>
-            <td>₹<%= amount %>
-            </td>
-          </tr>
-        </tfoot>
-      </table>
 
-      <p style="margin-top:20px; text-align:center;">Thank you for your payment!</p>
-    </div>
-    <% } %>
+          </thead>
 
-      <script>
-        function showReceipt() {
-          const receipt = document.getElementById("receipt");
-          receipt.style.display = "block";
-          window.print();
-        }
-      </script>
+          <tbody>
+
+            <% parsedInstallments.forEach(i=> { %>
+
+              <tr>
+
+                <td>
+                  <%= i.installment %>
+                </td>
+
+                <td>
+                  <%= i.feeType %>
+                </td>
+
+                <td class="text-right">
+                  ₹<%= parseFloat(i.amount).toLocaleString('en-IN') %>
+                </td>
+
+              </tr>
+
+              <% }) %>
+
+          </tbody>
+
+          <tfoot>
+
+            <tr class="row-breakup">
+
+              <td colspan="2" class="text-right">
+                School Fees
+              </td>
+
+              <td class="text-right">
+                ₹<%= schoolFees.toLocaleString('en-IN', { minimumFractionDigits: 2 }) %>
+              </td>
+
+            </tr>
+
+            <tr class="row-breakup">
+
+              <td colspan="2" class="text-right">
+                Portal & Payment Charges (0.2%)
+              </td>
+
+              <td class="text-right">
+                ₹<%= portalCharges.toLocaleString('en-IN', { minimumFractionDigits: 2 }) %>
+              </td>
+
+            </tr>
+
+            <tr class="row-total">
+
+              <td colspan="2" class="text-right">
+                Grand Total Paid
+              </td>
+
+              <td class="text-right">
+                ₹<%= grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 }) %>
+              </td>
+
+            </tr>
+
+          </tfoot>
+
+        </table>
+
+        <p class="receipt-footer-text">
+          This is a system-generated electronic receipt.
+        </p>
+
+      </div>
+
+      <% } %>
+
+        <script>
+
+          function showReceipt() {
+
+            const receipt =
+              document.getElementById("receipt");
+
+            if (!receipt) return;
+
+            receipt.style.display = "block";
+
+            window.print();
+          }
+
+        </script>
 
 </body>
 

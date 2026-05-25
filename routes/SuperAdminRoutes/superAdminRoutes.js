@@ -321,8 +321,8 @@ router.post("/super-admin/update-password", superAdminAuth, async (req, res) => 
     const { currentPassword, newPassword } = req.body;
 
     // Aapne jo username create kiya tha "harshitagarg"
-    const admin = await SuperAdmin.findOne({ username: "harshitagarg" });
-
+   const admin = await SuperAdmin.findById(req.session.superAdminId);
+   
     // 1. Purana password check karein
     const isMatch = await bcrypt.compare(currentPassword, admin.password);
     if (!isMatch) {

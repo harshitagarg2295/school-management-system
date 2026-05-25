@@ -69,7 +69,18 @@ router.post("/add-student", adminAuth, async (req, res) => { //add student
     //username = first 3 letters of name (lowercase) + @ + birth date (dd) no leading zeroes
     // password = full DOB (yyyymmdd) + @ + student id (capital)
 
-    const username = name.slice(0, 3).toLowerCase() + "@" + dobDate.getDate();
+    let username;
+    let exists = true;
+
+    while (exists) {
+        username = name.trim().slice(0, 3).toLowerCase() + "@" + dobDate.getDate() + Math.floor(10 + Math.random() * 90);
+
+        const existingStudent = await Student.findOne({ username, schoolCode });
+
+        if (!existingStudent) {
+            exists = false;
+        }
+    }
 
     const cleanId = id.trim().toUpperCase();
 
@@ -245,7 +256,7 @@ router.post("/edit-student/:id", adminAuth, async (req, res) => {
 router.post("/student/upload-image/:id", adminAuth, async (req, res) => {
     try {
         const base64 = req.body.croppedImage;
-        
+
         // Agar image data khali hai toh sidhe redirect karo
         if (!base64 || base64.trim() === "") {
             return res.redirect(`/student/${req.params.id}`);
@@ -428,10 +439,10 @@ router.post("/submit-attendance-students", adminAuth, async (req, res) => {
 router.get("/promote-students", adminAuth, async (req, res) => {
     const schoolCode = req.session.schoolCode;
     const classList = await Student.distinct("class", { schoolCode });
-    
-    res.render("Admin/promoteStudents", { 
-        classList, 
-        schoolCode 
+
+    res.render("Admin/promoteStudents", {
+        classList,
+        schoolCode
     });
 });
 

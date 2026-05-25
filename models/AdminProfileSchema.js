@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
 const profileSchema = new mongoose.Schema({
     schoolCode: {
@@ -9,11 +9,61 @@ const profileSchema = new mongoose.Schema({
     email: String,
     mobile: Number,
     address: String,
+    city: {
+        type: String,
+        default: ""
+    },
+    state: {
+        type: String,
+        default: ""
+    },
+    pincode: {
+        type: String,
+        default: ""
+    },
     bio: { type: String, required: false },
     username: String,
     password: String,
     image: String,
 
-})
+    // Payment Mode
+
+    paymentMode: {
+        type: String,
+        enum: ["test", "live"],
+        default: "test"
+    },
+
+    // Razorpay Integration Fields
+    schoolAccountId: {
+        type: String,
+        default: ""
+    },
+    bankSetupStatus: {
+        type: String,
+        enum: ["Pending", "Completed"],
+        default: "Pending"
+    },
+    businessType: {
+        type: String,
+        default: ""
+    },
+    legalName: {
+        type: String,
+        default: ""
+    },
+    panNumber: {
+        type: String,
+        default: ""
+    },
+    accountNumberMasked: {
+        type: String,
+        default: ""
+    },
+    ifscCode: {
+        type: String,
+        default: ""
+    }
+});
 
 module.exports = mongoose.model("adminProfileSchema", profileSchema);

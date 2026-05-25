@@ -4,6 +4,7 @@
   "description": "Created a school application for rishikulam",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -18,13 +19,19 @@
   },
   "homepage": "https://github.com/harshitagarg2295/School-Management#readme",
   "dependencies": {
+    "@capacitor/android": "^8.3.4",
+    "@capacitor/cli": "^8.3.4",
+    "@capacitor/core": "^8.3.4",
     "bcrypt": "^6.0.0",
     "cloudinary": "^1.41.3",
     "connect-mongo": "^6.0.0",
     "dotenv": "^17.2.3",
     "ejs": "^3.1.10",
     "express": "^5.1.0",
+    "express-rate-limit": "^8.5.2",
     "express-session": "^1.18.2",
+    "express-validator": "^7.3.2",
+    "helmet": "^8.2.0",
     "moment": "^2.30.1",
     "moment-timezone": "^0.6.0",
     "mongoose": "^8.15.1",

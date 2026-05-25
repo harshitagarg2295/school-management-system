@@ -216,7 +216,8 @@
         <%- include("partials/StudentPageSidebar") %>
 
             <div class="container">
-                <h1>Pay Fees - <%= schoolName || "School" %></h1>
+                <h1>Pay Fees - <%= schoolName || "School" %>
+                </h1>
 
                 <div class="student-details">
 
@@ -235,9 +236,6 @@
                 </div>
 
                 <form action="/students/checkout-fees" method="POST" class="data">
-
-                    <!-- Hidden input to send studentId from session -->
-                    <input type="hidden" name="studentId" value="<%= student._id %>">
 
                     <label class="select">Select Installments to Pay:</label>
                     <div class="installments">
@@ -272,7 +270,14 @@
                     </div>
 
                     <div class="btn">
-                        <button type="submit">Pay Now</button>
+
+                        <% if (hasPending) { %>
+                            <button type="submit"> Pay Now </button>
+                            <% } else { %>
+                                <button type="button" disabled style="background:#b5b5b5;cursor:not-allowed; ">No
+                                    Pending Fees</button>
+                                <% } %>
+
                     </div>
                 </form>
             </div>
@@ -280,20 +285,46 @@
 
     <!-- ✅ JS Logic for Total Calculation -->
     <script>
+
         const checkboxes = document.querySelectorAll('input[name="installments"]');
         const totalAmountSpan = document.getElementById('totalAmount');
 
+        const form = document.querySelector(".data");
+
+        // Total amount calculation
+
         checkboxes.forEach(checkbox => {
             checkbox.addEventListener('change', () => {
+
                 let total = 0;
                 checkboxes.forEach(cb => {
                     if (cb.checked) {
                         total += parseInt(cb.getAttribute('data-amount'));
                     }
                 });
+
                 totalAmountSpan.textContent = total;
-            });
+            }
+            );
         });
+
+
+
+        // Prevent submit without selection
+
+        if (form) {
+            form.addEventListener("submit", (e) => {
+
+                const checked = document.querySelectorAll('input[name="installments"]:checked');
+
+                if (checked.length === 0) {
+                    e.preventDefault();
+                    alert("Please select at least one installment.");
+                }
+            }
+            );
+        }
+
     </script>
 </body>
 

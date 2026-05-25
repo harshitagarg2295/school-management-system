@@ -37,7 +37,7 @@ router.post("/add-teacher", adminAuth, async (req, res) => {
   // password = first 2 letters of name + @ + DDMM (dob) + last2 mobile
 
   // 👉 clean name (no spaces)
-  const cleanName = name.toLowerCase().replace(/\s+/g, "");
+  const cleanName = name.trim().toLowerCase().replace(/\s+/g, "");
 
   // 👉 name parts
   const name3 = cleanName.slice(0, 3);

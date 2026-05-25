@@ -544,15 +544,9 @@
 
           <div class="left-meta">
             <div class="meta-item">
-              <span>Phone</span>
+              <span>Username</span>
               <span>
-                <%= teacher.phone || "N/A" %>
-              </span>
-            </div>
-            <div class="meta-item">
-              <span>Class(es)</span>
-              <span>
-                <%= teacher.class || "N/A" %>
+               <%= teacher.username || "N/A" %>
               </span>
             </div>
             <div class="meta-item">
@@ -633,12 +627,6 @@
                 <div class="label"><i class="fa-solid fa-location-dot"></i> Address</div>
                 <div class="value">
                   <%= teacher.address || "N/A" %>
-                </div>
-              </div>
-
-              <div class="info-card">
-                <div class="label"><i class="fa-solid fa-money-bill-wave"></i> Salary</div>
-                <div class="value">₹<%= teacher.salary ? Number(teacher.salary).toLocaleString('en-IN') : "0" %>
                 </div>
               </div>
 

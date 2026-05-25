@@ -1,0 +1,9 @@
+{
+  "appId": "com.harshita.schoolapp",
+  "appName": "School App",
+  "webDir": "public",
+  "server": {
+    "url": "https://school-management-system-trft.onrender.com",
+    "cleartext": true
+  }
+}

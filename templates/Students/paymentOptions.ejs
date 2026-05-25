@@ -5,225 +5,222 @@
   <meta charset="UTF-8">
   <title>Fees Payment</title>
   <style>
-  body {
-  background: linear-gradient(135deg, #cfe2ff, #f7faff);
-  margin: 0;
-  padding: 0;
-  font-family: "Poppins", sans-serif;
-}
+    body {
+      background: linear-gradient(135deg, #cfe2ff, #f7faff);
+      margin: 0;
+      padding: 0;
+      font-family: "Poppins", sans-serif;
+    }
 
-/* Main Box */
-.payment-container {
-  max-width: 700px;
-  margin: 60px auto;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  padding: 40px 45px;
-  text-align: center;
-  transition: 0.3s ease;
-}
+    /* Main Box */
+    .payment-container {
+      max-width: 700px;
+      margin: 60px auto;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      padding: 40px 45px;
+      text-align: center;
+      transition: 0.3s ease;
+    }
 
-h2 {
-  font-size: 26px;
-  color: #1a2a5b;
-  font-weight: 700;
-  margin-bottom: 10px;
-}
+    h2 {
+      font-size: 26px;
+      color: #1a2a5b;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
 
-.school-name {
-  font-size: 20px;
-  color: #324d9d;
-  margin-top: 20px;
-  font-weight: 600;
-  margin-bottom: 25px;
-}
+    .school-name {
+      font-size: 20px;
+      color: #324d9d;
+      margin-top: 20px;
+      font-weight: 600;
+      margin-bottom: 25px;
+    }
 
-/* Summary Section */
-.summary {
-  background: #f3f7ff;
-  border: 1px solid #dce6ff;
-  padding: 15px 18px;
-  border-radius: 12px;
-  display: flex;
-  justify-content: space-between;
-  font-size: 15px;
-  color: #333;
-  margin-bottom: 25px;
-  flex-wrap: wrap;
-  gap: 10px;
-}
+    /* Summary Section */
+    .summary {
+      background: #f3f7ff;
+      border: 1px solid #dce6ff;
+      padding: 15px 18px;
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 15px;
+      color: #333;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
 
-.summary .right {
-  color: #1a9b4a;
-  font-weight: 700;
-  font-size: 18px;
-}
+    .summary .right {
+      color: #1a9b4a;
+      font-weight: 700;
+      font-size: 18px;
+    }
 
-/* Installment List */
-.installment-list {
-  list-style: none;
-  padding: 0;
-  margin: 15px 0 30px;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  background: #fcfcff;
-}
+    /* Installment List */
+    .installment-list {
+      list-style: none;
+      padding: 0;
+      margin: 15px 0 30px;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      background: #fcfcff;
+    }
 
-.installment-list li {
-  padding: 10px 16px;
-  border-bottom: 1px dashed #e6e6e6;
-  display: flex;
-  justify-content: space-between;
-  color: #333;
-  font-size: 15px;
-  flex-wrap: wrap;
-}
+    .installment-list li {
+      padding: 10px 16px;
+      border-bottom: 1px dashed #e6e6e6;
+      display: flex;
+      justify-content: space-between;
+      color: #333;
+      font-size: 15px;
+      flex-wrap: wrap;
+    }
 
-.installment-list li:last-child {
-  border-bottom: none;
-}
+    .installment-list li:last-child {
+      border-bottom: none;
+    }
 
-/* Proceed Section */
-.proceed {
-  margin-top: 30px;
-}
+    /* Proceed Section */
+    .proceed {
+      margin-top: 30px;
+    }
 
-.proceed p {
-  color: #555;
-  font-weight: 500;
-  margin-bottom: 12px;
-}
+    .proceed p {
+      color: #555;
+      font-weight: 500;
+      margin-bottom: 12px;
+    }
 
-.proceed button {
-  background: #007bff;
-  color: #fff;
-  border: none;
-  padding: 14px 40px;
-  border-radius: 10px;
-  font-weight: 700;
-  font-size: 16px;
-  cursor: pointer;
-  transition: 0.2s;
-  box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
-}
+    .proceed button {
+      background: #007bff;
+      color: #fff;
+      border: none;
+      padding: 14px 40px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.2s;
+      box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+    }
 
-.proceed button:hover {
-  background: #0056c9;
-  transform: translateY(-1px);
-}
+    .proceed button:hover {
+      background: #0056c9;
+      transform: translateY(-1px);
+    }
 
-/* ------------ RESPONSIVE ------------- */
+    /* ------------ RESPONSIVE ------------- */
 
-/* Tablets */
-@media (max-width: 768px) {
+    /* Tablets */
+    @media (max-width: 768px) {
+      .payment-container {
+        margin: 30px 15px;
+        padding: 30px 25px;
+      }
 
-  .payment-container {
-    margin: 30px 15px;
-    padding: 30px 25px;
-  }
+      h2 {
+        font-size: 24px;
+      }
 
-  h2 {
-    font-size: 24px;
-  }
+      .school-name {
+        font-size: 18px;
+      }
 
-  .school-name {
-    font-size: 18px;
-  }
+      .summary {
+        font-size: 14px;
+      }
 
-  .summary {
-    font-size: 14px;
-  }
+      .summary .right {
+        font-size: 17px;
+      }
 
-  .summary .right {
-    font-size: 17px;
-  }
+      .installment-list li {
+        font-size: 14px;
+        padding: 10px 12px;
+        gap: 8px;
+      }
 
-  .installment-list li {
-    font-size: 14px;
-    padding: 10px 12px;
-    gap: 8px;
-  }
+      .proceed button {
+        padding: 12px 30px;
+        font-size: 15px;
+      }
+    }
 
-  .proceed button {
-    padding: 12px 30px;
-    font-size: 15px;
-  }
-}
+    /* Mobile Phones */
+    @media (max-width: 480px) {
+      .payment-container {
+        padding: 25px 18px;
+        margin: 20px;
+      }
 
-/* Mobile Phones */
-@media (max-width: 480px) {
+      h2 {
+        font-size: 22px;
+      }
 
-  .payment-container {
-    padding: 25px 18px;
-    margin: 20px;
-  }
+      .school-name {
+        font-size: 17px;
+      }
 
-  h2 {
-    font-size: 22px;
-  }
+      .summary {
+        padding: 12px;
+      }
 
-  .school-name {
-    font-size: 17px;
-  }
+      .summary div {
+        width: 100%;
+        text-align: left;
+      }
 
-  .summary {
-    padding: 12px;
-  }
+      .summary .right {
+        text-align: right;
+        width: 100%;
+      }
 
-  .summary div {
-    width: 100%;
-    text-align: left;
-  }
+      .installment-list li {
+        flex-direction: column;
+        align-items: flex-start;
+        font-size: 14px;
+      }
 
-  .summary .right {
-    text-align: right;
-    width: 100%;
-  }
+      .proceed button {
+        width: 100%;
+        padding: 14px 0;
+      }
+    }
 
-  .installment-list li {
-    flex-direction: column;
-    align-items: flex-start;
-    font-size: 14px;
-  }
+    /* Ultra Small Devices */
+    @media (max-width: 360px) {
+      .payment-container {
+        padding: 18px;
+      }
 
-  .proceed button {
-    width: 100%;
-    padding: 14px 0;
-  }
-}
+      .proceed p {
+        font-size: 14px;
+      }
 
-/* Ultra Small Devices */
-@media (max-width: 360px) {
-  .payment-container {
-    padding: 18px;
-  }
-
-  .proceed p {
-    font-size: 14px;
-  }
-
-  .summary,
-  .installment-list li {
-    font-size: 13px;
-  }
-}
-
+      .summary,
+      .installment-list li {
+        font-size: 13px;
+      }
+    }
   </style>
 </head>
 
 <body>
-
   <div class="payment-container">
     <h2>Fees Payment</h2>
-    <div class="school-name"><%= schoolName %></div>
+    <div class="school-name">
+      <%= schoolName %>
+    </div>
 
     <div class="summary">
       <div>Student: <strong>
           <%= student.name %>
         </strong> • Class: <%= student.class %>
       </div>
-      <div class="right">Total: ₹<span id="totalAmount">0</span></div>
     </div>
 
     <ul class="installment-list" id="installmentList">
@@ -238,6 +235,27 @@ h2 {
         <% }) %>
     </ul>
 
+    <div class="fee-breakdown"
+      style="margin-top: 15px; padding: 10px; background: #f8f9fa; border-radius: 5px; border: 1px solid #ddd;">
+      <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+        <span>School Fees:</span>
+        <span>₹<span id="schoolBaseAmount">0</span></span>
+      </div>
+      <div
+        style="display: flex; justify-content: space-between; margin-bottom: 5px; color: #28a745; font-weight: bold;">
+        <span>Portal Fees:</span>
+        <span>₹<span id="portalFeeAmount">0</span></span>
+      </div>
+      <hr style="border: 0; border-top: 1px solid #ccc; margin: 8px 0;">
+      <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 1.1em; color: #000;">
+        <span>Total Amount to Pay</span>
+        <span>₹<span id="totalAmount">0</span></span>
+      </div>
+      <p style="font-size: 0.85em; color: #6c757d; margin-top: 18px; line-height: 1.4;">
+        * Extra gateway charges may apply if paid via Credit Card/Netbanking.
+      </p>
+    </div>
+
     <div class="proceed">
       <p>You will be redirected to a secure payment gateway.</p>
       <button id="proceedBtn">Proceed to Pay</button>
@@ -246,54 +264,144 @@ h2 {
 
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script>
-    // ✅ Calculate total 
-    const items = document.querySelectorAll('#installmentList li');
-    let selectedInstallments = [];
 
-    items.forEach(li => {
+    const installmentItems = document.querySelectorAll("#installmentList li");
+
+    let schoolBaseFee = 0;
+
+    const selectedInstallments = [];
+
+    installmentItems.forEach((item, index) => {
+      const amount = parseInt(item.dataset.amount);
+
+      schoolBaseFee += amount;
+
       selectedInstallments.push({
-        index: li.getAttribute('data-index'),
-        installment: li.getAttribute('data-installment'),
-        feeType: li.getAttribute('data-feetype'),
-        amount: li.getAttribute('data-amount')
+        index: item.dataset.index,
+        installment: item.dataset.installment,
+        feeType: item.dataset.feetype,
+        amount: amount
       });
     });
 
-    let total = selectedInstallments.reduce((sum, i) => sum + parseInt(i.amount || 0), 0);
-    document.getElementById('totalAmount').textContent = total;
+    const portalFee = 20;
+    const totalAmount = schoolBaseFee + portalFee;
 
-    // ✅ Proceed to Pay
-    document.getElementById("proceedBtn").onclick = async function () {
-      if (total < 1) {
-        alert("Please select at least one installment to pay!");
+    document.getElementById("schoolBaseAmount").textContent = schoolBaseFee;
+    document.getElementById("portalFeeAmount").textContent = portalFee;
+    document.getElementById("totalAmount").textContent = totalAmount;
+
+    async function startupPayment() {
+
+      const schoolAccountId = "<%= schoolAccountId %>";
+
+      if (!schoolAccountId || schoolAccountId === "undefined" || schoolAccountId === "") {
+        alert("Error: School payment account ID not received in frontend! Please recheck database.");
         return;
       }
 
-      const response = await fetch("/create-order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: total })
-      });
+      try {
+        //  बैकएंड को हिट करके रेज़रपे ऑर्डर आईडी बनाना
+        const response = await fetch("/create-order", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            installments: selectedInstallments,
+            portalFee: portalFee,
+            schoolAccountId: schoolAccountId
+          })
+        });
 
-      const order = await response.json();
-      const installmentsData = encodeURIComponent(JSON.stringify(selectedInstallments));
+        const order = await response.json();
+        if (order.error) {
+          alert("Order Creation Failed: " + order.error);
+          return;
+        }
 
-      const options = {
-        key: "rzp_test_RSEpP4AhOamoYZ",
-        amount: order.amount,
-        currency: "INR",
-        name: "<%= schoolName %>",
-        description: "Fees Payment",
-        order_id: order.id,
-        handler: function (response) {
-          window.location.href = `/payment-success?payment_id=${response.razorpay_payment_id}&amount=${total}&installments=${installmentsData}`;
-        },
-        theme: { color: "#007bff" }
-      };
+        const installmentsData = JSON.stringify(selectedInstallments);
 
-      const rzp = new Razorpay(options);
-      rzp.open();
-    };
+        //  रेज़रपे चेकआउट सेटिंग्स खोलना
+        const options = {
+          key: order.razorpayKey,
+          amount: order.amount,
+          currency: "INR",
+          name: "<%= schoolName %>",
+          description: "School Fees Payment",
+          order_id: order.id,
+
+          // If only want upi payment
+          //  agr sare options chahte h to ye config wala pura block remove kr do 
+          config: {
+            display: {
+              blocks: {
+                preferred: {
+
+                  name: "Pay Securely",
+
+                  instruments: [
+                    {
+                      method: "upi"
+                    },
+                    {
+                      method: "card"
+                    },
+                    {
+                      method: "netbanking"
+                    }
+                  ]
+                }
+              },
+
+              sequence: [
+                "block.preferred"
+              ],
+
+              preferences: {
+
+                show_default_blocks:
+                  false
+              }
+            }
+          },
+
+          handler: async function (rzpResponse) {
+            // Payment success hone k bad verification k liye backened pr bhejna 
+            const verifyRes = await fetch("/verify-payment", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                razorpay_order_id: order.id,
+                razorpay_payment_id: rzpResponse.razorpay_payment_id,
+                razorpay_signature: rzpResponse.razorpay_signature,
+                installments: installmentsData
+              })
+            });
+
+            const verifyResult = await verifyRes.json();
+
+            if (verifyResult.success) {
+    
+              window.location.href = `/payment-status?status=success&payment_id=${rzpResponse.razorpay_payment_id}&order_id=${order.id}&amount=${schoolBaseFee}&installments=${installmentsData}`;
+            } else {
+              alert("Verification Failed: " + verifyResult.message);
+              window.location.href = `/payment-status?status=failed&message=${verifyResult.message}`;
+            }
+          },
+          theme: { color: "#1a2a5b" }
+        };
+
+        const rzp = new Razorpay(options);
+        rzp.open();
+
+      } catch (err) {
+        console.error("Payment Gateway Error:", err);
+        alert("Payment gateway start failed.");
+      }
+    }
+
+    document
+      .getElementById("proceedBtn")
+      .addEventListener("click", startupPayment);
   </script>
 </body>
 
