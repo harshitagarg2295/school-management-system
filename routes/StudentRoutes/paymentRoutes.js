@@ -248,7 +248,15 @@ router.post("/razorpay-webhook", express.raw({ type: "application/json" }), asyn
   try {
     const webhookSignature = req.headers["x-razorpay-signature"];
 
-    const expectedSignature = crypto.createHmac("sha256", process.env.RAZORPAY_WEBHOOK_SECRET).update(req.body).digest("hex");
+    const payload = JSON.parse(req.body.toString());
+
+    const schoolCode = payload.payload.payment.entity.notes.schoolCode;
+
+    const admin = await AdminProfile.findOne({ schoolCode });
+
+    const webhookSecret = admin?.paymentMode === "live" ? process.env.RAZORPAY_LIVE_WEBHOOK_SECRET : process.env.RAZORPAY_TEST_WEBHOOK_SECRET;
+
+    const expectedSignature = crypto.createHmac("sha256", webhookSecret).update(req.body).digest("hex");
 
     // Signature verification
 
@@ -257,10 +265,6 @@ router.post("/razorpay-webhook", express.raw({ type: "application/json" }), asyn
         .status(400)
         .send("Invalid webhook signature");
     }
-
-    // Convert buffer to JSON
-
-    const payload = JSON.parse(req.body.toString());
 
     // Event type
 
