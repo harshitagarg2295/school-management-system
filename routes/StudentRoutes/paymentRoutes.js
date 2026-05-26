@@ -131,7 +131,8 @@ router.post("/create-order", studentAuth, async (req, res) => {
         schoolCode,
         installments: JSON.stringify(installments)
       },
-      ...(schoolAccountId && schoolAccountId.length === 18 ? {
+
+      ...(schoolAccountId && schoolAccountId.length === 18  ?{
 
         transfers: [
           {
@@ -146,6 +147,7 @@ router.post("/create-order", studentAuth, async (req, res) => {
 
         : {})
     };
+    
 
     const order = await razorpay.orders.create(options);
     res.json({ ...order, razorpayKey: admin?.paymentMode === "live" ? process.env.RAZORPAY_LIVE_KEY_ID : process.env.RAZORPAY_TEST_KEY_ID });

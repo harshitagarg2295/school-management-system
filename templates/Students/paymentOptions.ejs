@@ -4,6 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Fees Payment</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
   <style>
     body {
       background: linear-gradient(135deg, #cfe2ff, #f7faff);
@@ -12,10 +14,33 @@
       font-family: "Poppins", sans-serif;
     }
 
+    .top-nav {
+      max-width: 650px;
+      margin: 2px auto 0;
+      padding: 0 10px;
+    }
+
+    .back-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: none;
+      background: white;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      cursor: pointer;
+      font-size: 1rem;
+      color: #1e293b;
+      transition: 0.2s ease;
+    }
+
+    .back-btn:hover {
+      transform: translateY(-2px);
+    }
+
     /* Main Box */
     .payment-container {
       max-width: 700px;
-      margin: 60px auto;
+      margin: 30px auto;
       background: #fff;
       border-radius: 16px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
@@ -210,6 +235,12 @@
 </head>
 
 <body>
+  <div class="top-nav">
+    <button onclick="history.back()" class="back-btn">
+      <i class="fa-solid fa-arrow-left"></i>
+    </button>
+  </div>
+
   <div class="payment-container">
     <h2>Fees Payment</h2>
     <div class="school-name">
@@ -284,7 +315,7 @@
       });
     });
 
-    const portalFee = 20;
+   const portalFee = parseFloat((schoolBaseFee * 0.002).toFixed(2));
     const totalAmount = schoolBaseFee + portalFee;
 
     document.getElementById("schoolBaseAmount").textContent = schoolBaseFee;
@@ -358,8 +389,7 @@
 
               preferences: {
 
-                show_default_blocks:
-                  false
+                show_default_blocks:false
               }
             }
           },
@@ -380,7 +410,7 @@
             const verifyResult = await verifyRes.json();
 
             if (verifyResult.success) {
-    
+
               window.location.href = `/payment-status?status=success&payment_id=${rzpResponse.razorpay_payment_id}&order_id=${order.id}&amount=${schoolBaseFee}&installments=${installmentsData}`;
             } else {
               alert("Verification Failed: " + verifyResult.message);

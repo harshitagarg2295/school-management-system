@@ -464,7 +464,7 @@
                                             <div class="id">
                                                 <%= index + 1 %>
                                             </div>
-                                           <div class="name">
+                                            <div class="name">
                                                 <a href="/student/<%= student._id %>"
                                                     style="text-decoration:none; color:inherit;">
                                                     <%= student.name %>
@@ -486,7 +486,7 @@
                                                 <%= student.phone %>
                                             </div>
                                             <div class="fees">
-                                              <%= student.fees ? student.fees.toLocaleString('en-IN') : '0' %>
+                                                <%= student.fees ? student.fees.toLocaleString('en-IN') : '0' %>
                                             </div>
                                             <div class="icons">
 
@@ -607,6 +607,8 @@
             }
         });
     </script>
+    <%- include("../partials/app-back-handler") %>
+
 </body>
 
 </html>

@@ -636,7 +636,8 @@
                         <!-- Class Name Display (Agar backend se className variable khali ya undefined milega toh automatic 'All Classes' dikhayega) -->
                         <h4 class="print-class-title"
                             style="margin: 5px 0 0 0; font-size: 15px; font-weight: 600; color: #222;">
-                            Class: <%= (typeof classFilter !=='undefined' && classFilter) ? classFilter : 'All Classes' %>
+                            Class: <%= (typeof classFilter !=='undefined' && classFilter) ? classFilter : 'All Classes'
+                                %>
                         </h4>
 
                         <h3 class="print-month-title"
@@ -842,6 +843,7 @@
             document.getElementById('print-live-datetime').innerHTML = "<b>Generated on:</b><br>" + now.toLocaleDateString('en-IN', options);
         };
     </script>
+    <%- include("../partials/app-back-handler") %>
 
 </body>
 

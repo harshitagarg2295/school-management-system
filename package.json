@@ -20,6 +20,7 @@
   "homepage": "https://github.com/harshitagarg2295/School-Management#readme",
   "dependencies": {
     "@capacitor/android": "^8.3.4",
+    "@capacitor/app": "^8.1.0",
     "@capacitor/cli": "^8.3.4",
     "@capacitor/core": "^8.3.4",
     "bcrypt": "^6.0.0",
