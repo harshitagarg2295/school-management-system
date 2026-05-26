@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -34,7 +35,7 @@
             background: white;
             padding: 50px;
             border-radius: 24px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
         }
 
         h2 {
@@ -45,7 +46,11 @@
             font-size: 1.4rem;
         }
 
-        p, li { color: var(--text); font-size: 1.05rem; }
+        p,
+        li {
+            color: var(--text);
+            font-size: 1.05rem;
+        }
 
         .highlight-box {
             background: #eff6ff;
@@ -56,57 +61,75 @@
         }
 
         @media (max-width: 768px) {
-            .container { margin-top: 0; padding: 30px 20px; border-radius: 0; }
+            .container {
+                margin-top: 0;
+                padding: 30px 20px;
+                border-radius: 0;
+            }
         }
     </style>
 </head>
+
 <body>
 
     <%- include("partials/HomePageNavbar") %>
 
-    <header class="terms-header">
-        <h1>Terms & Conditions</h1>
-        <p>Please read these terms carefully before using SchoolFlow.</p>
-    </header>
+        <header class="terms-header">
+            <h1>Terms & Conditions</h1>
+            <p>Please read these terms carefully before using SchoolFlow.</p>
+        </header>
 
-    <div class="container">
-        <p>Last Updated: May 2024</p>
-        <p>By accessing or using <strong>SchoolFlow</strong>, you agree to be bound by these terms. If you disagree with any part of the terms, you may not access our services.</p>
+        <div class="container">
+            <p>Last Updated: May 2024</p>
+            <p>By accessing or using <strong>SchoolFlow</strong>, you agree to be bound by these terms. If you disagree
+                with any part of the terms, you may not access our services.</p>
 
-        <h2>1. Account Responsibilities</h2>
-        <p>Schools must provide accurate and complete information during registration. You are responsible for maintaining the confidentiality of your login credentials and for all activities that occur under your account.</p>
+            <h2>1. Account Responsibilities</h2>
+            <p>Schools must provide accurate and complete information during registration. You are responsible for
+                maintaining the confidentiality of your login credentials and for all activities that occur under your
+                account.</p>
 
-        <h2>2. Usage Policy</h2>
-        <ul>
-            <li>The software should only be used for legitimate school management purposes.</li>
-            <li>Users must not attempt to breach the security or hack into the system.</li>
-            <li>Bulk messaging/notifications should not be used for spamming purposes.</li>
-        </ul>
+            <h2>2. Usage Policy</h2>
+            <ul>
+                <li>The software should only be used for legitimate school management purposes.</li>
+                <li>Users must not attempt to breach the security or hack into the system.</li>
+                <li>Bulk messaging/notifications should not be used for spamming purposes.</li>
+            </ul>
 
-        <div class="highlight-box">
-            <strong>Note for Parents:</strong> SchoolFlow acts as a facilitator for communication and payments. Any disputes regarding school policy, marks, or attendance should be discussed directly with the school administration.
+            <div class="highlight-box">
+                <strong>Note for Parents:</strong> SchoolFlow acts as a facilitator for communication and payments. Any
+                disputes regarding school policy, marks, or attendance should be discussed directly with the school
+                administration.
+            </div>
+
+            <h2>3. Payments & Refunds (Crucial for Razorpay)</h2>
+            <p>SchoolFlow integrates with third-party payment gateways (Razorpay) to collect fees.</p>
+            <ul>
+                <li><strong>Transaction Success:</strong> Once a payment is confirmed by the gateway, a digital receipt
+                    is generated.</li>
+                <li><strong>Refund Policy:</strong> Any refund for school fees must be claimed directly from the school.
+                    SchoolFlow is not responsible for refunding school fees once the amount is settled to the school's
+                    account.</li>
+                <li><strong>Technical Errors:</strong> In case of a double-deduction due to a technical glitch, users
+                    can contact support@schoolflow.com for assistance.</li>
+            </ul>
+
+            <h2>4. Data Ownership</h2>
+            <p>The school retains all rights to the student and staff data uploaded to the platform. SchoolFlow will not
+                share or use this data for third-party marketing.</p>
+
+            <h2>5. Termination</h2>
+            <p>We reserve the right to suspend or terminate access to our service immediately, without prior notice, if
+                these Terms are breached.</p>
+
+            <p style="margin-top: 50px; text-align: center;">
+                <a href="/" style="color: var(--accent); text-decoration: none; font-weight: 600;">Return to Home
+                    Page</a>
+            </p>
         </div>
 
-        <h2>3. Payments & Refunds (Crucial for Razorpay)</h2>
-        <p>SchoolFlow integrates with third-party payment gateways (Razorpay) to collect fees.</p>
-        <ul>
-            <li><strong>Transaction Success:</strong> Once a payment is confirmed by the gateway, a digital receipt is generated.</li>
-            <li><strong>Refund Policy:</strong> Any refund for school fees must be claimed directly from the school. SchoolFlow is not responsible for refunding school fees once the amount is settled to the school's account.</li>
-            <li><strong>Technical Errors:</strong> In case of a double-deduction due to a technical glitch, users can contact support@schoolflow.com for assistance.</li>
-        </ul>
-
-        <h2>4. Data Ownership</h2>
-        <p>The school retains all rights to the student and staff data uploaded to the platform. SchoolFlow will not share or use this data for third-party marketing.</p>
-
-        <h2>5. Termination</h2>
-        <p>We reserve the right to suspend or terminate access to our service immediately, without prior notice, if these Terms are breached.</p>
-
-        <p style="margin-top: 50px; text-align: center;">
-            <a href="/" style="color: var(--accent); text-decoration: none; font-weight: 600;">Return to Home Page</a>
-        </p>
-    </div>
-
-    <%- include("partials/HomePageFooter") %>
-
+        <%- include("partials/HomePageFooter") %>
+            <%- include("../partials/app-back-handler") %>
 </body>
+
 </html>

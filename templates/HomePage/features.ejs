@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -122,74 +123,87 @@
 
         .btn-cta:hover {
             background: var(--dark);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
 
         /* Responsive */
         @media (max-width: 350px) {
-            .feature-item { padding: 30px 20px; }
-            .features-hero h1 { font-size: 1.8rem; }
+            .feature-item {
+                padding: 30px 20px;
+            }
+
+            .features-hero h1 {
+                font-size: 1.8rem;
+            }
         }
     </style>
 </head>
+
 <body>
 
     <%- include("partials/HomePageNavbar") %>
 
-    <section class="features-hero">
-        <h1>Powerful Tools for Powerful Schools</h1>
-        <p>Everything you need to manage your institution from a single, intuitive dashboard.</p>
-    </section>
+        <section class="features-hero">
+            <h1>Powerful Tools for Powerful Schools</h1>
+            <p>Everything you need to manage your institution from a single, intuitive dashboard.</p>
+        </section>
 
-    <div class="container">
-        <div class="features-grid">
-            
-            <div class="feature-item">
-                <div class="icon-box"><i class="fa-solid fa-calendar-check"></i></div>
-                <h3>Smart Attendance</h3>
-                <p>Digital attendance for students and staff with automatic SMS alerts to parents. Generate monthly reports in one click.</p>
+        <div class="container">
+            <div class="features-grid">
+
+                <div class="feature-item">
+                    <div class="icon-box"><i class="fa-solid fa-calendar-check"></i></div>
+                    <h3>Smart Attendance</h3>
+                    <p>Digital attendance for students and staff with automatic SMS alerts to parents. Generate monthly
+                        reports in one click.</p>
+                </div>
+
+                <div class="feature-item">
+                    <div class="icon-box"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+                    <h3>Online Fee Portal</h3>
+                    <p>Integrated with Razorpay for 24/7 fee collection. Auto-generate professional receipts and track
+                        pending dues easily.</p>
+                </div>
+
+                <div class="feature-item">
+                    <div class="icon-box"><i class="fa-solid fa-graduation-cap"></i></div>
+                    <h3>Result Management</h3>
+                    <p>Create report cards, manage marks, and publish exam results online for parents and students to
+                        view instantly.</p>
+                </div>
+
+                <div class="feature-item">
+                    <div class="icon-box"><i class="fa-solid fa-bullhorn"></i></div>
+                    <h3>Instant Notifications</h3>
+                    <p>No more paper circulars. Send digital notices, holiday announcements, and event updates to the
+                        entire school instantly.</p>
+                </div>
+
+                <div class="feature-item">
+                    <div class="icon-box"><i class="fa-solid fa-book-open"></i></div>
+                    <h3>Study Resources</h3>
+                    <p>Manage class timetables and upload syllabus or study materials so students can access them from
+                        anywhere.</p>
+                </div>
+
+                <div class="feature-item">
+                    <div class="icon-box"><i class="fa-solid fa-shield-halved"></i></div>
+                    <h3>Secure & Cloud Based</h3>
+                    <p>Your school's data is 100% encrypted and stored on secure cloud servers, accessible only to
+                        authorized staff.</p>
+                </div>
+
             </div>
-
-            <div class="feature-item">
-                <div class="icon-box"><i class="fa-solid fa-file-invoice-dollar"></i></div>
-                <h3>Online Fee Portal</h3>
-                <p>Integrated with Razorpay for 24/7 fee collection. Auto-generate professional receipts and track pending dues easily.</p>
-            </div>
-
-            <div class="feature-item">
-                <div class="icon-box"><i class="fa-solid fa-graduation-cap"></i></div>
-                <h3>Result Management</h3>
-                <p>Create report cards, manage marks, and publish exam results online for parents and students to view instantly.</p>
-            </div>
-
-            <div class="feature-item">
-                <div class="icon-box"><i class="fa-solid fa-bullhorn"></i></div>
-                <h3>Instant Notifications</h3>
-                <p>No more paper circulars. Send digital notices, holiday announcements, and event updates to the entire school instantly.</p>
-            </div>
-
-            <div class="feature-item">
-                <div class="icon-box"><i class="fa-solid fa-book-open"></i></div>
-                <h3>Study Resources</h3>
-                <p>Manage class timetables and upload syllabus or study materials so students can access them from anywhere.</p>
-            </div>
-
-            <div class="feature-item">
-                <div class="icon-box"><i class="fa-solid fa-shield-halved"></i></div>
-                <h3>Secure & Cloud Based</h3>
-                <p>Your school's data is 100% encrypted and stored on secure cloud servers, accessible only to authorized staff.</p>
-            </div>
-
         </div>
-    </div>
 
-    <section class="bottom-cta">
-        <h2>Ready to Digitise Your School?</h2>
-        <p style="margin-bottom: 30px; color: var(--text-slate);">Join 50+ schools already using SchoolFlow.</p>
-        <a href="/login" class="btn-cta">Start Your Journey Now</a>
-    </section>
+        <section class="bottom-cta">
+            <h2>Ready to Digitise Your School?</h2>
+            <p style="margin-bottom: 30px; color: var(--text-slate);">Join 50+ schools already using SchoolFlow.</p>
+            <a href="/login" class="btn-cta">Start Your Journey Now</a>
+        </section>
 
-    <%- include("partials/HomePageFooter") %>
-
+        <%- include("partials/HomePageFooter") %>
+            <%- include("../partials/app-back-handler") %>
 </body>
+
 </html>

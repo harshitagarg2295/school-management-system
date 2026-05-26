@@ -4,8 +4,6 @@ uploads/
 *.log
 .DS_Store
 
-*.apk
-public/downloads/*.apk
 android/app/build/
 
 password of mongo uri
