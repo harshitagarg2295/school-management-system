@@ -11,22 +11,27 @@ const { teacherAuth } = require("../../middlewares/auth");
 
 // POST - Mark Holiday for Students
 router.post("/teachers/mark-holiday", teacherAuth, async (req, res) => {
-    const schoolCode = req.session.schoolCode;
-    const { date, reason } = req.body;
+    try {
+        const schoolCode = req.session.schoolCode;
+        const { date, reason } = req.body;
 
-    let existing = await Holiday.findOne({
-        date: new Date(date),
-        role: "student",
-        schoolCode
-    });
-    if (existing) {
-        existing.reason = reason;
-        await existing.save();
-    } else {
-        await Holiday.create({ role: "student", date: new Date(date), reason, schoolCode });
+        let existing = await Holiday.findOne({
+            date: new Date(date),
+            role: "student",
+            schoolCode
+        });
+        if (existing) {
+            existing.reason = reason;
+            await existing.save();
+        } else {
+            await Holiday.create({ role: "student", date: new Date(date), reason, schoolCode });
+        }
+
+        res.redirect("/teachers/mark-attendance");
+    } catch (err) {
+        console.error(err);
+        return res.status(500).render("HomePage/500");
     }
-
-    res.redirect("/teachers/mark-attendance");
 });
 
 // GET - Teacher mark attendance page
@@ -112,33 +117,33 @@ router.get("/teachers/mark-attendance", teacherAuth, async (req, res) => {
         });
 
     } catch (err) {
-        console.error("Error in GET /teachers/mark-attendance:", err);
-        res.status(500).send("Something went wrong");
+        console.error(err);
+        return res.status(500).render("HomePage/500");
     }
 });
 
 // POST - Save Attendance for Teacher’s class
 // 👉 Teacher Submit Student Attendance (SECURE VERSION)
 router.post("/teachers/submit-students-attendance", teacherAuth, async (req, res) => {
-    const schoolCode = req.session.schoolCode;
-    const teacherId = req.session.teacherId;
-    const teacher = await Teacher.findOne({
-        _id: teacherId,
-        schoolCode
-    });
-
-    // Permission Check
-    if (!teacher || teacher.classTeacher !== "yes" || !teacher.assignedClass) {
-        return res.send("You are not a class teacher");
-    }
-
-    // Default empty object taaki crash na ho
-    const { attendance = {}, month, year } = req.body;
-
-    // 1. Server Time (India)
-    const serverToday = moment.tz("Asia/Kolkata").startOf("day");
-
     try {
+        const schoolCode = req.session.schoolCode;
+        const teacherId = req.session.teacherId;
+        const teacher = await Teacher.findOne({
+            _id: teacherId,
+            schoolCode
+        });
+
+        // Permission Check
+        if (!teacher || teacher.classTeacher !== "yes" || !teacher.assignedClass) {
+            return res.send("You are not a class teacher");
+        }
+
+        // Default empty object taaki crash na ho
+        const { attendance = {}, month, year } = req.body;
+
+        // 1. Server Time (India)
+        const serverToday = moment.tz("Asia/Kolkata").startOf("day");
+
         for (let studentId in attendance) {
             const daily = attendance[studentId]; // { day_1: "P", day_2: "A", ... }
 
@@ -190,8 +195,8 @@ router.post("/teachers/submit-students-attendance", teacherAuth, async (req, res
         res.redirect(`/teachers/mark-attendance?month=${month}&year=${year}`);
 
     } catch (err) {
-        console.error("Error saving attendance:", err);
-        res.status(500).send("Something went wrong.");
+        console.error(err);
+        return res.status(500).render("HomePage/500");
     }
 });
 

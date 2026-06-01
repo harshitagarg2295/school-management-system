@@ -4,7 +4,7 @@ const Student = require("../../models/StudentSchema");
 const StudyMaterial = require("../../models/StudyMaterial");
 const { teacherAuth } = require("../../middlewares/auth");
 
-const {cloudinary, uploadMaterial } = require("../../config/cloudinaryConfig"); 
+const { cloudinary, uploadMaterial } = require("../../config/cloudinaryConfig");
 
 // ----------------------------------------
 // Function to prepare class list
@@ -26,53 +26,60 @@ const prepareClassList = async (schoolCode) => {
 
 // GET Route: Renders the form
 router.get("/teachers/upload-material", teacherAuth, async (req, res) => {
-    const schoolCode = req.session.schoolCode;
-    const classList = await prepareClassList(schoolCode);
-    res.render("Teachers/uploadStudyMaterial", {
-        classList,
-        selectedClass: req.query.class || "",
-        status: req.query.status,
-        errorMessage: req.query.error ? "Please select Class, Title, Description, and at least one File." : null
-    });
+    try {
+        const schoolCode = req.session.schoolCode;
+        const classList = await prepareClassList(schoolCode);
+        res.render("Teachers/uploadStudyMaterial", {
+            classList,
+            selectedClass: req.query.class || "",
+            status: req.query.status,
+            errorMessage: req.query.error ? "Please select Class, Title, Description, and at least one File." : null
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).render("HomePage/500");
+    }
 });
 
 // POST Route: Handles upload and DB save (Cloudinary version)
 router.post("/teachers/upload-material", uploadMaterial.array("material", 10), teacherAuth, async (req, res) => {
-    const schoolCode = req.session.schoolCode;
-    const { title, description, className } = req.body;
-    const uploadedFiles = req.files; // Ab isme Cloudinary ke links aayenge
 
-    // 🔥 1. DEMO SIZE CHECK (Cloudinary upload ke baad check ho rha h)
-    if (schoolCode === "DEMO248" && uploadedFiles) {
-        const demoSizeLimit = 2 * 1024 * 1024; // 2MB Limit
-        for (const file of uploadedFiles) {
-            if (file.size > demoSizeLimit) {
-                // Cloudinary se upload hui saari files delete karo
-                for (const f of uploadedFiles) {
-                    await cloudinary.uploader.destroy(f.filename, { resource_type: 'raw' });
-                }
-                return res.send(`
+    let uploadedFiles = [];
+
+    try {
+        const schoolCode = req.session.schoolCode;
+        const { title, description, className } = req.body;
+        uploadedFiles = req.files || []; // Ab isme Cloudinary ke links aayenge
+
+        // 🔥 1. DEMO SIZE CHECK (Cloudinary upload ke baad check ho rha h)
+        if (schoolCode === "DEMO248" && uploadedFiles) {
+            const demoSizeLimit = 2 * 1024 * 1024; // 2MB Limit
+            for (const file of uploadedFiles) {
+                if (file.size > demoSizeLimit) {
+                    // Cloudinary se upload hui saari files delete karo
+                    for (const f of uploadedFiles) {
+                        await cloudinary.uploader.destroy(f.filename, { resource_type: 'raw' });
+                    }
+                    return res.send(`
                     <script>
                         alert('Demo Mode Limit: You cannot upload files larger than 2MB. This is to save server space during your trial.');
                         window.history.back();
                     </script>
                 `);
+                }
             }
         }
-    }
 
-    // Validation Check
-    if (!className || !title || !description || !uploadedFiles || uploadedFiles.length === 0) {
-        if (uploadedFiles) {
-            // Agar fields missing hain toh uploaded files Cloudinary se hatao
-            for (const file of uploadedFiles) {
-                await cloudinary.uploader.destroy(file.filename, { resource_type: 'raw' });
+        // Validation Check
+        if (!className || !title || !description || !uploadedFiles || uploadedFiles.length === 0) {
+            if (uploadedFiles) {
+                // Agar fields missing hain toh uploaded files Cloudinary se hatao
+                for (const file of uploadedFiles) {
+                    await cloudinary.uploader.destroy(file.filename, { resource_type: 'raw' });
+                }
             }
+            return res.redirect("/teachers/upload-material?error=missing_fields&class=" + className);
         }
-        return res.redirect("/teachers/upload-material?error=missing_fields&class=" + className);
-    }
-
-    try {
         // Save to DB
         for (const file of uploadedFiles) {
             await StudyMaterial.create({
@@ -92,37 +99,42 @@ router.post("/teachers/upload-material", uploadMaterial.array("material", 10), t
     } catch (error) {
         console.error("Error during material upload or DB save:", error);
         // Error aane par uploaded files clean karo
-        if (uploadedFiles) {
+        if (uploadedFiles.length > 0) {
             for (const file of uploadedFiles) {
                 await cloudinary.uploader.destroy(file.filename, { resource_type: 'raw' });
             }
         }
-        res.redirect("/teachers/upload-material?status=fail");
+        return res.redirect("/teachers/upload-material?status=fail");
     }
 });
 
 // VIEW ROUTE
 router.get("/teachers/view-material", teacherAuth, async (req, res) => {
-    const schoolCode = req.session.schoolCode;
-    const teacherName = req.session.teacherName;
+    try {
+        const schoolCode = req.session.schoolCode;
+        const teacherName = req.session.teacherName;
 
-    if (!teacherName) return res.redirect("/login");
-    
-    const selectedClass = req.query.class;
-    let query = { uploadedBy: teacherName, schoolCode };
+        if (!teacherName) return res.redirect("/login");
 
-    if (selectedClass && selectedClass !== "") {
-        query.class = selectedClass;
+        const selectedClass = req.query.class;
+        let query = { uploadedBy: teacherName, schoolCode };
+
+        if (selectedClass && selectedClass !== "") {
+            query.class = selectedClass;
+        }
+        const materials = await StudyMaterial.find(query).sort({ uploadedAt: -1 });
+        const classList = await prepareClassList(schoolCode);
+
+        res.render("Teachers/viewStudyMaterial", {
+            materials: materials,
+            currentTeacherName: teacherName,
+            classList: classList,
+            selectedClass: selectedClass
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).render("HomePage/500");
     }
-    const materials = await StudyMaterial.find(query).sort({ uploadedAt: -1 });
-    const classList = await prepareClassList(schoolCode);
-
-    res.render("Teachers/viewStudyMaterial", {
-        materials: materials,
-        currentTeacherName: teacherName,
-        classList: classList,
-        selectedClass: selectedClass
-    });
 });
 
 // 🔥 🔥 DELETE ROUTE (Cloudinary Destroy + DB Delete)
@@ -130,7 +142,7 @@ router.get("/teachers/delete-material/:id", teacherAuth, async (req, res) => {
     try {
         const materialId = req.params.id;
         const material = await StudyMaterial.findById(materialId);
-        
+
         if (!material) return res.redirect("/teachers/view-material");
 
         // 1. Cloudinary se file delete karo

@@ -362,37 +362,37 @@
 
           // If only want upi payment
           //  agr sare options chahte h to ye config wala pura block remove kr do 
-          config: {
-            display: {
-              blocks: {
-                preferred: {
+          // config: {
+          //   display: {
+          //     blocks: {
+          //       preferred: {
 
-                  name: "Pay Securely",
+          //         name: "Pay Securely",
 
-                  instruments: [
-                    {
-                      method: "upi"
-                    },
-                    {
-                      method: "card"
-                    },
-                    {
-                      method: "netbanking"
-                    }
-                  ]
-                }
-              },
+          //         instruments: [
+          //           {
+          //             method: "upi"
+          //           },
+          //           {
+          //             method: "card"
+          //           },
+          //           {
+          //             method: "netbanking"
+          //           }
+          //         ]
+          //       }
+          //     },
 
-              sequence: [
-                "block.preferred"
-              ],
+          //     sequence: [
+          //       "block.preferred"
+          //     ],
 
-              preferences: {
+          //     preferences: {
 
-                show_default_blocks:false
-              }
-            }
-          },
+          //       show_default_blocks:false
+          //     }
+          //   }
+          // },
 
           handler: async function (rzpResponse) {
             // Payment success hone k bad verification k liye backened pr bhejna 

@@ -17,73 +17,89 @@ const { cloudinary } = require("../../config/cloudinaryConfig");
 
 // List all teachers
 router.get("/teach-menu", adminAuth, async (req, res) => {
-  const schoolCode = req.session.schoolCode;
-  const admin = await AdminNotification.findOne({ schoolCode }) || { notifications: [] };
-  const teachers = await Teacher.find({ schoolCode }).sort({ name: 1 });
-  res.render("Admin/teachers_list", { teachers, admin });
+
+  try {
+    const schoolCode = req.session.schoolCode;
+    const admin = await AdminNotification.findOne({ schoolCode }) || { notifications: [] };
+    const teachers = await Teacher.find({ schoolCode }).sort({ name: 1 });
+    res.render("Admin/teachers_list", { teachers, admin });
+  }
+  catch (err) {
+    console.error(err);
+    return res.status(500).render("HomePage/500");
+  }
+
 });
 
 // Add teacher
 router.post("/add-teacher", adminAuth, async (req, res) => {
-  const schoolCode = req.session.schoolCode;
-  const toTitleCase = str => str.replace(/\w\S*/g, txt =>
-    txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase()
-  );
+  try {
 
-  const { name, empId, subject, salary, dob, phone, class: className } = req.body;
+    const schoolCode = req.session.schoolCode;
+    const toTitleCase = str => str.replace(/\w\S*/g, txt =>
+      txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase()
+    );
 
-  // name is in lowercase
-  // Example logic: username = first 3 letters of name + @ + last4 mobile
-  // password = first 2 letters of name + @ + DDMM (dob) + last2 mobile
+    const { name, empId, subject, salary, dob, phone, class: className } = req.body;
 
-  // 👉 clean name (no spaces)
-  const cleanName = name.trim().toLowerCase().replace(/\s+/g, "");
+    // name is in lowercase
+    // Example logic: username = first 3 letters of name + @ + last4 mobile
+    // password = first 2 letters of name + @ + DDMM (dob) + last2 mobile
 
-  // 👉 name parts
-  const name3 = cleanName.slice(0, 3);
-  const name2 = cleanName.slice(0, 2);
+    // 👉 clean name (no spaces)
+    const cleanName = name.trim().toLowerCase().replace(/\s+/g, "");
 
-  // 👉 mobile parts
-  const phoneStr = phone.toString();
-  const last4 = phoneStr.slice(-4);
-  const last2 = phoneStr.slice(-2);
+    // 👉 name parts
+    const name3 = cleanName.slice(0, 3);
+    const name2 = cleanName.slice(0, 2);
 
-  // 👉 username
-  const username = `${name3}@${last4}`;
+    // 👉 mobile parts
+    const phoneStr = phone.toString();
+    const last4 = phoneStr.slice(-4);
+    const last2 = phoneStr.slice(-2);
 
-  // 👉 DOB format (DDMM)
-  // 👉 DOB format (DDMM)
-  let dobPart = "0000";
+    // 👉 username
+    const username = `${name3}@${last4}`;
 
-  if (req.body.dob) {
-    const [year, month, day] = req.body.dob.split("-");
-    dobPart = day + month;
+    // 👉 DOB format (DDMM)
+    // 👉 DOB format (DDMM)
+    let dobPart = "0000";
+
+    if (req.body.dob) {
+      const [year, month, day] = req.body.dob.split("-");
+      dobPart = day + month;
+    }
+
+    // 👉 password
+    const rawPassword = `${name2}@${dobPart}${last2}`;
+    console.log("🔥 GENERATED PASSWORD:", rawPassword);
+
+    // 🔐 HASH PASSWORD
+    const hashedPassword = await bcrypt.hash(rawPassword, 10);
+
+    const teacher = new Teacher({
+      name: toTitleCase(name),
+      empId: empId?.toUpperCase() || "",
+      subject: toTitleCase(subject),
+      class: className.toUpperCase(),
+      dob,
+      salary,
+      phone,
+      username,
+      password: hashedPassword,
+      schoolCode
+    });
+
+    const savedTeacher = await teacher.save();
+
+    // 🔥 IMPORTANT: redirect to profile page
+    return res.redirect(`/teacher/${savedTeacher._id}`);
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).render("HomePage/500");
   }
 
-  // 👉 password
-  const rawPassword = `${name2}@${dobPart}${last2}`;
-  console.log("🔥 GENERATED PASSWORD:", rawPassword);
-
-  // 🔐 HASH PASSWORD
-  const hashedPassword = await bcrypt.hash(rawPassword, 10);
-
-  const teacher = new Teacher({
-    name: toTitleCase(name),
-    empId: empId?.toUpperCase() || "",
-    subject: toTitleCase(subject),
-    class: className.toUpperCase(),
-    dob,
-    salary,
-    phone,
-    username,
-    password: hashedPassword,
-    schoolCode
-  });
-
-  const savedTeacher = await teacher.save();
-
-  // 🔥 IMPORTANT: redirect to profile page
-  return res.redirect(`/teacher/${savedTeacher._id}`);
 });
 
 router.get("/teacher/:id", adminAuth, async (req, res) => {
@@ -107,75 +123,88 @@ router.get("/teacher/:id", adminAuth, async (req, res) => {
     });
 
   } catch (err) {
-    console.log(err);
-    res.send("Error loading profile");
+    console.error(err);
+     return res.status(500).render("HomePage/500");
   }
 });
 
 // Delete teacher
 router.post("/delete-teacher/:id", adminAuth, async (req, res) => {
-  const schoolCode = req.session.schoolCode;
-  const teacher = await Teacher.findById(req.params.id);
+  try {
 
-  if (teacher && teacher.username === "teacher_demo") {
-    return res.send(`
+    const schoolCode = req.session.schoolCode;
+    const teacher = await Teacher.findById(req.params.id);
+
+    if (teacher && teacher.username === "teacher_demo") {
+      return res.send(`
                 <script>
                     alert('Notice: This is a default Demo Teacher. You cannot delete it, but you can delete any new teacher you create.');
                     window.history.back();
                 </script>
             `);
+    }
+
+    await Teacher.findOneAndDelete({
+      _id: req.params.id,
+      schoolCode
+    });
+    res.redirect("/teach-menu");
+  } catch (err) {
+    console.error(err);
+    return res.status(500).render("HomePage/500");
   }
 
-  await Teacher.findOneAndDelete({
-    _id: req.params.id,
-    schoolCode
-  });
-  res.redirect("/teach-menu");
 });
 
 // Edit teacher
 router.post("/edit-teacher/:id", adminAuth, async (req, res) => {
-  const schoolCode = req.session.schoolCode;
-  const toTitleCase = (str) => {
-    if (!str) return "";   // 🔥 important
-    return str.replace(/\w\S*/g, txt =>
-      txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase()
+  try {
+
+    const schoolCode = req.session.schoolCode;
+    const toTitleCase = (str) => {
+      if (!str) return "";   // 🔥 important
+      return str.replace(/\w\S*/g, txt =>
+        txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase()
+      );
+    };
+
+    const { name, empId, subject, class: className, salary, address, phone } = req.body;
+
+    const updateData = {};
+
+    if (name) updateData.name = toTitleCase(name);
+    if (empId) updateData.empId = empId.trim().toUpperCase();
+    if (subject) updateData.subject = toTitleCase(subject);
+    if (className) updateData.class = className.trim().toUpperCase();
+    if (address) updateData.address = toTitleCase(address);
+    if (salary) updateData.salary = salary;
+    if (phone) updateData.phone = phone;
+
+    if (req.body.gender) updateData.gender = req.body.gender;
+    if (req.body.dob) updateData.dob = req.body.dob;
+    if (req.body.bloodGroup) updateData.bloodGroup = req.body.bloodGroup;
+    if (req.body.education) updateData.education = req.body.education;
+    if (req.body.experience) updateData.experience = req.body.experience;
+    if (req.body.joiningDate) updateData.joiningDate = req.body.joiningDate;
+    if (req.body.classTeacher) updateData.classTeacher = req.body.classTeacher;
+    if (req.body.assignedClass) updateData.assignedClass = req.body.assignedClass;
+
+    await Teacher.findOneAndUpdate(
+      { _id: req.params.id, schoolCode },
+      { $set: updateData }
     );
-  };
 
-  const { name, empId, subject, class: className, salary, address, phone } = req.body;
-
-  const updateData = {};
-
-  if (name) updateData.name = toTitleCase(name);
-  if (empId) updateData.empId = empId.trim().toUpperCase();
-  if (subject) updateData.subject = toTitleCase(subject);
-  if (className) updateData.class = className.trim().toUpperCase();
-  if (address) updateData.address = toTitleCase(address);
-  if (salary) updateData.salary = salary;
-  if (phone) updateData.phone = phone;
-
-  if (req.body.gender) updateData.gender = req.body.gender;
-  if (req.body.dob) updateData.dob = req.body.dob;
-  if (req.body.bloodGroup) updateData.bloodGroup = req.body.bloodGroup;
-  if (req.body.education) updateData.education = req.body.education;
-  if (req.body.experience) updateData.experience = req.body.experience;
-  if (req.body.joiningDate) updateData.joiningDate = req.body.joiningDate;
-  if (req.body.classTeacher) updateData.classTeacher = req.body.classTeacher;
-  if (req.body.assignedClass) updateData.assignedClass = req.body.assignedClass;
-
-  await Teacher.findOneAndUpdate(
-    { _id: req.params.id, schoolCode },
-    { $set: updateData }
-  );
-
-  res.redirect(`/teacher/${req.params.id}`);
+    res.redirect(`/teacher/${req.params.id}`);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).render("HomePage/500");
+  }
 });
 
 router.post("/teacher/upload-image/:id", adminAuth, async (req, res) => {
   try {
     const base64 = req.body.croppedImage;
-    
+
     // Agar image nahi aayi toh chupchap redirect kar do
     if (!base64 || base64.trim() === "") {
       return res.redirect(`/teacher/${req.params.id}`);
@@ -207,24 +236,30 @@ router.post("/teacher/upload-image/:id", adminAuth, async (req, res) => {
 
   } catch (err) {
     console.error("Error uploading teacher image to Cloudinary:", err);
-    res.status(500).send("Error uploading image");
+    return res.status(500).render("HomePage/500");
   }
 });
 
 // 👉 Declare Holiday (for teachers)
 router.post("/mark-teacher-holiday", adminAuth, async (req, res) => {
-  const schoolCode = req.session.schoolCode;
-  const { date, reason } = req.body;
-  let holidayDate = moment.utc(date, "YYYY-MM-DD").startOf("day").toDate();
+  try {
 
-  let existing = await Holiday.findOne({ date: holidayDate, role: "teacher", schoolCode });
-  if (existing) {
-    existing.reason = reason;
-    await existing.save();
-  } else {
-    await Holiday.create({ role: "teacher", date: holidayDate, reason, schoolCode });
+    const schoolCode = req.session.schoolCode;
+    const { date, reason } = req.body;
+    let holidayDate = moment.utc(date, "YYYY-MM-DD").startOf("day").toDate();
+
+    let existing = await Holiday.findOne({ date: holidayDate, role: "teacher", schoolCode });
+    if (existing) {
+      existing.reason = reason;
+      await existing.save();
+    } else {
+      await Holiday.create({ role: "teacher", date: holidayDate, reason, schoolCode });
+    }
+    res.redirect("/view-attendance-teachers");
+  } catch (err) {
+    console.error(err);
+    return res.status(500).render("HomePage/500");
   }
-  res.redirect("/view-attendance-teachers");
 });
 
 
@@ -423,7 +458,7 @@ router.get("/view-attendance-teachers", adminAuth, async (req, res) => {
     });
   } catch (err) {
     console.error("Error in /view-attendance-teachers:", err);
-    res.status(500).send("Error loading attendance data.");
+     return res.status(500).render("HomePage/500");
   }
 });
 
@@ -493,7 +528,7 @@ router.post("/submit-attendance-teachers", adminAuth, async (req, res) => {
 
       await SalaryStatus.findOneAndUpdate(
         { teacherId, month: Number(month), year: Number(year), schoolCode },
-        { status: newStatus,paidOn: paidOnDate, schoolCode },
+        { status: newStatus, paidOn: paidOnDate, schoolCode },
         { upsert: true, new: true }
       );
 
@@ -545,7 +580,7 @@ router.post("/submit-attendance-teachers", adminAuth, async (req, res) => {
 
   } catch (err) {
     console.error("Teacher attendance save error:", err);
-    res.status(500).send("Unable to save attendance.");
+    return res.status(500).render("HomePage/500");
   }
 });
 
@@ -568,7 +603,7 @@ router.post("/update-salary-status/:teacherId", adminAuth, async (req, res) => {
     res.redirect(`/view-attendance-teachers?month=${month}&year=${year}`);
   } catch (err) {
     console.error("Salary status update error:", err);
-    res.status(500).send("Unable to update salary status.");
+    return res.status(500).render("HomePage/500");
   }
 });
 

@@ -18,7 +18,12 @@ const pricing = {
 
 // GET: login page
 router.get("/super-admin/login", (req, res) => {
-  res.render("SuperAdmin/login", { error: null });
+  try {
+    res.render("SuperAdmin/login", { error: null });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).render("HomePage/500");
+  }
 });
 
 // POST: login
@@ -44,7 +49,7 @@ router.post("/super-admin/login", async (req, res) => {
     // ✅ Fix: Purana session clear karke naya banao (Best Practice)
     req.session.regenerate((err) => {
       if (err) {
-        console.log("Session Regen Error:", err);
+        console.error("Session Regen Error:", err);
         return res.render("SuperAdmin/login", { error: "Session Error" });
       }
 
@@ -54,7 +59,7 @@ router.post("/super-admin/login", async (req, res) => {
       // ✅ Fix: Save hone ka wait karo phir redirect karo
       req.session.save((saveErr) => {
         if (saveErr) {
-          console.log("Session Save Error:", saveErr);
+          console.error("Session Save Error:", saveErr);
           return res.render("SuperAdmin/login", { error: "Save Error" });
         }
         res.redirect("/super-admin/dashboard");
@@ -62,7 +67,7 @@ router.post("/super-admin/login", async (req, res) => {
     });
 
   } catch (err) {
-    console.log("Login Error:", err);
+    console.error("Login Error:", err);
     res.render("SuperAdmin/login", {
       error: "Internal Server Error. Please try again later."
     });
@@ -71,10 +76,15 @@ router.post("/super-admin/login", async (req, res) => {
 
 // logout route
 router.get("/super-admin/logout", (req, res) => {
-  req.session.destroy((err) => {
-    if (err) console.log(err);
-    res.redirect("/login");
-  });
+  try {
+    req.session.destroy((err) => {
+      if (err) console.error(err);
+      res.redirect("/login");
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).render("HomePage/500");
+  }
 });
 
 // dashboard page
@@ -129,14 +139,19 @@ router.get("/super-admin/dashboard", superAdminAuth, async (req, res) => {
     });
 
   } catch (err) {
-    console.log(err);
-    res.send("Error loading dashboard");
+    console.error(err);
+    return res.status(500).render("HomePage/500");
   }
 });
 
 // Add school form
 router.get("/super-admin/add-school", superAdminAuth, (req, res) => {
-  res.render("SuperAdmin/addSchool");
+  try {
+    res.render("SuperAdmin/addSchool");
+  } catch (err) {
+    console.error(err);
+    return res.status(500).render("HomePage/500");
+  }
 });
 
 
@@ -198,15 +213,20 @@ router.post("/super-admin/add-school", superAdminAuth, async (req, res) => {
     res.send(`School Created! Code: ${schoolCode}`);
 
   } catch (err) {
-    console.log(err);
-    res.send("Error creating school");
+    console.error(err);
+    return res.status(500).render("HomePage/500");
   }
 });
 
 // all schools list
 router.get("/super-admin/schools", superAdminAuth, async (req, res) => {
-  const schools = await School.find();
-  res.render("SuperAdmin/schoolsList", { schools });
+  try {
+    const schools = await School.find();
+    res.render("SuperAdmin/schoolsList", { schools });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).render("HomePage/500");
+  }
 });
 
 
@@ -252,7 +272,7 @@ router.post("/super-admin/renew-school/:id", superAdminAuth, async (req, res) =>
 
   } catch (err) {
     console.error(err);
-    res.status(500).send("Error renewing subscription");
+    return res.status(500).render("HomePage/500");
   }
 });
 
@@ -263,7 +283,8 @@ router.post('/super-admin/toggle-status/:id', superAdminAuth, async (req, res) =
     await School.findByIdAndUpdate(req.params.id, { status: status });
     res.sendStatus(200);
   } catch (err) {
-    res.status(500).send("Error updating status");
+    console.error(err);
+    return res.status(500).render("HomePage/500");
   }
 });
 
@@ -288,7 +309,8 @@ router.delete('/super-admin/delete-school/:id', superAdminAuth, async (req, res)
 
     res.sendStatus(200);
   } catch (err) {
-    res.status(500).send("Error deleting school");
+    console.error(err);
+    return res.status(500).render("HomePage/500");
   }
 });
 
@@ -304,15 +326,20 @@ router.get("/super-admin/transaction-history/:id", superAdminAuth, async (req, r
       history
     });
   } catch (err) {
-    console.log(err);
-    res.send("Error loading history");
+    console.error(err);
+    return res.status(500).render("HomePage/500");
   }
 });
 
 // 1.Super admin setting page
 router.get("/super-admin/settings", superAdminAuth, async (req, res) => {
   // Check if logged in (middleware use karein yahan)
-  res.render("SuperAdmin/superAdminSetting", { error: null, success: null });
+  try {
+    res.render("SuperAdmin/superAdminSetting", { error: null, success: null });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).render("HomePage/500");
+  }
 });
 
 // 2. Password Update Karein
@@ -321,8 +348,8 @@ router.post("/super-admin/update-password", superAdminAuth, async (req, res) => 
     const { currentPassword, newPassword } = req.body;
 
     // Aapne jo username create kiya tha "harshitagarg"
-   const admin = await SuperAdmin.findById(req.session.superAdminId);
-   
+    const admin = await SuperAdmin.findById(req.session.superAdminId);
+
     // 1. Purana password check karein
     const isMatch = await bcrypt.compare(currentPassword, admin.password);
     if (!isMatch) {
@@ -346,11 +373,8 @@ router.post("/super-admin/update-password", superAdminAuth, async (req, res) => 
     });
 
   } catch (err) {
-    console.log(err);
-    res.render("SuperAdmin/superAdminSetting", {
-      error: "Something went wrong. Try Again",
-      success: null
-    });
+    console.error(err);
+    return res.status(500).render("HomePage/500");
   }
 });
 

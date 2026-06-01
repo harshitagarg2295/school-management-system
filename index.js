@@ -104,6 +104,23 @@ app.get('/refund-policy', (req, res) => res.render('HomePage/refund-policy'));
 app.get('/login', (req, res) => res.render('HomePage/login'));
 app.get('/try-demo', (req, res) => res.render('HomePage/demo-access'));
 
+app.get("/app", (req, res) => {
+
+  if (req.session.adminId) {
+    return res.redirect("/adminDashboard");
+  }
+
+  if (req.session.teacherId) {
+    return res.redirect("/teacherDashboard");
+  }
+
+  if (req.session.studentId) {
+    return res.redirect("/studentDashboard");
+  }
+
+  return res.redirect("/login");
+});
+
 // Login for all (student, teacher & admin)
 
 const Teacher = require("./models/TeacherSchema");

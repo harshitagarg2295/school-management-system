@@ -8,57 +8,72 @@ const { adminAuth } = require("../../middlewares/auth");
 
 // --- 1. Common GET Route for Timetable View (Filter Logic and Data Loading) ---
 router.get("/get-timetable-view/:type/:className/:period", adminAuth, async (req, res) => {
-    const schoolCode = req.session.schoolCode;
-    const { type, className, period } = req.params;
+    try {
+        const schoolCode = req.session.schoolCode;
+        const { type, className, period } = req.params;
 
-    const classList = await Student.distinct("class", { schoolCode });
+        const classList = await Student.distinct("class", { schoolCode });
 
-    // Fetch saved timetable first
-    let savedTimetable = null;
-    if (className !== 'null' && period !== 'null') {
-        savedTimetable = await Timetable.findOne({
-            class: className,
+        // Fetch saved timetable first
+        let savedTimetable = null;
+        if (className !== 'null' && period !== 'null') {
+            savedTimetable = await Timetable.findOne({
+                class: className,
+                type,
+                period,
+                schoolCode   // 🔥 add
+            });
+        }
+
+        // Prepare subjects list
+        let subjects = className === 'null' ? [] : getSubjectsForClass(className);
+
+        // If a timetable exists, sort it by date and reorder subjects
+        if (savedTimetable && savedTimetable.subjects.length > 0) {
+            savedTimetable.subjects.sort((a, b) => new Date(a.date) - new Date(b.date));
+            subjects = savedTimetable.subjects.map(s => s.name);
+        }
+
+        // Handle selection states
+        const selectedClass = className === 'null' ? "" : className;
+        const selectedPeriod = period === 'null' ? "" : period;
+
+        res.render("Admin/timetable", {
             type,
-            period,
-            schoolCode   // 🔥 add
+            classList,
+            selectedClass,
+            selectedPeriod,
+            subjects,
+            savedTimetable,
+            moment
         });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).render("HomePage/500");
     }
-
-    // Prepare subjects list
-    let subjects = className === 'null' ? [] : getSubjectsForClass(className);
-
-    // If a timetable exists, sort it by date and reorder subjects
-    if (savedTimetable && savedTimetable.subjects.length > 0) {
-        savedTimetable.subjects.sort((a, b) => new Date(a.date) - new Date(b.date));
-        subjects = savedTimetable.subjects.map(s => s.name);
-    }
-
-    // Handle selection states
-    const selectedClass = className === 'null' ? "" : className;
-    const selectedPeriod = period === 'null' ? "" : period;
-
-    res.render("Admin/timetable", {
-        type,
-        classList,
-        selectedClass,
-        selectedPeriod,
-        subjects,
-        savedTimetable,
-        moment
-    });
 });
 
 
 // --- 2. Existing Initial GET Routes Update (No Default Class) ---
 
 router.get("/add-timetable/monthly-test", adminAuth, async (req, res) => {
-    const schoolCode = req.session.schoolCode;
-    return res.redirect(`/get-timetable-view/monthly/null/null`);
+    try {
+        const schoolCode = req.session.schoolCode;
+        return res.redirect(`/get-timetable-view/monthly/null/null`);
+    } catch (err) {
+        console.error(err);
+        return res.status(500).render("HomePage/500");
+    }
 });
 
 router.get("/add-timetable/exams", adminAuth, async (req, res) => {
-    const schoolCode = req.session.schoolCode;
-    return res.redirect(`/get-timetable-view/exams/null/null`);
+    try {
+        const schoolCode = req.session.schoolCode;
+        return res.redirect(`/get-timetable-view/exams/null/null`);
+    } catch (err) {
+        console.error(err);
+        return res.status(500).render("HomePage/500");
+    }
 });
 
 

@@ -173,7 +173,7 @@ router.post("/bank-setup", adminAuth, async (req, res) => {
                 rzpErr.message.includes("Route feature not enabled") ||
                 errorDesc.includes("feature is not enabled")
             ) {
-                const dummyAccountId = "acc_TEST" + Math.floor(100000 + Math.random() * 900000);
+              const dummyAccountId = "acc_TEST" + Math.floor(1000000000 + Math.random() * 9000000000);
 
                 await AdminProfile.findOneAndUpdate(
                     { schoolCode },

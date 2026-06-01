@@ -63,6 +63,7 @@ async function updateStudentPayment({ student, parsedInstallments, paymentId, sc
 router.post("/create-order", studentAuth, async (req, res) => {
 
   const { installments, schoolAccountId } = req.body;
+  console.log("schoolAccountId:", schoolAccountId, "Length:", schoolAccountId.length);
 
   if (!installments || !schoolAccountId) {
     return res.status(400).json({

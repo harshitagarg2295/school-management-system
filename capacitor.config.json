@@ -3,7 +3,7 @@
   "appName": "School App",
   "webDir": "public",
   "server": {
-    "url": "https://school-management-system-trft.onrender.com",
+     "url": "https://school-management-system-trft.onrender.com/app",
     "cleartext": true
   }
 }

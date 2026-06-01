@@ -14,10 +14,15 @@ const { cloudinary } = require("../../config/cloudinaryConfig");
 
 // List all staffs
 router.get("/staff-menu", adminAuth, async (req, res) => {
-    const schoolCode = req.session.schoolCode;
-    const admin = await AdminNotification.findOne({ schoolCode }) || { notifications: [] };
-    const staffs = await Staff.find({ schoolCode }).sort({ name: 1 });
-    res.render("Admin/staffs_list", { staffs, admin });
+    try {
+        const schoolCode = req.session.schoolCode;
+        const admin = await AdminNotification.findOne({ schoolCode }) || { notifications: [] };
+        const staffs = await Staff.find({ schoolCode }).sort({ name: 1 });
+        res.render("Admin/staffs_list", { staffs, admin });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).render("HomePage/500");
+    }
 });
 
 const toTitleCase = (str) => {
@@ -29,32 +34,42 @@ const toTitleCase = (str) => {
 
 // Add staff
 router.post("/add-staff", adminAuth, async (req, res) => {
-    const schoolCode = req.session.schoolCode;
+    try {
+        const schoolCode = req.session.schoolCode;
 
-    const { name, empId, category, salary, address, phone } = req.body;
+        const { name, empId, category, salary, address, phone } = req.body;
 
-    const testaff = new Staff({
-        name: toTitleCase(name),
-        category: toTitleCase(category),
-        address: toTitleCase(address),
-        salary: salary,
-        phone: phone,
-        empId: empId?.toUpperCase() || "",
-        schoolCode
-    });
+        const testaff = new Staff({
+            name: toTitleCase(name),
+            category: toTitleCase(category),
+            address: toTitleCase(address),
+            salary: salary,
+            phone: phone,
+            empId: empId?.toUpperCase() || "",
+            schoolCode
+        });
 
-    const savedStaff = await testaff.save();
-    return res.redirect(`/staff/${savedStaff._id}`);
+        const savedStaff = await testaff.save();
+        return res.redirect(`/staff/${savedStaff._id}`);
+    } catch (err) {
+        console.error(err);
+        return res.status(500).render("HomePage/500");
+    }
 });
 
 // Delete staff
 router.post("/delete-staff/:id", adminAuth, async (req, res) => {
-    const schoolCode = req.session.schoolCode;
-    await Staff.findOneAndDelete({
-        _id: req.params.id,
-        schoolCode
-    });
-    res.redirect("/staff-menu");
+    try {
+        const schoolCode = req.session.schoolCode;
+        await Staff.findOneAndDelete({
+            _id: req.params.id,
+            schoolCode
+        });
+        res.redirect("/staff-menu");
+    } catch (err) {
+        console.error(err);
+        return res.status(500).render("HomePage/500");
+    }
 });
 
 router.get("/staff/:id", adminAuth, async (req, res) => {
@@ -73,8 +88,8 @@ router.get("/staff/:id", adminAuth, async (req, res) => {
         res.render("Admin/staffProfile", { staff });
 
     } catch (err) {
-        console.log(err);
-        res.send("Error loading staff profile");
+        console.error(err);
+        return res.status(500).render("HomePage/500");
     }
 });
 
@@ -119,7 +134,7 @@ router.post("/edit-staff/:id", adminAuth, async (req, res) => {
         res.redirect(`/staff/${req.params.id}`);
     } catch (err) {
         console.error("Update Error:", err);
-        res.status(500).send("Error updating staff");
+        return res.status(500).render("HomePage/500");
     }
 });
 
@@ -127,7 +142,7 @@ router.post("/edit-staff/:id", adminAuth, async (req, res) => {
 router.post("/staff/upload-image/:id", adminAuth, async (req, res) => {
     try {
         const base64 = req.body.croppedImage;
-        
+
         // Agar image data nahi mila toh wapas bhej do
         if (!base64 || base64.trim() === "") {
             return res.redirect(`/staff/${req.params.id}`);
@@ -159,25 +174,30 @@ router.post("/staff/upload-image/:id", adminAuth, async (req, res) => {
 
     } catch (err) {
         console.error("Error uploading staff image to Cloudinary:", err);
-        res.status(500).send("Error uploading image");
+        return res.status(500).render("HomePage/500");
     }
 });
 
 
 // 👉 Declare Holiday (for tseaff)
 router.post("/mark-staff-holiday", adminAuth, async (req, res) => {
-    const schoolCode = req.session.schoolCode;
-    const { date, reason } = req.body;
-    let holidayDate = moment.utc(date, "YYYY-MM-DD").startOf("day").toDate();
+    try {
+        const schoolCode = req.session.schoolCode;
+        const { date, reason } = req.body;
+        let holidayDate = moment.utc(date, "YYYY-MM-DD").startOf("day").toDate();
 
-    let existing = await Holiday.findOne({ date: holidayDate, role: "staff", schoolCode });
-    if (existing) {
-        existing.reason = reason;
-        await existing.save();
-    } else {
-        await Holiday.create({ role: "staff", date: holidayDate, reason, schoolCode });
+        let existing = await Holiday.findOne({ date: holidayDate, role: "staff", schoolCode });
+        if (existing) {
+            existing.reason = reason;
+            await existing.save();
+        } else {
+            await Holiday.create({ role: "staff", date: holidayDate, reason, schoolCode });
+        }
+        res.redirect("/view-attendance-staffs");
+    } catch (err) {
+        console.error(err);
+        return res.status(500).render("HomePage/500");
     }
-    res.redirect("/view-attendance-staffs");
 });
 
 
@@ -343,7 +363,7 @@ router.get("/view-attendance-staffs", adminAuth, async (req, res) => {
         });
     } catch (err) {
         console.error("Error in /view-attendance-staffs:", err);
-        res.status(500).send("Error loading attendance data.");
+        return res.status(500).render("HomePage/500");
     }
 });
 
@@ -443,7 +463,7 @@ router.post("/submit-attendance-staffs", adminAuth, async (req, res) => {
             loopUpToDay = parseInt(currentMoment.format("D"));
         }
 
-       for (let s of staffList) {
+        for (let s of staffList) {
             const currentStatus = s.salaryStatus?.get(yearKey)?.get(monthKey) || "pending";
 
             if (currentStatus === "paid") {
@@ -506,7 +526,7 @@ router.post("/submit-attendance-staffs", adminAuth, async (req, res) => {
 
     } catch (err) {
         console.error("Staff attendance save error:", err);
-        res.status(500).send("Unable to save staff attendance.");
+        return res.status(500).render("HomePage/500");
     }
 });
 
@@ -528,7 +548,7 @@ router.post("/update-staff-salary/:staffId", adminAuth, async (req, res) => {
         if (status === "pending") {
             const uniqueKey = `staff_${staffId}_${year}_${month}`;
             await Expense.findOneAndDelete({ uniqueKey, schoolCode });
-        }else if (status === "paid") {
+        } else if (status === "paid") {
             const s = await Staff.findOne({ _id: staffId, schoolCode });
             if (s) {
                 const daysInMonth = moment(`${year}-${month}`, "YYYY-MM").daysInMonth();
@@ -621,7 +641,8 @@ router.post("/update-staff-salary/:staffId", adminAuth, async (req, res) => {
         res.redirect(`/view-attendance-staffs?month=${month}&year=${year}`);
     } catch (error) {
         console.error("Error in single row salary update:", error);
-        res.status(500).send("Internal Server Error");
+        return res.status(500).render("HomePage/500");
+
     }
 });
 

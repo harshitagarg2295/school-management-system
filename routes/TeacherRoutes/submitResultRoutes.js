@@ -111,51 +111,52 @@ router.get("/teachers/submit-result", teacherAuth, async (req, res) => {
       teacherClasses
     });
   } catch (err) {
-    console.error("Error in GET /teachers/submit-result:", err);
-    res.status(500).send("Error loading page");
+    console.error(err);
+    return res.status(500).render("HomePage/500");
   }
 });
 
 
 
 // ---------- POST ----------
-router.post("/teachers/submit-result",teacherAuth, async (req, res) => {
-  const schoolCode = req.session.schoolCode;
-  const { classFilter, examType, examName, outOf, year, marks } = req.body;
-  const teacherId = req.session.teacherId;
+router.post("/teachers/submit-result", teacherAuth, async (req, res) => {
+  try {
+    const schoolCode = req.session.schoolCode;
+    const { classFilter, examType, examName, outOf, year, marks } = req.body;
+    const teacherId = req.session.teacherId;
 
-  if (!examType || !examName) {
-    return res.send(`<script>alert("Please select exam type!"); window.history.back();</script>`);
+    if (!examType || !examName) {
+      return res.send(`<script>alert("Please select exam type!"); window.history.back();</script>`);
+    }
+
+    for (const studentId of Object.keys(marks || {})) {
+      const studentMarks = marks[studentId];
+      const marksMap = {};
+      Object.entries(studentMarks).forEach(([sub, val]) => {
+        const n = val === "" ? null : Number(val);
+        if (n !== null && !isNaN(n)) marksMap[sub] = n;
+      });
+
+      // पहले का result निकालो
+      const existing = await StudentResult.findOne({
+        studentId, class: classFilter, examType, examName, year, schoolCode
+      });
+
+      let newMarks = { ...(existing?.marks?.toObject?.() || {}) };
+      newMarks = { ...newMarks, ...marksMap };   // merge करो
+
+      await StudentResult.findOneAndUpdate(
+        { studentId, class: classFilter, examType, examName, year, schoolCode },
+        { $set: { marks: newMarks, outOf, teacherId, updatedAt: new Date(), schoolCode } },
+        { upsert: true, new: true }
+      );
+    }
+    res.redirect(`/teachers/submit-result?classFilter=${classFilter}&type=${examType}&sub=${examName}&year=${year}`);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).render("HomePage/500");
   }
-
-  for (const studentId of Object.keys(marks || {})) {
-    const studentMarks = marks[studentId];
-    const marksMap = {};
-    Object.entries(studentMarks).forEach(([sub, val]) => {
-      const n = val === "" ? null : Number(val);
-      if (n !== null && !isNaN(n)) marksMap[sub] = n;
-    });
-
-    // पहले का result निकालो
-    const existing = await StudentResult.findOne({
-      studentId, class: classFilter, examType, examName, year, schoolCode
-    });
-
-    let newMarks = { ...(existing?.marks?.toObject?.() || {}) };
-    newMarks = { ...newMarks, ...marksMap };   // merge करो
-
-    await StudentResult.findOneAndUpdate(
-      { studentId, class: classFilter, examType, examName, year, schoolCode },
-      { $set: { marks: newMarks, outOf, teacherId, updatedAt: new Date(), schoolCode } },
-      { upsert: true, new: true }
-    );
-  }
-  res.redirect(`/teachers/submit-result?classFilter=${classFilter}&type=${examType}&sub=${examName}&year=${year}`);
-
 });
 
 
-module.exports = {
-  router,
-  getSubjectsForClass   // ✅ export the helper
-};
+module.exports = { router, getSubjectsForClass };   // ✅ export the helper
