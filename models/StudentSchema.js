@@ -30,7 +30,8 @@ const studentSchema = new mongoose.Schema({
       amount: Number,
       status: String,
       mode: String,
-      paymentDate: Date
+      paymentDate: Date,
+      paymentId: { type: String, default: "" }
     }
   ],
 }, {

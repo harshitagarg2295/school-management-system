@@ -162,7 +162,8 @@ router.get("/adminDashboard", adminAuth, async (req, res) => {
                 fundDoc = await Fund.create({
                     key: "fund",
                     value: newValue,
-                    date: new Date()
+                    date: new Date(),
+                    schoolCode
                 });
             }
 

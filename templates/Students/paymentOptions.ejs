@@ -411,7 +411,7 @@
 
             if (verifyResult.success) {
 
-              window.location.href = `/payment-status?status=success&payment_id=${rzpResponse.razorpay_payment_id}&order_id=${order.id}&amount=${schoolBaseFee}&installments=${installmentsData}`;
+              window.location.href = `/payment-status?status=success&payment_id=${rzpResponse.razorpay_payment_id}&order_id=${order.id}&amount=${schoolBaseFee}&installments=${encodeURIComponent(installmentsData)}`;
             } else {
               alert("Verification Failed: " + verifyResult.message);
               window.location.href = `/payment-status?status=failed&message=${verifyResult.message}`;

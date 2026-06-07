@@ -129,7 +129,7 @@ const schoolCode = req.session.schoolCode;
 router.get("/logout", anyAuth, (req, res) => {
 
     req.session.destroy(() => {
-        res.clearCookie("connect.sid");
+        res.clearCookie("school.sid");
         res.redirect("/"); // नया login page
     });
 

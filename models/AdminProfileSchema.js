@@ -26,14 +26,6 @@ const profileSchema = new mongoose.Schema({
     password: String,
     image: String,
 
-    // Payment Mode
-
-    paymentMode: {
-        type: String,
-        enum: ["test", "live"],
-        default: "test"
-    },
-
     // Razorpay Integration Fields
     schoolAccountId: {
         type: String,

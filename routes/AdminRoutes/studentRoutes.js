@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const Student = require("../../models/StudentSchema");
 const AdminNotification = require("../../models/AdminNotificationSchema");
+const Holiday = require("../../models/Holiday");
+const Attendance = require("../../models/StudentAttendance");
 const { adminAuth } = require("../../middlewares/auth");
 const bcrypt = require("bcrypt")
 const moment = require("moment-timezone");
@@ -97,7 +99,6 @@ router.post("/add-student", adminAuth, async (req, res) => { //add student
         const cleanId = id.trim().toUpperCase();
 
         const rawPassword = DOB.replace(/-/g, "") + "@" + cleanId;
-        console.log("🔥 GENERATED PASSWORD:", rawPassword);
 
         // 🔐 HASH PASSWORD (IMPORTANT) store password in secure form
         const hashedPassword = await bcrypt.hash(rawPassword, 10);
@@ -320,9 +321,6 @@ router.post("/student/upload-image/:id", adminAuth, async (req, res) => {
 
 
 // Attandance for students + holidays
-
-const Holiday = require("../../models/Holiday");
-const Attendance = require("../../models/StudentAttendance");
 
 
 router.get("/view-attendance-students", adminAuth, async (req, res) => {

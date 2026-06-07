@@ -116,7 +116,7 @@ router.get("/school_fees_collection", adminAuth, async (req, res) => {
 
     const expenses = await Expense.find({
       schoolCode,
-      date: {
+      paymentDate: {
         $gte: new Date(`${selectedYear}-04-01`),
         $lte: new Date(`${selectedYear + 1}-03-31`)
       }

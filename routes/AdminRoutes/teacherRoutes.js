@@ -72,7 +72,6 @@ router.post("/add-teacher", adminAuth, async (req, res) => {
 
     // 👉 password
     const rawPassword = `${name2}@${dobPart}${last2}`;
-    console.log("🔥 GENERATED PASSWORD:", rawPassword);
 
     // 🔐 HASH PASSWORD
     const hashedPassword = await bcrypt.hash(rawPassword, 10);

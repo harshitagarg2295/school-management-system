@@ -1,10 +1,7 @@
 const express = require("express");
 const router = express.Router();
-
 const Razorpay = require("razorpay");
-
 const AdminProfile = require("../../models/AdminProfileSchema");
-
 const { adminAuth } = require("../../middlewares/auth");
 
 function getRazorpayInstance(mode) {
@@ -13,6 +10,11 @@ function getRazorpayInstance(mode) {
         key_id: mode === "live" ? process.env.RAZORPAY_LIVE_KEY_ID : process.env.RAZORPAY_TEST_KEY_ID,
         key_secret: mode === "live" ? process.env.RAZORPAY_LIVE_KEY_SECRET : process.env.RAZORPAY_TEST_KEY_SECRET
     });
+}
+
+// Yeh helper function dono files ke top pe add karo
+function getMode(schoolCode) {
+  return schoolCode === "DEMO248" ? "test" : "live";
 }
 
 // GET - Bank Setup Page
@@ -90,7 +92,8 @@ router.post("/bank-setup", adminAuth, async (req, res) => {
             });
         }
 
-        const razorpay = getRazorpayInstance(existingAdmin?.paymentMode || "test");
+        const isDemo = schoolCode === "DEMO248";
+        const razorpay = getRazorpayInstance(isDemo ? "test" : "live");
 
         let cleanStreetAddress = existingAdmin?.address?.trim();
 
@@ -173,7 +176,7 @@ router.post("/bank-setup", adminAuth, async (req, res) => {
                 rzpErr.message.includes("Route feature not enabled") ||
                 errorDesc.includes("feature is not enabled")
             ) {
-              const dummyAccountId = "acc_TEST" + Math.floor(1000000000 + Math.random() * 9000000000);
+                const dummyAccountId = "acc_TEST" + Math.floor(1000000000 + Math.random() * 9000000000);
 
                 await AdminProfile.findOneAndUpdate(
                     { schoolCode },

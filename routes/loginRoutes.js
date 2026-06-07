@@ -71,24 +71,30 @@ router.post("/login", async (req, res) => {
     // 1. School check (Subscription & Existence)
     const school = await School.findOne({ code: schoolCode.trim() });
     if (!school) {
-      return res.redirect(`/login?error=Invalid School Code`);
+      return res.redirect(`/login?error=1`);
     }
 
-    const isExpired = school.status === 'Inactive' || (school.subscriptionEnd && new Date() > school.subscriptionEnd);
-   if (isExpired) {
-    // Agar status 'Inactive' hai toh Admin ho ya Student, sab blocked!
-    if (school.status === 'Inactive') {
-        return res.render("Admin/subscriptionBlocked", { role: role.charAt(0).toUpperCase() + role.slice(1),status: school.status });
+    const isInactive = school.status === 'Inactive';
+    const isDateExpired = school.subscriptionEnd && new Date() > school.subscriptionEnd;
+
+    // Case 1: School Inactive hai - sab block (Admin bhi)
+    if (isInactive) {
+      return res.render("Admin/subscriptionBlocked", {
+        role: role.charAt(0).toUpperCase() + role.slice(1),
+        status: school.status
+      });
     }
-    
-    // Agar status Active hai par sirf DATE expire hui hai, toh Admin ko Dashboard jane do (taaki wo renew kar sake)
-    // Lekin Teacher/Student ko block kar do
-    if (role !== "admin") {
-        return res.render("Admin/subscriptionBlocked", { role: role.charAt(0).toUpperCase() + role.slice(1),
-          status: school.status
-        });
+
+    // Case 2: Sirf date expire hui (status Active) - Teacher/Student block, Admin allow
+    // Admin ko allow karte hain taaki wo andar jaake renew kar sake
+
+    if (isDateExpired && role !== "admin") {
+      return res.render("Admin/subscriptionBlocked", {
+        role: role.charAt(0).toUpperCase() + role.slice(1),
+        status: school.status
+      });
     }
-}
+
     // 2. Credential Check
     const isValid = await checkLogin(role, username, password, schoolCode, Teacher, Student);
     if (!isValid) {
@@ -106,7 +112,7 @@ router.post("/login", async (req, res) => {
     }
 
     if (!userData) {
-      return res.redirect(`/login?error=User Data Not Found`);
+      return res.redirect(`/login?error=1`);
     }
 
     // 4. 🔥 SESSION REGENERATE (Purana sab khatam)
@@ -174,8 +180,8 @@ router.post("/forgot-password", async (req, res) => {
   try {
 
     if (req.body.schoolCode === "DEMO248") {
-    return res.send("<script>alert('Forgot Password is disabled in Demo Mode'); window.history.back();</script>");
-}
+      return res.send("<script>alert('Forgot Password is disabled in Demo Mode'); window.history.back();</script>");
+    }
 
     const { role, username, dob, phone, newPassword, confirmPassword, schoolCode } = req.body;
 
@@ -262,7 +268,7 @@ router.post("/forgot-password", async (req, res) => {
 
 // --- Route to show Demo Credentials Page ---
 router.get("/try-demo", (req, res) => {
-    res.render("HomePage/demo-access", { demoCode: "DEMO248" }); 
+  res.render("HomePage/demo-access", { demoCode: "DEMO248" });
 });
 
 

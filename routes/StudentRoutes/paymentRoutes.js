@@ -1,3 +1,4 @@
+
 const express = require("express");
 const router = express.Router();
 const Razorpay = require("razorpay");
@@ -12,6 +13,10 @@ function getRazorpayInstance(mode) {
     key_id: mode === "live" ? process.env.RAZORPAY_LIVE_KEY_ID : process.env.RAZORPAY_TEST_KEY_ID,
     key_secret: mode === "live" ? process.env.RAZORPAY_LIVE_KEY_SECRET : process.env.RAZORPAY_TEST_KEY_SECRET
   });
+}
+
+function getMode(schoolCode) {
+  return schoolCode === "DEMO248" ? "test" : "live";
 }
 
 async function updateStudentPayment({ student, parsedInstallments, paymentId, schoolCode }) {
@@ -75,9 +80,7 @@ router.post("/create-order", studentAuth, async (req, res) => {
     const studentId = req.session.studentId.id;
     const schoolCode = req.session.schoolCode;
 
-    const admin = await AdminProfile.findOne({ schoolCode });
-
-    const razorpay = getRazorpayInstance(admin?.paymentMode || "test");
+    const razorpay = getRazorpayInstance(getMode(schoolCode));
 
     const student = await Student.findOne({
       _id: studentId,
@@ -133,7 +136,7 @@ router.post("/create-order", studentAuth, async (req, res) => {
         installments: JSON.stringify(installments)
       },
 
-      ...(schoolAccountId && schoolAccountId.length === 18  ?{
+      ...(schoolAccountId && schoolAccountId.startsWith("acc_") ? {
 
         transfers: [
           {
@@ -148,11 +151,13 @@ router.post("/create-order", studentAuth, async (req, res) => {
 
         : {})
     };
-    
+
 
     const order = await razorpay.orders.create(options);
-    res.json({ ...order, razorpayKey: admin?.paymentMode === "live" ? process.env.RAZORPAY_LIVE_KEY_ID : process.env.RAZORPAY_TEST_KEY_ID });
-  } catch (err) {
+    const mode = getMode(schoolCode);
+    res.json({ ...order, razorpayKey: mode === "live" ? process.env.RAZORPAY_LIVE_KEY_ID : process.env.RAZORPAY_TEST_KEY_ID });
+  }
+  catch (err) {
     console.error("Order creation error:", err);
     res.status(500).json({ error: "Order generation failed" });
   }
@@ -165,9 +170,7 @@ router.post("/verify-payment", studentAuth, async (req, res) => {
 
   try {
 
-    const admin = await AdminProfile.findOne({ schoolCode });
-
-    const razorpaySecret = admin?.paymentMode === "live" ? process.env.RAZORPAY_LIVE_KEY_SECRET : process.env.RAZORPAY_TEST_KEY_SECRET;
+    const razorpaySecret = getMode(schoolCode) === "live" ? process.env.RAZORPAY_LIVE_KEY_SECRET : process.env.RAZORPAY_TEST_KEY_SECRET;
 
     const hmac = crypto.createHmac("sha256", razorpaySecret);
     hmac.update(razorpay_order_id + "|" + razorpay_payment_id);
@@ -180,7 +183,7 @@ router.post("/verify-payment", studentAuth, async (req, res) => {
       });
     }
 
-    const razorpay = getRazorpayInstance(admin?.paymentMode || "test");
+    const razorpay = getRazorpayInstance(getMode(schoolCode));
 
     const payment = await razorpay.payments.fetch(razorpay_payment_id);
 
@@ -204,6 +207,14 @@ router.post("/verify-payment", studentAuth, async (req, res) => {
     }
 
     const parsedInstallments = typeof installments === "string" ? JSON.parse(installments) : installments;
+
+    // Duplicate payment check: agar sab installments already Paid hain toh idempotent response do
+    const alreadyPaid = parsedInstallments.every(i => {
+      return student.feeStatus[i.index]?.status === "Paid";
+    });
+    if (alreadyPaid) {
+      return res.json({ success: true, alreadyProcessed: true });
+    }
 
     const expectedAmount = parsedInstallments.reduce(
 
@@ -255,9 +266,7 @@ router.post("/razorpay-webhook", express.raw({ type: "application/json" }), asyn
 
     const schoolCode = payload.payload.payment.entity.notes.schoolCode;
 
-    const admin = await AdminProfile.findOne({ schoolCode });
-
-    const webhookSecret = admin?.paymentMode === "live" ? process.env.RAZORPAY_LIVE_WEBHOOK_SECRET : process.env.RAZORPAY_TEST_WEBHOOK_SECRET;
+    const webhookSecret = getMode(schoolCode) === "live" ? process.env.RAZORPAY_LIVE_WEBHOOK_SECRET : process.env.RAZORPAY_TEST_WEBHOOK_SECRET;
 
     const expectedSignature = crypto.createHmac("sha256", webhookSecret).update(req.body).digest("hex");
 

@@ -140,20 +140,6 @@ const settingRoutes = require("./routes/settingsRoutes");
 app.use("/", settingRoutes);
 
 
-// MongoDB connection
-const PORT = process.env.PORT || 3005;
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log("MongoDB Connected");
-
-    // ✅ Import cleanup scheduler
-    require("./cleanupNotifications");  // <- important line
-
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
-  })
-  .catch(err => console.log(err));
 
 //  <---- Admin Dashboard related routes ---->
 
@@ -290,6 +276,22 @@ app.use(paymentRoute);
 
 const studentProfileRoute = require("./routes/StudentRoutes/profileRoutes");
 app.use(studentProfileRoute);
+
+
+// MongoDB connection
+const PORT = process.env.PORT || 3005;
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log("MongoDB Connected");
+
+    // ✅ Import cleanup scheduler
+    require("./cleanupNotifications");  // <- important line
+
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  })
+  .catch(err => console.log(err));
 
 app.use((req, res) => {
 
