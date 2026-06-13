@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Fees Payment</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
     body {
@@ -255,15 +255,27 @@
     </div>
 
     <ul class="installment-list" id="installmentList">
+      <!-- Academic Fees -->
       <% selectedIndexes.forEach(i=> { %>
-        <li data-index="<%= i %>" data-amount="<%= student.feeStatus[i].amount %>"
+        <li data-type="academic" data-index="<%= i %>" data-amount="<%= student.feeStatus[i].amount %>"
           data-installment="<%= student.feeStatus[i].installment %>" data-feetype="<%= student.feeStatus[i].feeType %>">
           <span>
             <%= student.feeStatus[i].feeType %> — <%= student.feeStatus[i].installment %>
           </span>
-          <span>₹<%= student.feeStatus[i].amount %></span>
+          <span>₹<%= student.feeStatus[i].amount.toLocaleString('en-IN') %></span>
         </li>
         <% }) %>
+          <!-- Vehicle Fees -->
+          <% if (typeof selectedVehicleIndexes !=='undefined' ) { %>
+            <% selectedVehicleIndexes.forEach(i=> { %>
+              <li data-type="vehicle" data-index="<%= i %>" data-amount="<%= student.vehicleFeeStatus[i].amount %>"
+                data-installment="<%= student.vehicleFeeStatus[i].installment %>" data-feetype="Vehicle Fee">
+                <span>🚌 Vehicle — <%= student.vehicleFeeStatus[i].installment %> (<%= student.vehicleFeeStatus[i].month
+                      %>)</span>
+                <span>₹<%= student.vehicleFeeStatus[i].amount.toLocaleString('en-IN') %></span>
+              </li>
+              <% }) %>
+                <% } %>
     </ul>
 
     <div class="fee-breakdown"
@@ -302,25 +314,26 @@
 
     const selectedInstallments = [];
 
-    installmentItems.forEach((item, index) => {
+    installmentItems.forEach((item) => {
       const amount = parseInt(item.dataset.amount);
 
       schoolBaseFee += amount;
 
       selectedInstallments.push({
-        index: item.dataset.index,
+        index: parseInt(item.dataset.index),
         installment: item.dataset.installment,
         feeType: item.dataset.feetype,
-        amount: amount
+        amount: amount,
+        type: item.dataset.type   // 'academic' or 'vehicle'
       });
     });
 
-   const portalFee = parseFloat((schoolBaseFee * 0.002).toFixed(2));
+    const portalFee = parseFloat((schoolBaseFee * 0.002).toFixed(2));
     const totalAmount = schoolBaseFee + portalFee;
 
     document.getElementById("schoolBaseAmount").textContent = schoolBaseFee;
-    document.getElementById("portalFeeAmount").textContent = portalFee;
-    document.getElementById("totalAmount").textContent = totalAmount;
+    document.getElementById("portalFeeAmount").textContent = portalFee.toFixed(2);
+    document.getElementById("totalAmount").textContent = totalAmount.toFixed(2);
 
     async function startupPayment() {
 
@@ -359,7 +372,6 @@
           name: "<%= schoolName %>",
           description: "School Fees Payment",
           order_id: order.id,
-
           // If only want upi payment
           //  agr sare options chahte h to ye config wala pura block remove kr do 
           // config: {

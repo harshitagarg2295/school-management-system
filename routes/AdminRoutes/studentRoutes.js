@@ -74,7 +74,9 @@ router.post("/add-student", adminAuth, async (req, res) => { //add student
         const {
             name, id, class: studentClass, DOB, fees, phone, address, rollNo, house,
             section, gender, admissionDate, fatherName, motherName,
-            initialClass, previousSchool, bloodGroup
+            initialClass, previousSchool, bloodGroup,
+            aadharNo, samagraId, fatherOccupation, motherOccupation,
+            isVehicleAssigned, vehicleNo, driverName, driverPhone, vehicleFees
         } = req.body;
 
         const dobDate = new Date(DOB); // convert string to date object
@@ -138,6 +140,16 @@ router.post("/add-student", adminAuth, async (req, res) => { //add student
                 status: "Pending"
             }
         ];
+        // --- Installment calculation ke niche ye add karo ---
+        const totalVehicleFees = parseInt(vehicleFees) || 0;
+        const vehicleInstallmentAmount = Math.round(totalVehicleFees / 4);
+
+        const vehicleFeeArray = [
+            { installment: "1st Installment", month: "April", amount: vehicleInstallmentAmount, status: "Pending" },
+            { installment: "2nd Installment", month: "September", amount: vehicleInstallmentAmount, status: "Pending" },
+            { installment: "3rd Installment", month: "December", amount: vehicleInstallmentAmount, status: "Pending" },
+            { installment: "4th Installment", month: "February", amount: vehicleInstallmentAmount, status: "Pending" }
+        ];
 
         const student = new Student({
             schoolCode,
@@ -160,7 +172,21 @@ router.post("/add-student", adminAuth, async (req, res) => { //add student
             phone: phone,
             feeStatus: feeStatusArray,
             username,
-            password: hashedPassword
+            password: hashedPassword,
+
+            // --- NAYI PROFILE FIELDS DATABASE ME STORE ---
+            aadharNo: aadharNo || "",
+            samagraId: samagraId || "",
+            fatherOccupation: toTitleCase(fatherOccupation),
+            motherOccupation: toTitleCase(motherOccupation),
+            isVehicleAssigned: isVehicleAssigned === 'true',
+            vehicleDetails: {
+                vehicleNo: vehicleNo || "",
+                driverName: toTitleCase(driverName),
+                driverPhone: driverPhone ? Number(driverPhone) : null,
+                vehicleFees: totalVehicleFees
+            },
+            vehicleFeeStatus: vehicleFeeArray
         });
 
         const savedStudent = await student.save();
@@ -244,7 +270,9 @@ router.post("/edit-student/:id", adminAuth, async (req, res) => {
         const {
             name, id, fatherName, motherName, phone, address,
             gender, dob, admissionDate, initialClass, previousSchool,
-            rollNo, house, section, bloodGroup
+             rollNo, house, section, bloodGroup,
+            aadharNo, samagraId, fatherOccupation, motherOccupation,
+            isVehicleAssigned, vehicleNo, driverName, driverPhone, routeDetails, vehicleFees
         } = req.body;
 
         const updateData = {};
@@ -265,6 +293,37 @@ router.post("/edit-student/:id", adminAuth, async (req, res) => {
         if (admissionDate) updateData.admissionDate = new Date(admissionDate);
         if (initialClass) updateData.initialClass = initialClass.toUpperCase();
         if (previousSchool) updateData.previousSchool = toTitleCase(previousSchool);
+
+          // ✅ Aadhar & Samagra
+        if (aadharNo !== undefined) updateData.aadharNo = aadharNo.trim();
+        if (samagraId !== undefined) updateData.samagraId = samagraId.trim();
+        if (fatherOccupation !== undefined) updateData.fatherOccupation = toTitleCase(fatherOccupation);
+        if (motherOccupation !== undefined) updateData.motherOccupation = toTitleCase(motherOccupation);
+        // ✅ isVehicleAssigned — yahi bug tha! Pehle ye line thi hi nahi
+        updateData.isVehicleAssigned = isVehicleAssigned === 'true';
+        // ✅ Vehicle Details
+        const totalVehicleFees = vehicleFees ? parseInt(vehicleFees) : 0;
+        updateData.vehicleDetails = {
+            vehicleNo: vehicleNo || "",
+            driverName: toTitleCase(driverName),
+            driverPhone: driverPhone ? Number(driverPhone) : null,
+            routeDetails: routeDetails || "",
+            vehicleFees: totalVehicleFees
+        };
+        // ✅ Agar vehicle assign ho rahi hai, aur vehicleFeeStatus DB mein nahi hai toh auto-generate karo
+        if (updateData.isVehicleAssigned && totalVehicleFees > 0) {
+            const existingStudent = await Student.findOne({ _id: req.params.id, schoolCode });
+            if (existingStudent && (!existingStudent.vehicleFeeStatus || existingStudent.vehicleFeeStatus.length === 0)) {
+                const vInstallment = Math.round(totalVehicleFees / 4);
+                updateData.vehicleFeeStatus = [
+                    { installment: "1st Installment", month: "April",     amount: vInstallment, status: "Pending" },
+                    { installment: "2nd Installment", month: "September", amount: vInstallment, status: "Pending" },
+                    { installment: "3rd Installment", month: "December",  amount: vInstallment, status: "Pending" },
+                    { installment: "4th Installment", month: "February",  amount: vInstallment, status: "Pending" }
+                ];
+            }
+        }
+
         Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key]);
 
         await Student.findOneAndUpdate(

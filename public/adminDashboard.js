@@ -129,7 +129,7 @@ window.onload = function () {
                 labels: Object.keys(revenueData),
                 datasets: [{
                     data: Object.values(revenueData),
-                    backgroundColor: ['#9575CD', '#FF8A65', '#FFD54F'],
+                    backgroundColor: ['#9575CD', '#FF8A65','#4DB6AC', '#FFD54F'],
                 }],
             },
             options: {

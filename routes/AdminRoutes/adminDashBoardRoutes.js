@@ -68,11 +68,25 @@ router.get("/adminDashboard", adminAuth, async (req, res) => {
         const monthlyIncomeData = new Array(12).fill(0);
         const monthlyExpenseData = new Array(12).fill(0);
 
-        // Income
-        const allFees = await Student.find({ schoolCode }, { feeStatus: 1 });
+        // Income — Academic + Vehicle fees
+        const allFees = await Student.find({ schoolCode }, { feeStatus: 1, vehicleFeeStatus: 1, isVehicleAssigned: 1 });
+
         allFees.forEach(student => {
+            // Academic fees
             if (Array.isArray(student.feeStatus)) {
                 student.feeStatus.forEach(fee => {
+                    if (fee.paymentDate && fee.status.toLowerCase() === "paid") {
+                        const d = new Date(fee.paymentDate);
+                        if (d >= start && d <= end) {
+                            const index = d.getMonth() >= 3 ? d.getMonth() - 3 : d.getMonth() + 9;
+                            monthlyIncomeData[index] += fee.amount;
+                        }
+                    }
+                });
+            }
+             // ✅ Vehicle fees bhi line chart mein add karo
+            if (student.isVehicleAssigned && Array.isArray(student.vehicleFeeStatus)) {
+                student.vehicleFeeStatus.forEach(fee => {
                     if (fee.paymentDate && fee.status.toLowerCase() === "paid") {
                         const d = new Date(fee.paymentDate);
                         if (d >= start && d <= end) {
@@ -113,13 +127,18 @@ router.get("/adminDashboard", adminAuth, async (req, res) => {
 
         let admissionIncome = 0;
         let feesIncome = 0;
+        let vehicleIncome = 0;
 
         const students = await Student.find({
             schoolCode,
-            "feeStatus.paymentDate": { $gte: start, $lte: end }
+            $or: [
+                { "feeStatus.paymentDate": { $gte: start, $lte: end } },
+                { "vehicleFeeStatus.paymentDate": { $gte: start, $lte: end } }
+            ]
         });
 
         students.forEach(stud => {
+              // Academic fees
             if (stud.feeStatus && Array.isArray(stud.feeStatus)) {
                 stud.feeStatus.forEach(fee => {
                     if (
@@ -132,6 +151,18 @@ router.get("/adminDashboard", adminAuth, async (req, res) => {
                         } else {
                             feesIncome += fee.amount;
                         }
+                    }
+                });
+            }
+             // ✅ Vehicle fees pie chart mein alag slice
+            if (stud.isVehicleAssigned && Array.isArray(stud.vehicleFeeStatus)) {
+                stud.vehicleFeeStatus.forEach(fee => {
+                    if (
+                        fee.status.toLowerCase() === "paid" &&
+                        fee.paymentDate >= start &&
+                        fee.paymentDate <= end
+                    ) {
+                        vehicleIncome += fee.amount;
                     }
                 });
             }
@@ -182,13 +213,14 @@ router.get("/adminDashboard", adminAuth, async (req, res) => {
         const revenueData = {
             Admission: admissionIncome,
             Fees: feesIncome,
+            Vehicle: vehicleIncome,
             Fund: fundValue
         };
 
         // Check if data exists
         const hasIncome = monthlyIncomeData.some(val => val > 0);
         const hasExpense = monthlyExpenseData.some(val => val > 0);
-        const hasRevenue = (admissionIncome > 0 || feesIncome > 0 || fundValue > 0);
+         const hasRevenue = (admissionIncome > 0 || feesIncome > 0 || vehicleIncome > 0 || fundValue > 0);
 
         const noData = !(hasIncome || hasExpense || hasRevenue); //flag for fund input
 

@@ -26,6 +26,7 @@ router.get("/school_fees_collection", adminAuth, async (req, res) => {
     const monthlyCollection = new Array(12).fill(0);
 
     allStudents.forEach(student => {
+      // Academic fees
       student.feeStatus.forEach(fee => {
         if (fee.status === "Paid" && fee.paymentDate) {
           const date = new Date(fee.paymentDate);
@@ -41,6 +42,22 @@ router.get("/school_fees_collection", adminAuth, async (req, res) => {
           }
         }
       });
+
+      // ✅ Vehicle fees bhi graph mein shamil karo
+      if (student.isVehicleAssigned && Array.isArray(student.vehicleFeeStatus)) {
+        student.vehicleFeeStatus.forEach(fee => {
+          if (fee.status === "Paid" && fee.paymentDate) {
+            const date = new Date(fee.paymentDate);
+            const jsMonth = date.getMonth();
+            const jsYear = date.getFullYear();
+            const feeFinancialYear = jsMonth >= 3 ? jsYear : jsYear - 1;
+            if (feeFinancialYear === selectedYear) {
+              const fyMonth = (jsMonth + 9) % 12;
+              monthlyCollection[fyMonth] += fee.amount;
+            }
+          }
+        });
+      }
     });
 
     let totalAmount = 0;
@@ -49,33 +66,40 @@ router.get("/school_fees_collection", adminAuth, async (req, res) => {
     let processedStudents = allStudents.map((student) => {
       let paidFees = 0;
 
-      // Calculate paid fees for current fianancial year
+      // Academic fees paid this FY
       student.feeStatus.forEach((fee) => {
-        // if (fee.status === "Paid" && fee.feeType !== "Admission Fee") {
-        //   paidFees += fee.amount;
-        // }
-        if (
-          fee.status === "Paid" && fee.paymentDate) {
+        if (fee.status === "Paid" && fee.paymentDate) {
           const d = new Date(fee.paymentDate);
           const fy = d.getMonth() >= 3 ? d.getFullYear() : d.getFullYear() - 1;
 
-          if (fy === selectedYear) {
-            paidFees += fee.amount;
-          }
+           if (fy === selectedYear) paidFees += fee.amount;
         }
       });
 
-      const remainingFees = student.fees - paidFees;
-      // const allPaid = student.feeStatus
-      //   .filter(fee => fee.feeType !== "Admission Fee")
-      //   .every(fee => fee.status === "Paid");
+      // ✅ Vehicle fees paid this FY bhi jodo
+      if (student.isVehicleAssigned && Array.isArray(student.vehicleFeeStatus)) {
+        student.vehicleFeeStatus.forEach((fee) => {
+          if (fee.status === "Paid" && fee.paymentDate) {
+            const d = new Date(fee.paymentDate);
+            const fy = d.getMonth() >= 3 ? d.getFullYear() : d.getFullYear() - 1;
+            if (fy === selectedYear) paidFees += fee.amount;
+          }
+        });
+      }
 
-      const allPaid = student.feeStatus.every(
-        fee => fee.status === "Paid"
-      );
+      // ✅ Total amount = academic fees + vehicle fees (annual)
+      const totalStudentFees = student.fees +
+        (student.isVehicleAssigned && student.vehicleDetails ? (student.vehicleDetails.vehicleFees || 0) : 0);
 
+      const remainingFees = totalStudentFees - paidFees;
 
-      totalAmount += student.fees;
+      const academicAllPaid = student.feeStatus.every(fee => fee.status === "Paid");
+      const vehicleAllPaid = !student.isVehicleAssigned ||
+        !student.vehicleFeeStatus || student.vehicleFeeStatus.length === 0 ||
+        student.vehicleFeeStatus.every(fee => fee.status === "Paid");
+      const allPaid = academicAllPaid && vehicleAllPaid;
+
+      totalAmount += totalStudentFees;
       totalReceived += paidFees;
 
       return {
@@ -93,10 +117,18 @@ router.get("/school_fees_collection", adminAuth, async (req, res) => {
         if (fee.paymentDate) {
           const m = new Date(fee.paymentDate).getMonth();
           const y = new Date(fee.paymentDate).getFullYear();
-          const fy = m >= 3 ? y : y - 1;
-          yearSet.add(fy);
+          yearSet.add(m >= 3 ? y : y - 1);
         }
       });
+      if (student.isVehicleAssigned && Array.isArray(student.vehicleFeeStatus)) {
+        student.vehicleFeeStatus.forEach(fee => {
+          if (fee.paymentDate) {
+            const m = new Date(fee.paymentDate).getMonth();
+            const y = new Date(fee.paymentDate).getFullYear();
+            yearSet.add(m >= 3 ? y : y - 1);
+          }
+        });
+      }
     });
     const availableYears = Array.from(yearSet).sort((a, b) => b - a);
 

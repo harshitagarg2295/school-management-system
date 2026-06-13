@@ -435,6 +435,96 @@
                             <button type="submit" class="save-fee">Save Changes</button>
                         </form>
                     </div>
+
+                       <!-- ===================== VEHICLE FEES SECTION ===================== -->
+                    <% if (student.isVehicleAssigned && student.vehicleFeeStatus && student.vehicleFeeStatus.length > 0) { %>
+                    <hr>
+                    <div class="fee-structure">
+                        <div class="fee-structure-header">
+                            <h1>🚌 Vehicle Fee Structure</h1>
+                            <span style="font-size:15px; color:#555;">
+                                Annual: ₹<%= (student.vehicleDetails && student.vehicleDetails.vehicleFees) ? student.vehicleDetails.vehicleFees.toLocaleString('en-IN') : '0' %>
+                            </span>
+                        </div>
+
+                        <!-- Header (Hidden on Mobile) -->
+                        <div class="fee-header" style="background-color: rgb(91, 140, 90);">
+                            <span>Installment</span>
+                            <span>Month</span>
+                            <span>Amount</span>
+                            <span>Status</span>
+                            <span>Date</span>
+                            <span>Mode</span>
+                        </div>
+
+                        <form action="/update-vehicle-fee-status/<%= student._id %>" method="POST">
+                            <div class="fee-content">
+                                <% student.vehicleFeeStatus.forEach((fee, i) => { %>
+                                    <div class="fee-row" id="vfee-row-<%= i %>">
+
+                                        <!-- 1. Installment -->
+                                        <p><%= fee.installment %></p>
+
+                                        <!-- 2. Month -->
+                                        <p><%= fee.month %></p>
+
+                                        <!-- 3. Amount -->
+                                        <p>₹<%= fee.amount.toLocaleString('en-IN') %></p>
+
+                                        <!-- 4. Status -->
+                                        <div class="status-col">
+                                            <% if (fee.status === 'Pending') { %>
+                                                <div class="status pending" onclick="toggleVEdit('<%= i %>')" id="vstatus-display-<%= i %>">
+                                                    <span class="dot"></span> <%= fee.status %>
+                                                </div>
+                                                <select name="vehicleFeeStatus[<%= i %>][status]" class="status"
+                                                    id="vstatus-select-<%= i %>" style="display:none;">
+                                                    <option value="Pending" <%= fee.status==='Pending'?'selected':'' %>>Pending</option>
+                                                    <option value="Paid" <%= fee.status==='Paid'?'selected':'' %>>Paid</option>
+                                                </select>
+                                            <% } else { %>
+                                                <input type="hidden" name="vehicleFeeStatus[<%= i %>][status]" value="<%= fee.status %>">
+                                                <span class="status paid"><span class="dot"></span> Paid</span>
+                                            <% } %>
+                                        </div>
+
+                                        <!-- 5. Date -->
+                                        <div class="date-col">
+                                            <% if (fee.status === 'Pending') { %>
+                                                <input type="date" class="paymentDate"
+                                                    name="vehicleFeeStatus[<%= i %>][paymentDate]"
+                                                    value="<%= fee.paymentDate ? fee.paymentDate.toISOString().split('T')[0] : '' %>">
+                                            <% } else { %>
+                                                <input type="hidden" name="vehicleFeeStatus[<%= i %>][paymentDate]"
+                                                    value="<%= fee.paymentDate ? fee.paymentDate.toISOString().split('T')[0] : '' %>">
+                                                <p id="vdate-display-<%= i %>" style="margin:0; width:auto; display:inline;">
+                                                    <%= fee.paymentDate ? fee.paymentDate.toISOString().split('T')[0] : '-' %>
+                                                </p>
+                                            <% } %>
+                                        </div>
+
+                                        <!-- 6. Mode -->
+                                        <div class="mode-col">
+                                            <% if (fee.status === 'Pending') { %>
+                                                <select class="mode" name="vehicleFeeStatus[<%= i %>][mode]">
+                                                    <option value="Online" <%= fee.mode==='Online'?'selected':'' %>>Online</option>
+                                                    <option value="Offline" <%= fee.mode==='Offline'?'selected':'' %>>Offline</option>
+                                                </select>
+                                            <% } else { %>
+                                                <input type="hidden" name="vehicleFeeStatus[<%= i %>][mode]" value="<%= fee.mode %>">
+                                                <span style="margin-right:10px;"><%= fee.mode || '-' %></span>
+                                                <i class="fa-solid fa-pen-to-square edit-btn" onclick="enableVEdit('<%= i %>')"></i>
+                                            <% } %>
+                                        </div>
+
+                                    </div>
+                                <% }) %>
+                            </div>
+                            <button type="submit" class="save-fee" style="background-color: rgb(74, 154, 90);">Save Vehicle Fees</button>
+                        </form>
+                    </div>
+                    <% } %>
+
                 </div>
             </div>
     </div>
@@ -476,6 +566,47 @@
 
             <div class="mode-col">
                 <select name="feeStatus[${index}][mode]" class="mode">
+                    <option value="Online">Online</option>
+                    <option value="Offline">Offline</option>
+                </select>
+            </div>
+        `;
+    }
+
+      // ---- Vehicle Fee Toggle & Edit Functions ----
+      function toggleVEdit(index) {
+        document.getElementById(`vstatus-display-${index}`).style.display = "none";
+        document.getElementById(`vstatus-select-${index}`).style.display = "inline-flex";
+    }
+
+    function enableVEdit(index) {
+        const row = document.getElementById(`vfee-row-${index}`);
+        const dateDisplay = document.getElementById(`vdate-display-${index}`);
+        let formattedDate = '';
+
+        if (dateDisplay && dateDisplay.innerText.trim() !== '-' && dateDisplay.innerText.trim() !== '') {
+            try { formattedDate = new Date(dateDisplay.innerText).toISOString().split('T')[0]; } catch (e) { }
+        }
+
+        row.innerHTML = `
+            <p>${row.children[0].innerText}</p>
+            <p>${row.children[1].innerText}</p>
+            <p>${row.children[2].innerText}</p>
+
+            <div class="status-col">
+                <select name="vehicleFeeStatus[${index}][status]" class="status">
+                    <option value="Pending">Pending</option>
+                    <option value="Partial">Partial</option>
+                    <option value="Paid" selected>Paid</option>
+                </select>
+            </div>
+
+            <div class="date-col">
+                <input type="date" class="paymentDate" name="vehicleFeeStatus[${index}][paymentDate]" value="${formattedDate}">
+            </div>
+
+            <div class="mode-col">
+                <select name="vehicleFeeStatus[${index}][mode]" class="mode">
                     <option value="Online">Online</option>
                     <option value="Offline">Offline</option>
                 </select>

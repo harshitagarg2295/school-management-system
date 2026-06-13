@@ -11,110 +11,203 @@
   <style>
     :root {
       --primary: #2196f3;
+      --primary-light: #e3f2fd;
       --light-bg: #f4f7fb;
       --text-dark: #2c3e50;
       --border: #e0e0e0;
+      --text-muted: #7f8c8d;
       --card-bg: #ffffff;
+      --radius: 14px;
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.07);
     }
 
-    body {
+    * {
+      box-sizing: border-box;
       margin: 0;
+      padding: 0;
+    }
+
+
+    body {
       background: var(--light-bg);
       color: var(--text-dark);
+      font-family: 'Poppins', sans-serif;
     }
 
     .teacher-dash {
       display: flex;
+      min-height: 100vh;
     }
 
-    /* 🔥 MAIN CARD (same alignment as salary page) */
+
     .profile-card {
-      font-family: "Poppins", sans-serif;
-      margin: 20px 20px 20px 40px;
-      width: 83%;
-      background: var(--card-bg);
-      padding: 35px 30px;
-      border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-      transition: 0.3s;
+      flex: 1;
+      padding: 24px;
+      overflow-y: auto;
     }
 
-    /* 🔥 HEADER */
-    .profile-header {
+    .hero-card {
+      background: linear-gradient(135deg, #1976d2, #42a5f5);
+      border-radius: var(--radius);
+      padding: 28px 30px;
       display: flex;
       align-items: center;
-      gap: 25px;
-      margin-bottom: 20px;
-      border-bottom: 2px solid var(--border);
-      padding-bottom: 20px;
+      gap: 24px;
+      margin-bottom: 24px;
+      color: white;
+      box-shadow: var(--shadow);
     }
 
-    .profile-img {
-      width: 110px;
-      height: 110px;
+    .hero-avatar {
+      width: 100px;
+      height: 100px;
       border-radius: 50%;
       object-fit: cover;
-      border: 4px solid var(--primary);
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+      border: 4px solid rgba(255, 255, 255, 0.6);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+      flex-shrink: 0;
     }
 
-    .profile-header h2 {
-      margin: 0;
-      font-size: 26px;
+    .hero-info h2 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .hero-info p {
+      font-size: 14px;
+      opacity: 0.88;
+      margin-bottom: 10px;
+    }
+
+    .hero-badges {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      background: rgba(255, 255, 255, 0.22);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      border-radius: 999px;
+      padding: 4px 12px;
+      font-size: 12px;
       font-weight: 600;
     }
 
-    .profile-header p {
-      margin: 5px 0 0;
-      color: var(--primary);
-      font-weight: 500;
+    .section-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px 24px;
+      margin-bottom: 20px;
     }
 
-    /* 🔥 GRID */
-    .profile-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 18px;
-    }
 
-    /* 🔥 ITEM BOX */
-    .profile-item {
-      background: var(--light-bg);
-      padding: 10px;
-      border-radius: 10px;
-      transition: 0.3s;
-    }
-
-    .profile-item:hover {
-      background: #e3f2fd;
-      transform: translateY(-2px);
-    }
-
-    .profile-item label {
+    .section-title {
       font-size: 15px;
-      color: #555;
-      display: block;
-      margin-bottom: 5px;
+      font-weight: 700;
+      color: var(--text-dark);
+      border-left: 4px solid var(--primary);
+      padding-left: 10px;
+      margin-bottom: 18px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
-    .profile-item span {
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .info-item {
+      background: var(--light-bg);
+      border: 1px solid transparent;
+      border-radius: 10px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .info-item:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .info-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+      font-size: 15px;
+      flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.07);
+    }
+
+    .info-text label {
+      font-size: 11px;
+      color: var(--text-muted);
       font-weight: 600;
+      display: block;
+      margin-bottom: 2px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .info-text span {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-dark);
+      word-break: break-word;
     }
 
     .full-width {
       grid-column: span 2;
     }
 
-    /* 📱 Responsive */
+    .vehicle-assigned-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #e8f5e9;
+      color: #2e7d32;
+      border: 1px solid #a5d6a7;
+      border-radius: 999px;
+      padding: 4px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 14px;
+    }
+
+
     @media (max-width: 768px) {
-      .profile-card {
-        margin: 20px;
-        width: 100%;
-        padding: 20px;
+      .profile-main {
+        padding: 15px;
       }
 
-      .profile-grid {
+      .hero-card {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .hero-badges {
+        justify-content: center;
+      }
+
+      .info-grid {
         grid-template-columns: 1fr;
+      }
+
+      .full-width {
+        grid-column: span 1;
       }
     }
   </style>
@@ -131,109 +224,233 @@
       <div class="profile-card">
 
         <!-- Header -->
-        <div class="profile-header">
-
+        <div class="hero-card">
           <img
             src="<%= teacher?.photo ? (teacher.photo.startsWith('http') ? teacher.photo : '/uploads/teachers/' + teacher.photo) : '/default.png' %>"
-            class="profile-img">
-          <div>
+            class="hero-avatar">
+
+          <div class="hero-info">
             <h2>
               <%= teacher.name %>
             </h2>
             <p>
-              <%= teacher.subject %>
+              <%= teacher.subject || 'Teacher' %>
             </p>
-          </div>
 
+            <div class="hero-badges">
+              <span class="badge">
+                <i class="fa-solid fa-id-card"></i>
+                <%= teacher.empId || 'N/A' %>
+              </span>
+
+              <span class="badge">
+                <i class="fa-solid fa-book"></i>
+                <%= teacher.subject || 'N/A' %>
+              </span>
+
+              <span class="badge">
+                <i class="fa-solid fa-user-check"></i>
+                <%= teacher.classTeacher==="yes" ? "Class Teacher" : "Teacher" %>
+              </span>
+
+              <% if(teacher.bloodGroup){ %>
+                <span class="badge">
+                  <i class="fa-solid fa-droplet"></i>
+                  <%= teacher.bloodGroup %>
+                </span>
+                <% } %>
+            </div>
+          </div>
         </div>
 
         <!-- Details -->
-        <div class="profile-grid">
+        <div class="section-card">
+          <div class="section-title">
+            <i class="fa-solid fa-user"></i> &nbsp;Personal Information
+          </div>
 
-    <!-- Basic Information -->
+          <div class="info-grid">
 
-    <div class="profile-item">
-        <label>Employee ID</label>
-        <span><%= teacher.empId %></span>
-    </div>
+            <div class="info-item">
+              <div class="info-icon">
+                <i class="fa-solid fa-venus-mars"></i>
+              </div>
+              <div class="info-text">
+                <label>Gender</label>
+                <span>
+                  <%= teacher.gender || 'N/A' %>
+                </span>
+              </div>
+            </div>
 
-    <div class="profile-item">
-        <label>Username</label>
-        <span><%= teacher.username %></span>
-    </div>
+            <div class="info-item">
+              <div class="info-icon">
+                <i class="fa-solid fa-cake-candles"></i>
+              </div>
+              <div class="info-text">
+                <label>Date of Birth</label>
+                <span>
+                  <%= teacher.dob ? new Date(teacher.dob).toLocaleDateString('en-GB') : 'N/A' %>
+                </span>
+              </div>
+            </div>
 
-    <div class="profile-item">
-        <label>Phone</label>
-        <span><%= teacher.phone %></span>
-    </div>
+            <div class="info-item">
+              <div class="info-icon">
+                <i class="fa-solid fa-phone"></i>
+              </div>
+              <div class="info-text">
+                <label>Phone</label>
+                <span>
+                  <%= teacher.phone || 'N/A' %>
+                </span>
+              </div>
+            </div>
 
-    <div class="profile-item">
-        <label>Gender</label>
-        <span><%= teacher.gender || "N/A" %></span>
-    </div>
+            <div class="info-item">
+              <div class="info-icon">
+                <i class="fa-solid fa-user-gear"></i>
+              </div>
+              <div class="info-text">
+                <label>Username</label>
+                <span>
+                  <%= teacher.username || 'N/A' %>
+                </span>
+              </div>
+            </div>
 
-    <!-- Personal Information -->
+            <div class="info-item full-width">
+              <div class="info-icon">
+                <i class="fa-solid fa-location-dot"></i>
+              </div>
+              <div class="info-text">
+                <label>Address</label>
+                <span>
+                  <%= teacher.address || 'N/A' %>
+                </span>
+              </div>
+            </div>
 
-    <div class="profile-item">
-        <label>Date of Birth</label>
-        <span>
-            <%= teacher.dob ? teacher.dob.toISOString().split("T")[0] : "N/A" %>
-        </span>
-    </div>
+          </div>
+        </div>
 
-    <div class="profile-item">
-        <label>Blood Group</label>
-        <span><%= teacher.bloodGroup || "N/A" %></span>
-    </div>
+        <div class="section-card">
+          <div class="section-title">
+            <i class="fa-solid fa-briefcase"></i> &nbsp;Professional Information
+          </div>
 
-    <!-- Professional Information -->
+          <div class="info-grid">
 
-    <div class="profile-item">
-        <label>Education</label>
-        <span><%= teacher.education || "N/A" %></span>
-    </div>
+            <div class="info-item">
+              <div class="info-icon">
+                <i class="fa-solid fa-graduation-cap"></i>
+              </div>
+              <div class="info-text">
+                <label>Education</label>
+                <span>
+                  <%= teacher.education || 'N/A' %>
+                </span>
+              </div>
+            </div>
 
-    <div class="profile-item">
-        <label>Experience</label>
-        <span><%= teacher.experience || "N/A" %></span>
-    </div>
+            <div class="info-item">
+              <div class="info-icon">
+                <i class="fa-solid fa-award"></i>
+              </div>
+              <div class="info-text">
+                <label>Experience</label>
+                <span>
+                  <%= teacher.experience || 'N/A' %>
+                </span>
+              </div>
+            </div>
 
-    <div class="profile-item">
-        <label>Salary</label>
-        <span><%= teacher.salary || "N/A" %></span>
-    </div>
+            <div class="info-item">
+              <div class="info-icon">
+                <i class="fa-solid fa-indian-rupee-sign"></i>
+              </div>
+              <div class="info-text">
+                <label>Salary</label>
+                <span>₹ <%= teacher.salary || 'N/A' %></span>
+              </div>
+            </div>
 
-    <!-- Class Information -->
+            <div class="info-item">
+              <div class="info-icon">
+                <i class="fa-solid fa-book-open"></i>
+              </div>
+              <div class="info-text">
+                <label>Subject</label>
+                <span>
+                  <%= teacher.subject || 'N/A' %>
+                </span>
+              </div>
+            </div>
 
-    <div class="profile-item">
-        <label>Classes</label>
-        <span><%= teacher.class || "N/A" %></span>
-    </div>
+               <div class="info-item">
+              <div class="info-icon">
+               <i class="fa-solid fa-calendar-check"></i>
+              </div>
+              <div class="info-text">
+                <label>Joining Date</label>
+                <span><%= teacher.joiningDate ? new Date(teacher.joiningDate).toLocaleDateString('en-GB') : "N/A" %></span>
+              </div>
+            </div>
 
-    <div class="profile-item">
-        <label>Class Teacher</label>
-        <span><%= teacher.classTeacher === "yes" ? "Yes" : "No" %></span>
-    </div>
-    
-    <div class="profile-item">
-        <label>Assigned Class</label>
-        <span><%= teacher.assignedClass || "N/A" %></span>
-    </div>
+          </div>
+        </div>
+          
+        <div class="section-card">
+          <div class="section-title">
+            <i class="fa-solid fa-school"></i> &nbsp;Class Information
+          </div>
 
+          <div class="info-grid">
 
-    <!-- Address -->
+            <div class="info-item">
+              <div class="info-icon">
+                <i class="fa-solid fa-chalkboard"></i>
+              </div>
+              <div class="info-text">
+                <label>Classes</label>
+                <span>
+                  <%= teacher.class || 'N/A' %>
+                </span>
+              </div>
+            </div>
 
-    <div class="profile-item full-width">
-        <label>Address</label>
-        <span><%= teacher.address || "N/A" %></span>
-    </div>
+            <div class="info-item">
+              <div class="info-icon">
+                <i class="fa-solid fa-user-check"></i>
+              </div>
+              <div class="info-text">
+                <label>Class Teacher</label>
+                <span>
+                  <%= teacher.classTeacher==="yes" ? "Yes" : "No" %>
+                </span>
+              </div>
+            </div>
 
-</div>
+            <div class="info-item full-width">
+              <div class="info-icon">
+                <i class="fa-solid fa-building"></i>
+              </div>
+              <div class="info-text">
+                <label>Assigned Class</label>
+                <span>
+                  <%= teacher.assignedClass || 'N/A' %>
+                </span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
 
       </div>
 
   </div>
-<script src="/backButton.js"></script>
+  <script src="/backButton.js"></script>
 </body>
 
 </html>

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SchoolFlow Navbar</title>
+    <title>VidhyaLitee Navbar</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <style>
         :root {
@@ -43,18 +43,29 @@
 
         /* Logo Style */
         .logo a {
-            font-size: 24px;
-            font-weight: 800;
-            color: var(--dark-color);
-            text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 10px;
-            white-space: nowrap;
+            gap: 12px;
+            text-decoration: none;
+            color: #0f172a;
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.8px;
         }
 
-        .logo span {
-            color: var(--primary-color);
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: #2563eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-icon i {
+            color: white;
+            font-size: 20px;
         }
 
         /* Nav Links */
@@ -68,11 +79,13 @@
         /* Desktop Optimization (901px to 1100px) to prevent layout break */
         @media (min-width: 901px) and (max-width: 1100px) {
             .nav {
-                gap: 14px; 
+                gap: 14px;
             }
+
             .nav a {
                 font-size: 14px !important;
             }
+
             .login-btn {
                 padding: 8px 18px !important;
             }
@@ -116,6 +129,7 @@
                 opacity: 0;
                 transform: translateY(10px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -180,12 +194,14 @@
                 height: calc(100vh - 80px);
                 background: white;
                 flex-direction: column;
-                padding: 25px 20px; /* Padding kam kar di aur gap tight kiya */
-                gap: 12px;          /* Elements ke beech ka gap 25px se ghatakar 12px kiya */
+                padding: 25px 20px;
+                /* Padding kam kar di aur gap tight kiya */
+                gap: 12px;
+                /* Elements ke beech ka gap 25px se ghatakar 12px kiya */
                 transition: 0.4s ease-in-out;
                 text-align: center;
                 overflow-y: auto;
-                box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+                box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
             }
 
             .nav.active {
@@ -198,7 +214,8 @@
 
             .nav a {
                 display: block;
-                padding: 6px 0; /* Links ka vertical space tight kar diya */
+                padding: 6px 0;
+                /* Links ka vertical space tight kar diya */
                 font-size: 16px;
             }
 
@@ -230,11 +247,11 @@
                 display: block;
             }
 
-            .dropdown > a i {
+            .dropdown>a i {
                 transition: 0.3s;
             }
 
-            .dropdown.active > a i {
+            .dropdown.active>a i {
                 transform: rotate(180deg);
             }
         }
@@ -246,8 +263,10 @@
     <nav class="navbar">
         <div class="logo">
             <a href="/">
-                <i class="fa-solid fa-rocket" style="color: #2563eb;"></i>
-                School<span>Flow</span>
+                <div class="logo-icon">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                VidhyaLitee
             </a>
         </div>
 

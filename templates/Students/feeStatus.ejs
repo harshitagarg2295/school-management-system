@@ -243,6 +243,42 @@
             text-align: center;
             margin-top: 10px;
         }
+
+        .vfee-row p:nth-child(1)::before {
+            content: "Installment :";
+            font-weight: bold;
+            color: #555;
+        }
+
+        .vfee-row p:nth-child(2)::before {
+            content: "Month :";
+            font-weight: bold;
+            color: #555;
+        }
+
+        .vfee-row p:nth-child(3)::before {
+            content: "Amount :";
+            font-weight: bold;
+            color: #555;
+        }
+
+        .vfee-row p:nth-child(4)::before {
+            content: "Status :";
+            font-weight: bold;
+            color: #555;
+        }
+
+        .vfee-row p:nth-child(5)::before {
+            content: "Date :";
+            font-weight: bold;
+            color: #555;
+        }
+
+        .vfee-row p:nth-child(6)::before {
+            content: "Mode :";
+            font-weight: bold;
+            color: #555;
+        }
     }
 
     @media(max-width: 550px) {
@@ -338,9 +374,62 @@
                             <% }) %>
                     </div>
                 </div>
+                <!-- ===== VEHICLE FEES SECTION ===== -->
+                <% if (student.isVehicleAssigned && student.vehicleFeeStatus && student.vehicleFeeStatus.length> 0) { %>
+                    <hr>
+                    <div class="fee-structure">
+                        <div class="fee-structure-header">
+                            <h1>🚌 Vehicle Fee Structure</h1>
+                            <span style="font-size:15px; color:#2e6b4f; font-weight:600;">
+                                Annual: ₹<%= (student.vehicleDetails && student.vehicleDetails.vehicleFees) ?
+                                    student.vehicleDetails.vehicleFees.toLocaleString('en-IN') : '0' %>
+                            </span>
+                        </div>
+                        <div class="fee-header" style="background-color: rgb(74, 154, 90);">
+                            <span>Installment</span>
+                            <span>Month</span>
+                            <span>Amount</span>
+                            <span>Status</span>
+                            <span>Date of Payment</span>
+                            <span>Mode</span>
+                        </div>
+                        <div class="fee-content">
+                            <% student.vehicleFeeStatus.forEach((fee, i)=> { %>
+                                <div class="fee-row vfee-row" id="vfee-row-<%= i %>">
+                                    <p>
+                                        <%= fee.installment %>
+                                    </p>
+                                    <p>
+                                        <%= fee.month %>
+                                    </p>
+                                    <p>₹<%= fee.amount.toLocaleString('en-IN') %>
+                                    </p>
+                                    <p>
+                                        <% if (fee.status==='Paid' ) { %>
+                                            <span class="status paid"><span class="dot"></span> Paid</span>
+                                            <% } else if (fee.status==='Partial' ) { %>
+                                                <span class="status pending"><span class="dot"></span> Partial</span>
+                                                <% } else { %>
+                                                    <span class="status pending"><span class="dot"></span>
+                                                        Pending</span>
+                                                    <% } %>
+                                    </p>
+                                    <p>
+                                        <%= fee.paymentDate ? new Date(fee.paymentDate).toLocaleDateString("en-GB")
+                                            : "-" %>
+                                    </p>
+                                    <p>
+                                        <%= fee.mode ? fee.mode : '-' %>
+                                    </p>
+                                </div>
+                                <% }) %>
+                        </div>
+                    </div>
+                    <% } %>
             </div>
     </div>
     <script src="/backButton.js"></script>
+
 </body>
 
 </html>

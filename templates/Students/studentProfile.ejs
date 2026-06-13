@@ -3,136 +3,209 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Student Profile | <%= student.name %>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | <%= student.name %>
     </title>
 
     <link rel="stylesheet" href="/css/adminDashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
             --primary: #4caf50;
+            --primary-light: #e8f5e9;
             --light-bg: #f4f7fb;
             --text-dark: #2c3e50;
             --border: #e0e0e0;
+            --text-muted: #7f8c8d;
             --card-bg: #ffffff;
+            --radius: 14px;
+            --shadow: 0 4px 24px rgba(0, 0, 0, 0.07);
         }
 
-        body {
+        * {
+            box-sizing: border-box;
             margin: 0;
+            padding: 0;
+        }
+
+
+        body {
             background: var(--light-bg);
             color: var(--text-dark);
+            font-family: 'Poppins', sans-serif;
         }
 
         .student-dash {
             display: flex;
+            min-height: 100vh;
         }
 
-        .profile-card {
-            font-family: "Poppins", sans-serif;
-            margin: 20px;
-            width: 100%;
-            background: var(--card-bg);
-            padding: 35px 30px;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+
+        .profile-main {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
         }
 
-        .profile-header {
+        .hero-card {
+            background: linear-gradient(135deg, #2e7d32, #66bb6a);
+            border-radius: var(--radius);
+            padding: 28px 30px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            /* Button aur info ko align karne ke liye */
-            gap: 25px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid var(--border);
-            padding-bottom: 20px;
+            gap: 24px;
+            margin-bottom: 24px;
+            color: white;
+            box-shadow: var(--shadow);
         }
 
-        .header-info {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .profile-img {
-            width: 110px;
-            height: 110px;
+        .hero-avatar {
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
             object-fit: cover;
-            border: 4px solid var(--primary);
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+            border: 4px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+            flex-shrink: 0;
         }
 
-        .profile-header h2 {
-            margin: 0;
-            font-size: 26px;
+        .hero-info h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
         }
 
-        .profile-header p {
-            margin: 5px 0 0;
-            color: var(--primary);
-            font-weight: 500;
+        .hero-info p {
+            font-size: 14px;
+            opacity: 0.88;
+            margin-bottom: 10px;
         }
 
-        .profile-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 18px;
+        .hero-badges {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
-        .profile-item {
-            background: var(--light-bg);
-            padding: 12px 15px;
-            border-radius: 10px;
-            border: 1px solid transparent;
-        }
-
-        .profile-item:hover {
-            border-color: var(--primary);
-            background: #f0fdf4;
-        }
-
-        .profile-item label {
-            font-size: 13px;
-            color: #777;
-            display: block;
-            margin-bottom: 3px;
-            font-weight: 500;
-        }
-
-        .profile-item span {
+        .badge {
+            background: rgba(255, 255, 255, 0.22);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 999px;
+            padding: 4px 12px;
+            font-size: 12px;
             font-weight: 600;
+        }
+
+        .section-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 22px 24px;
+            margin-bottom: 20px;
+        }
+
+
+        .section-title {
             font-size: 15px;
+            font-weight: 700;
+            color: var(--text-dark);
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+            margin-bottom: 18px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+
+        .info-item {
+            background: var(--light-bg);
+            border: 1px solid transparent;
+            border-radius: 10px;
+            padding: 12px 14px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .info-item:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .info-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 15px;
+            flex-shrink: 0;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.07);
+        }
+
+        .info-text label {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 600;
+            display: block;
+            margin-bottom: 2px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .info-text span {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+            word-break: break-word;
         }
 
         .full-width {
             grid-column: span 2;
         }
 
+        .vehicle-assigned-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+            border-radius: 999px;
+            padding: 4px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 14px;
+        }
+
 
         @media (max-width: 768px) {
-            .profile-card {
-                margin: 20px;
-                width: 100%;
+            .profile-main {
+                padding: 15px;
             }
 
-            .profile-header {
+            .hero-card {
                 flex-direction: column;
-                align-items: center;
                 text-align: center;
             }
 
-
-        }
-
-        @media (max-width: 480px) {
-            .profile-img {
-                width: 80px;
-                height: 80px;
+            .hero-badges {
+                justify-content: center;
             }
 
-            .profile-grid {
+            .info-grid {
                 grid-template-columns: 1fr;
             }
 
@@ -148,145 +221,264 @@
     <div class="student-dash">
         <%- include("partials/StudentPageSidebar") %>
 
-            <div class="profile-card">
-                <div class="profile-header">
-                    <div class="header-info">
-                        <img src="<%= student?.photo ? (student.photo.startsWith('http') ? student.photo : '/uploads/students/' + student.photo) : '/images/default-student.png' %>"
-                            class="profile-img" alt="Student Profile">
-                        <div>
-                            <h2>
-                                <%= student.name %>
-                            </h2>
-                            <p>Class: <%= student.class %> - <%= student.section %>
-                            </p>
+
+            <div class="profile-main">
+                <!-- ======= HERO HEADER ======= -->
+                <div class="hero-card">
+                    <img src="<%= student?.photo ? (student.photo.startsWith('http') ? student.photo : '/uploads/students/' + student.photo) : '/images/default-student.png' %>"
+                        class="hero-avatar" alt="Profile Photo">
+                    <div class="hero-info">
+                        <h2>
+                            <%= student.name %>
+                        </h2>
+                        <p>Class <%= student.class %> - Section <%= student.section || 'N/A' %>
+                        </p>
+                        <div class="hero-badges">
+                            <span class="badge"><i class="fa-solid fa-id-card"></i>
+                                <%= student.id || 'N/A' %>
+                            </span>
+                            <span class="badge"><i class="fa-solid fa-list-ol"></i> Roll: <%= student.rollNo || 'N/A' %>
+                            </span>
+                            <span class="badge"><i class="fa-solid fa-shield"></i>
+                                <%= student.house || 'N/A' %>
+                            </span>
+                            <% if (student.bloodGroup) { %>
+                                <span class="badge"><i class="fa-solid fa-droplet"></i>
+                                    <%= student.bloodGroup %>
+                                </span>
+                                <% } %>
                         </div>
                     </div>
                 </div>
 
-                <div class="profile-grid">
+                <!-- ======= SECTION 1: PERSONAL INFORMATION ======= -->
+                <div class="section-card">
+                    <div class="section-title"><i class="fa-solid fa-user"></i> &nbsp;Personal Information</div>
+                    <div class="info-grid">
 
-                    <!-- Student Information -->
+                        <div class="info-item">
+                            <div class="info-icon"><i class="fa-solid fa-venus-mars"></i></div>
+                            <div class="info-text">
+                                <label>Gender</label>
+                                <span>
+                                    <%= student.gender || 'N/A' %>
+                                </span>
+                            </div>
+                        </div>
 
-                    <div class="profile-item">
-                        <label>Admission No / ID</label>
-                        <span>
-                            <%= student.id %>
-                        </span>
+
+
+                        <div class="info-item">
+                            <div class="info-icon"><i class="fa-solid fa-cake-candles"></i></div>
+                            <div class="info-text">
+                                <label>Date of Birth</label>
+                                <span>
+                                    <%= student.DOB ? new Date(student.DOB).toLocaleDateString('en-GB') : 'N/A' %>
+                                </span>
+                            </div>
+
+                        </div>
+
+
+                        <div class="info-item">
+                            <div class="info-icon"><i class="fa-solid fa-phone"></i></div>
+                            <div class="info-text">
+                                <label>Phone / WhatsApp</label>
+                                <span>
+                                    <%= student.phone || 'N/A' %>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-icon"><i class="fa-solid fa-user-gear"></i></div>
+                            <div class="info-text">
+                                <label>Username</label>
+                                <span>
+                                    <%= student.username || 'N/A' %>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="info-item full-width">
+                            <div class="info-icon"><i class="fa-solid fa-location-dot"></i></div>
+                            <div class="info-text">
+                                <label>Residential Address</label>
+                                <span>
+                                    <%= student.address || 'N/A' %>
+                                </span>
+                            </div>
+                        </div>
+
                     </div>
-
-                    <div class="profile-item">
-                        <label>Roll Number</label>
-                        <span>
-                            <%= student.rollNo || "N/A" %>
-                        </span>
-                    </div>
-
-                    <div class="profile-item">
-                        <label>Class</label>
-                        <span>
-                            <%= student.class %>
-                        </span>
-                    </div>
-
-                    <div class="profile-item">
-                        <label>Section</label>
-                        <span>
-                            <%= student.section || "N/A" %>
-                        </span>
-                    </div>
-
-                    <div class="profile-item">
-                        <label>House</label>
-                        <span>
-                            <%= student.house || "N/A" %>
-                        </span>
-                    </div>
-
-                    <div class="profile-item">
-                        <label>Gender</label>
-                        <span>
-                            <%= student.gender || "N/A" %>
-                        </span>
-                    </div>
-
-                    <div class="profile-item">
-                        <label>Date of Birth</label>
-                        <span>
-                            <%= student.DOB ? new Date(student.DOB).toLocaleDateString('en-GB') : "N/A" %>
-                        </span>
-                    </div>
-
-                    <div class="profile-item">
-                        <label>Blood Group</label>
-                        <span>
-                            <%= student.bloodGroup || "N/A" %>
-                        </span>
-                    </div>
-
-                    <div class="profile-item">
-                        <label>Admission Date</label>
-                        <span>
-                            <%= student.admissionDate ? new Date(student.admissionDate).toLocaleDateString('en-GB')
-                                : "N/A" %>
-                        </span>
-                    </div>
-
-                    <div class="profile-item">
-                        <label>Admitted In Class</label>
-                        <span>
-                            <%= student.initialClass || "N/A" %>
-                        </span>
-                    </div>
-
-                    <!-- Family Information -->
-
-                    <div class="profile-item">
-                        <label>Father's Name</label>
-                        <span>
-                            <%= student.fatherName || "N/A" %>
-                        </span>
-                    </div>
-
-                    <div class="profile-item">
-                        <label>Mother's Name</label>
-                        <span>
-                            <%= student.motherName || "N/A" %>
-                        </span>
-                    </div>
-
-                    <div class="profile-item">
-                        <label>Phone / WhatsApp</label>
-                        <span>
-                            <%= student.phone || "N/A" %>
-                        </span>
-                    </div>
-
-                    <!-- Academic Information -->
-
-                    <div class="profile-item">
-                        <label>Previous School</label>
-                        <span>
-                            <%= student.previousSchool || "N/A" %>
-                        </span>
-                    </div>
-
-                    <div class="profile-item">
-                        <label>Username</label>
-                        <span>
-                            <%= student.username || "N/A" %>
-                        </span>
-                    </div>
-
-                    <!-- Address -->
-
-                    <div class="profile-item full-width">
-                        <label>Residential Address</label>
-                        <span>
-                            <%= student.address || "N/A" %>
-                        </span>
-                    </div>
-
                 </div>
+                <!-- ======= SECTION 2: FAMILY INFORMATION ======= -->
+                <div class="section-card">
+                    <div class="section-title"><i class="fa-solid fa-people-roof"></i> &nbsp;Family Information</div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-icon"><i class="fa-solid fa-person-rays"></i></div>
+                            <div class="info-text">
+                                <label>Father's Name</label>
+                                <span>
+                                    <%= student.fatherName || 'N/A' %>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-icon"><i class="fa-solid fa-briefcase"></i></div>
+                            <div class="info-text">
+                                <label>Father's Occupation</label>
+                                <span>
+                                    <%= student.fatherOccupation || 'N/A' %>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-icon"><i class="fa-solid fa-person-breastfeeding"></i></div>
+                            <div class="info-text">
+                                <label>Mother's Name</label>
+                                <span>
+                                    <%= student.motherName || 'N/A' %>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-icon"><i class="fa-solid fa-briefcase"></i></div>
+                            <div class="info-text">
+                                <label>Mother's Occupation</label>
+                                <span>
+                                    <%= student.motherOccupation || 'N/A' %>
+                                </span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- ======= SECTION 3: ACADEMIC HISTORY ======= -->
+                <div class="section-card">
+                    <div class="section-title"><i class="fa-solid fa-graduation-cap"></i> &nbsp;Academic History</div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-icon"><i class="fa-solid fa-calendar-check"></i></div>
+                            <div class="info-text">
+                                <label>Admission Date</label>
+                                <span>
+                                    <%= student.admissionDate ? new
+                                        Date(student.admissionDate).toLocaleDateString('en-GB') : 'N/A' %>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-icon"><i class="fa-solid fa-school"></i></div>
+                            <div class="info-text">
+                                <label>Admitted In Class</label>
+                                <span>
+                                    <%= student.initialClass || 'N/A' %>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="info-item full-width">
+                            <div class="info-icon"><i class="fa-solid fa-building-columns"></i></div>
+                            <div class="info-text">
+                                <label>Previous School</label>
+                                <span>
+                                    <%= student.previousSchool || 'None' %>
+                                </span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- ======= SECTION 4: GOVERNMENT IDs ======= -->
+                <% if (student.aadharNo || student.samagraId) { %>
+                    <div class="section-card">
+                        <div class="section-title"><i class="fa-solid fa-fingerprint"></i> &nbsp;Government IDs</div>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <div class="info-icon"><i class="fa-solid fa-id-card"></i></div>
+                                <div class="info-text">
+                                    <label>Aadhar Number</label>
+                                    <span>
+                                        <%= student.aadharNo || 'N/A' %>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-icon"><i class="fa-solid fa-address-card"></i></div>
+                                <div class="info-text">
+                                    <label>Samagra ID</label>
+                                    <span>
+                                        <%= student.samagraId || 'N/A' %>
+                                    </span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <% } %>
+
+                        <!-- ======= SECTION 5: VEHICLE / TRANSPORT ======= -->
+                        <% if (student.isVehicleAssigned) { %>
+                            <div class="section-card">
+                                <div class="section-title"><i class="fa-solid fa-bus"></i> &nbsp;Vehicle & Transport
+                                </div>
+                                <div class="vehicle-assigned-badge">
+                                    <i class="fa-solid fa-circle-check"></i> School Bus / Van Assigned
+                                </div>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <div class="info-icon"><i class="fa-solid fa-bus"></i></div>
+                                        <div class="info-text">
+                                            <label>Vehicle Number</label>
+                                            <span>
+                                                <%= (student.vehicleDetails && student.vehicleDetails.vehicleNo) ?
+                                                    student.vehicleDetails.vehicleNo : 'N/A' %>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="info-item">
+                                        <div class="info-icon"><i class="fa-solid fa-id-badge"></i></div>
+                                        <div class="info-text">
+                                            <label>Driver Name</label>
+                                            <span>
+                                                <%= (student.vehicleDetails && student.vehicleDetails.driverName) ?
+                                                    student.vehicleDetails.driverName : 'N/A' %>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="info-item">
+                                        <div class="info-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
+                                        <div class="info-text">
+                                            <label>Driver Mobile</label>
+                                            <span>
+                                                <%= (student.vehicleDetails && student.vehicleDetails.driverPhone) ?
+                                                    student.vehicleDetails.driverPhone : 'N/A' %>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="info-item">
+                                        <div class="info-icon"><i class="fa-solid fa-route"></i></div>
+                                        <div class="info-text">
+                                            <label>Route Details</label>
+                                            <span>
+                                                <%= (student.vehicleDetails && student.vehicleDetails.routeDetails) ?
+                                                    student.vehicleDetails.routeDetails : 'N/A' %>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <% } %>
             </div>
     </div>
     <script src="/backButton.js"></script>

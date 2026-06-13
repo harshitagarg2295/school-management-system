@@ -22,19 +22,24 @@ function getMode(schoolCode) {
 async function updateStudentPayment({ student, parsedInstallments, paymentId, schoolCode }) {
 
   parsedInstallments.forEach(i => {
-
-    if (!student.feeStatus[i.index]) {
-      return;
+    if (i.type === "vehicle") {
+      // ✅ Vehicle fees update
+      if (!student.vehicleFeeStatus || !student.vehicleFeeStatus[i.index]) return;
+      if (student.vehicleFeeStatus[i.index].status === "Paid") return;
+      student.vehicleFeeStatus[i.index].status = "Paid";
+      student.vehicleFeeStatus[i.index].paymentId = paymentId;
+      student.vehicleFeeStatus[i.index].paymentDate = new Date();
+      student.vehicleFeeStatus[i.index].mode = "Online";
+    } else {
+      // ✅ Academic fees update
+      if (!student.feeStatus[i.index]) return;
+      if (student.feeStatus[i.index].status === "Paid") return;
+      student.feeStatus[i.index].status = "Paid";
+      student.feeStatus[i.index].paymentId = paymentId;
+      student.feeStatus[i.index].paymentDate = new Date();
+      student.feeStatus[i.index].mode = "Online";
     }
 
-    if (student.feeStatus[i.index].status === "Paid") {
-      return;
-    }
-
-    student.feeStatus[i.index].status = "Paid";
-    student.feeStatus[i.index].paymentId = paymentId;
-    student.feeStatus[i.index].paymentDate = new Date();
-    student.feeStatus[i.index].mode = "Online";
   });
 
   await student.save();
@@ -45,19 +50,16 @@ async function updateStudentPayment({ student, parsedInstallments, paymentId, sc
     adminNotify = new AdminNotificationSchema({ notifications: [], schoolCode });
   }
 
-  const totalPaidAmount = parsedInstallments.reduce(
-
-    (sum, i) => {
-
+  const totalPaidAmount = parsedInstallments.reduce((sum, i) => {
+    if (i.type === "vehicle") {
+      const fee = student.vehicleFeeStatus?.[i.index];
+      return fee ? sum + fee.amount : sum;
+    } else {
       const fee = student.feeStatus[i.index];
+      return fee ? sum + fee.amount : sum;
+    }
+  }, 0);
 
-      if (fee) {
-        return sum + fee.amount;
-      }
-      return sum;
-    },
-    0
-  );
 
   adminNotify.notifications.unshift({ message: `Payment Received: ₹${totalPaidAmount} from ${student.name} (Class: ${student.class}).` });
 
@@ -68,7 +70,6 @@ async function updateStudentPayment({ student, parsedInstallments, paymentId, sc
 router.post("/create-order", studentAuth, async (req, res) => {
 
   const { installments, schoolAccountId } = req.body;
-  console.log("schoolAccountId:", schoolAccountId, "Length:", schoolAccountId.length);
 
   if (!installments || !schoolAccountId) {
     return res.status(400).json({
@@ -98,25 +99,23 @@ router.post("/create-order", studentAuth, async (req, res) => {
     let schoolBaseFee = 0;
 
     installments.forEach(i => {
-      // Invalid index protection
 
-      if (typeof i.index === "undefined" || isNaN(i.index)) {
-        return;
+      if (typeof i.index === "undefined" || i.index === null) return;
+
+      if (i.type === "vehicle") {
+        // ✅ Vehicle fee
+        const fee = student.vehicleFeeStatus?.[parseInt(i.index)];
+        if (fee && fee.status !== "Paid") schoolBaseFee += fee.amount;
+      } else {
+        // ✅ Academic fee
+        const fee = student.feeStatus[parseInt(i.index)];
+        if (fee && fee.status !== "Paid") schoolBaseFee += fee.amount;
       }
 
-      const fee = student.feeStatus[i.index];
-
-      // Only unpaid installments allowed
-
-      if (fee && fee.status !== "Paid") {
-        schoolBaseFee += fee.amount;
-      }
     });
 
     if (schoolBaseFee <= 0) {
-      return res.status(400).json({
-        error: "Invalid fee amount."
-      });
+      return res.status(400).json({ error: "Invalid fee amount. All selected fees may already be paid." });
     }
 
     const schoolShareInPaise = Math.round(schoolBaseFee * 100);
@@ -136,7 +135,7 @@ router.post("/create-order", studentAuth, async (req, res) => {
         installments: JSON.stringify(installments)
       },
 
-      ...(schoolAccountId && schoolAccountId.startsWith("acc_") ? {
+       ...(schoolAccountId && schoolAccountId.startsWith("acc_") && getMode(schoolCode) === "live" ? {
 
         transfers: [
           {
@@ -146,10 +145,7 @@ router.post("/create-order", studentAuth, async (req, res) => {
             on_hold: false
           }
         ]
-      }
-
-
-        : {})
+     } : {})
     };
 
 
@@ -158,8 +154,9 @@ router.post("/create-order", studentAuth, async (req, res) => {
     res.json({ ...order, razorpayKey: mode === "live" ? process.env.RAZORPAY_LIVE_KEY_ID : process.env.RAZORPAY_TEST_KEY_ID });
   }
   catch (err) {
-    console.error("Order creation error:", err);
-    res.status(500).json({ error: "Order generation failed" });
+    // ✅ Better error logging for debugging
+    console.error("Order creation error details:", JSON.stringify(err?.error || err?.message || err, null, 2));
+    res.status(500).json({ error: "Order generation failed", detail: err?.error?.description || err?.message });
   }
 });
 
@@ -208,28 +205,27 @@ router.post("/verify-payment", studentAuth, async (req, res) => {
 
     const parsedInstallments = typeof installments === "string" ? JSON.parse(installments) : installments;
 
-    // Duplicate payment check: agar sab installments already Paid hain toh idempotent response do
+    // ✅ Expected amount check — academic + vehicle fees both
+    const expectedAmount = parsedInstallments.reduce((sum, i) => {
+      if (i.type === "vehicle") {
+        const fee = student.vehicleFeeStatus?.[parseInt(i.index)];
+        return (fee && fee.status !== "Paid") ? sum + fee.amount : sum;
+      } else {
+        const fee = student.feeStatus[parseInt(i.index)];
+        return (fee && fee.status !== "Paid") ? sum + fee.amount : sum;
+      }
+    }, 0);
+
+    // ✅ Duplicate payment check — academic + vehicle dono handle karo
     const alreadyPaid = parsedInstallments.every(i => {
+      if (i.type === "vehicle") {
+        return student.vehicleFeeStatus?.[i.index]?.status === "Paid";
+      }
       return student.feeStatus[i.index]?.status === "Paid";
     });
     if (alreadyPaid) {
       return res.json({ success: true, alreadyProcessed: true });
     }
-
-    const expectedAmount = parsedInstallments.reduce(
-
-      (sum, i) => {
-        const fee = student.feeStatus[i.index];
-
-        if (fee && fee.status !== "Paid") {
-          return sum + fee.amount;
-        }
-
-        return sum;
-      },
-
-      0
-    );
 
     const calculatedPortalFee = parseFloat((expectedAmount * 0.002).toFixed(2));
 
@@ -306,9 +302,13 @@ router.post("/razorpay-webhook", express.raw({ type: "application/json" }), asyn
           .send("Student not found");
       }
 
+      // Duplicate payment check — academic + vehicle dono handle karo
+
       const alreadyPaid = parsedInstallments.every(i => {
-        return student.feeStatus[i.index]
-          ?.status === "Paid";
+        if (i.type === "vehicle") {
+          return student.vehicleFeeStatus?.[i.index]?.status === "Paid";
+        }
+        return student.feeStatus[i.index]?.status === "Paid";
       });
 
 

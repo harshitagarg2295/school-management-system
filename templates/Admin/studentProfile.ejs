@@ -10,20 +10,31 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg: #f5f7fb;
+      --bg: #f0f4ff;
       --card-bg: #ffffff;
-      --primary: #4f7cff;
-      --primary-dark: #315fdb;
-      --accent: #eaf1ff;
-      --muted: #6b7280;
-      --text: #1f2937;
-      --border: #e5e7eb;
-      --shadow: rgba(17, 24, 39, 0.08);
-      --radius-lg: 18px;
-      --radius-md: 12px;
+      --primary: #4361ee;
+      --primary-dark: #2f4ac2;
+      --primary-light: #eef1ff;
+      --accent: #7209b7;
+      --green: #06d6a0;
+      --green-light: #e8fdf7;
+      --yellow: #f9c74f;
+      --red: #ef476f;
+      --muted: #8897ae;
+      --text: #1a2342;
+      --text-light: #4a5568;
+      --border: #e2e8f6;
+      --shadow-sm: 0 2px 8px rgba(67, 97, 238, 0.08);
+      --shadow-md: 0 8px 24px rgba(67, 97, 238, 0.12);
+      --shadow-lg: 0 16px 40px rgba(67, 97, 238, 0.14);
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+      --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     * {
@@ -35,52 +46,121 @@
     body {
       background: var(--bg);
       color: var(--text);
+      min-height: 100vh;
     }
 
     .admin_dash {
       display: flex;
-      gap: 24px;
+      gap: 0px;
       align-items: flex-start;
       min-height: 100vh;
-      padding: 24px;
     }
 
-    .profile-card {
-      font-family: "Segoe UI", Arial, sans-serif;
-      width: 100%;
-      max-width: 1180px;
-      margin: 10px auto;
-      background: var(--card-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: 0 12px 30px var(--shadow);
-      overflow: hidden;
-      display: grid;
-      grid-template-columns: 340px 1fr;
-      min-height: 700px;
+    .main-wrapper {
+      font-family: 'Inter', 'Segoe UI', sans-serif;
+      flex: 1;
+      padding: 28px 28px 40px;
+      min-width: 0;
     }
 
-    /* LEFT SECTION */
-    .profile-section {
-      padding: 34px 28px;
-      background: linear-gradient(180deg, #f8fbff, #eef5ff);
-      border-right: 1px solid #edf2f7;
+    /* ─── PAGE HEADER ─── */
+    .page-header {
       display: flex;
-      flex-direction: column;
       align-items: center;
-      gap: 18px;
+      gap: 14px;
+      margin-bottom: 24px;
     }
 
-    .image {
-      width: 180px;
-      height: 180px;
-      border-radius: 50%;
-      overflow: hidden;
-      background: #fff;
-      border: 5px solid #dbe7ff;
-      box-shadow: 0 10px 24px rgba(79, 124, 255, 0.16);
+    .page-header-icon {
+      width: 46px;
+      height: 46px;
+      background: var(--primary);
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
+      color: white;
+      font-size: 18px;
+      box-shadow: 0 6px 16px rgba(67, 97, 238, 0.3);
+    }
+
+    .page-header h1 {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .page-header p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+
+    .profile-card {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+      background: white;
+    }
+
+    /* ─── LEFT PANEL ─── */
+    .profile-section {
+      background: linear-gradient(160deg, #1a2342 0%, #2d3e8c 55%, #4361ee 100%);
+      padding: 36px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .profile-section::before {
+      content: '';
+      position: absolute;
+      top: -60px;
+      right: -60px;
+      width: 180px;
+      height: 180px;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 50%;
+    }
+
+    .profile-section::after {
+      content: '';
+      position: absolute;
+      bottom: -40px;
+      left: -40px;
+      width: 130px;
+      height: 130px;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 50%;
+    }
+
+    .image {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 4px solid rgba(255, 255, 255, 0.35);
+      box-shadow: 0 0 0 8px rgba(255, 255, 255, 0.08), 0 16px 32px rgba(0, 0, 0, 0.25);
+      background: rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+      transition: transform var(--transition);
+    }
+
+    .image:hover {
+      transform: scale(1.03);
     }
 
     .image img.preview {
@@ -89,183 +169,268 @@
       object-fit: cover;
     }
 
+
     .student-basic {
       text-align: center;
+      position: relative;
+      z-index: 1;
     }
 
     .student-basic h2 {
-      font-size: 22px;
-      font-weight: 700;
-      color: #172033;
+      font-size: 20px;
+      font-weight: 800;
+      color: #fff;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
 
     .student-badge {
       display: inline-block;
       margin-top: 8px;
-      background: #ffffff;
-      color: var(--primary-dark);
-      border: 1px solid #d7e4ff;
-      padding: 6px 14px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(8px);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      padding: 5px 16px;
       border-radius: 999px;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 600;
+      letter-spacing: 0.5px;
     }
 
     .upload-actions {
       display: flex;
       gap: 10px;
-      margin-top: 10px;
+      position: relative;
+      z-index: 1;
     }
 
     .upload-actions button {
-      border: none;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
       border-radius: 10px;
-      padding: 10px 14px;
+      padding: 9px 18px;
       cursor: pointer;
       font-size: 13px;
       font-weight: 600;
       display: flex;
       align-items: center;
       gap: 6px;
+      transition: all var(--transition);
+      backdrop-filter: blur(6px);
     }
 
-    #chooseBtn {
-      background: #fff;
-      color: #24313a;
-      border: 1px solid #dbe3f0;
-    }
-
-    #cameraBtn {
-      background: var(--primary);
-      color: white;
+    .upload-actions button:hover {
+      background: rgba(255, 255, 255, 0.22);
+      transform: translateY(-2px);
     }
 
     .left-meta {
       width: 100%;
-      background: rgba(255, 255, 255, 0.75);
-      border: 1px solid #e3ebfa;
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 14px;
-      padding: 16px;
-      display: grid;
-      gap: 12px;
-      margin-top: 10px;
+      overflow: hidden;
     }
 
     .meta-item {
       display: flex;
       justify-content: space-between;
+      align-items: center;
+      padding: 11px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       font-size: 13px;
+      transition: background var(--transition);
     }
 
     .meta-item span:first-child {
-      color: var(--muted);
-      font-weight: 600;
+      color: rgba(255, 255, 255, 0.72);
+      font-weight: 500;
     }
 
     .meta-item span:last-child {
-      color: #1f2937;
+      color: #ffffff;
       font-weight: 700;
     }
 
-    /* RIGHT SECTION */
     .details {
-      padding: 34px 36px;
+      padding: 32px 36px;
       display: flex;
       flex-direction: column;
-      gap: 20px;
-    }
-
-    .details-header h1 {
-      font-size: 28px;
-      color: #172033;
+      gap: 22px;
+      background: #fafbff;
     }
 
     .details-header-wrapper {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 10px;
+      align-items: center;
+      padding-bottom: 18px;
+      border-bottom: 2px solid var(--border);
     }
 
     .fee-status-btn {
-      background: #fff;
-      color: #2563eb;
-      /* Primary Blue */
-      border: 1px solid #dbeafe;
-      padding: 10px 18px;
+      background: linear-gradient(135deg, #4361ee, #2f4ac2);
+      color: white;
+      border: none;
+      padding: 11px 20px;
       border-radius: 12px;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 700;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-    }
-
-    .fee-status-btn i {
-      font-size: 16px;
+      transition: all var(--transition);
+      box-shadow: 0 4px 14px rgba(67, 97, 238, 0.35);
     }
 
     .fee-status-btn:hover {
-      background: #2563eb;
-      color: #ffffff;
-      border-color: #2563eb;
       transform: translateY(-2px);
-      box-shadow: 0 6px 15px rgba(37, 99, 235, 0.2);
+      box-shadow: 0 8px 20px rgba(67, 97, 238, 0.45);
     }
 
-    .subtitle {
-      color: var(--muted);
-      font-size: 14px;
+    /* ─── SECTIONS (READONLY) ─── */
+    .readonly,
+    .edit-form {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
     }
 
     .section-title {
-      font-size: 17px;
+      font-size: 14px;
       font-weight: 700;
-      color: #1f2d36;
-      margin-bottom: 15px;
-      border-left: 4px solid var(--primary);
-      padding-left: 10px;
+      color: var(--primary);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
     }
 
-    .readonly,
-    .edit-form {
-      background: linear-gradient(180deg, #fcfdff, #f7faff);
-      border: 1px solid #e8eef8;
-      border-radius: 16px;
-      padding: 22px;
+    .section-title::before {
+      content: '';
+      display: inline-block;
+      width: 4px;
+      height: 18px;
+      background: linear-gradient(180deg, var(--primary), var(--accent));
+      border-radius: 4px;
     }
 
-    .info-grid,
-    .form-grid {
+    .section-title.green::before {
+      background: linear-gradient(180deg, var(--green), #0aa070);
+    }
+
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(90deg, var(--border), transparent);
+      margin: 22px 0;
+    }
+
+    /* ─── INFO CARDS ─── */
+    .info-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
+      gap: 12px;
     }
 
     .info-card {
-      background: white;
-      border: 1px solid #ebf0f7;
-      border-radius: 12px;
-      padding: 12px 16px;
+      background: var(--primary-light);
+      border: 1px solid #dde4ff;
+      border-radius: var(--radius-sm);
+      padding: 13px 16px;
+      transition: all var(--transition);
+    }
+
+    .info-card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(67, 97, 238, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .info-card.vehicle-card {
+      /* background: var(--green-light); */
+      border-color: #dde4ff;
+    }
+
+    .info-card.vehicle-card:hover {
+      /* border-color: var(--green); */
+      border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(67, 97, 238, 0.1);
     }
 
     .info-card .label {
-      color: var(--muted);
-      font-size: 12px;
+      color: var(--primary);
+      font-size: 11px;
       font-weight: 600;
-      margin-bottom: 4px;
+      margin-bottom: 5px;
       display: flex;
       align-items: center;
       gap: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .info-card .label i {
+      color: var(--primary);
+      font-size: 11px;
     }
 
     .info-card .value {
-      color: #1f2937;
-      font-size: 15px;
+      color: var(--text);
+      font-size: 14px;
       font-weight: 700;
+    }
+
+    /* Vehicle assigned badge */
+    .vehicle-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .vehicle-badge.assigned {
+      background: #e6fbf5;
+      color: #059669;
+      border: 1px solid #a7f3d0;
+    }
+
+    .vehicle-badge.not-opted {
+      background: #fff1f2;
+      color: #e11d48;
+      border: 1px solid #fecdd3;
+    }
+
+    .vehicle-badge .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* ─── EDIT FORM ─── */
+    .edit-form {
+      border-color: #dde4ff;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
     }
 
     .form-group {
@@ -275,47 +440,72 @@
     }
 
     .form-group label {
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 700;
-      color: #4b5563;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
     }
 
     .edit-form input,
     .edit-form select {
-      padding: 11px;
-      border-radius: 10px;
-      border: 1px solid #ccd7ea;
+      padding: 11px 14px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border);
+      background: #fafbff;
+      font-size: 14px;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
       outline: none;
+      transition: all var(--transition);
     }
+
+    .edit-form input:focus,
+    .edit-form select:focus {
+      border-color: var(--primary);
+      background: white;
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+    }
+
+    /* ─── ACTIONS ─── */
 
     .row-actions {
       display: flex;
       gap: 12px;
-      margin-top: 15px;
       justify-content: flex-end;
+      padding-top: 4px;
     }
 
     .btn {
       border: none;
-      border-radius: 10px;
-      padding: 11px 20px;
+      border-radius: 12px;
+      padding: 12px 22px;
       cursor: pointer;
       font-size: 14px;
       font-weight: 700;
       display: inline-flex;
       align-items: center;
       gap: 8px;
+      transition: all var(--transition);
+      font-family: 'Inter', sans-serif;
     }
 
     .btn.edit {
-      background: var(--primary);
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
       color: white;
+      box-shadow: 0 4px 14px rgba(67, 97, 238, 0.3);
     }
 
     .btn.secondary {
-      background: #fff;
-      color: #1f2937;
-      border: 1px solid #d5dfef;
+      background: white;
+      color: var(--text-light);
+      border: 1.5px solid var(--border);
+    }
+
+    .btn.secondary:hover {
+      background: #f8f9ff;
+      border-color: var(--primary);
+      color: var(--primary);
     }
 
     /* CROPPER MODAL */
@@ -325,7 +515,8 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: rgba(0, 0, 0, 0.8);
+      background: rgba(10, 15, 40, 0.85);
+      backdrop-filter: blur(6px);
       display: none;
       justify-content: center;
       align-items: center;
@@ -334,46 +525,70 @@
 
     .crop-container {
       width: 90%;
-      max-width: 400px;
+      max-width: 420px;
       background: #fff;
-      border-radius: 15px;
+      border-radius: 20px;
       overflow: hidden;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
     }
 
     .crop-footer {
-      padding: 15px;
+      padding: 16px;
       display: flex;
       gap: 10px;
+      background: #f8f9ff;
+      border-top: 1px solid var(--border);
     }
 
-    @media (max-width: 1000px) {
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 1050px) {
       .profile-card {
         grid-template-columns: 1fr;
       }
 
       .profile-section {
         border-right: none;
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       }
     }
 
-    @media (max-width: 600px) {
+    @media (max-width: 650px) {
+      .main-wrapper {
+        padding: 16px;
+      }
+
+      .details {
+        padding: 20px 18px;
+      }
+
       .details-header-wrapper {
         flex-direction: column;
-        gap: 15px;
+        gap: 14px;
+        align-items: flex-start;
       }
 
       .fee-status-btn {
         width: 100%;
         justify-content: center;
       }
-    }
-
-    @media (max-width: 600px) {
 
       .info-grid,
       .form-grid {
         grid-template-columns: 1fr;
+      }
+
+      .info-card[style*="grid-column"],
+      .form-group[style*="grid-column"] {
+        grid-column: span 1 !important;
+      }
+
+      .row-actions {
+        justify-content: stretch;
+        flex-direction: column;
+      }
+
+      .btn {
+        justify-content: center;
       }
     }
   </style>
@@ -383,241 +598,455 @@
   <div class="admin_dash">
     <%- include("partials/AdminPageSidebar") %>
 
-      <div class="profile-card">
-        <form id="imageForm" method="post" action="/student/upload-image/<%= student._id %>" class="profile-section">
-          <input type="hidden" id="croppedImageInput" name="croppedImage">
-          <div class="image">
-            <img id="previewImg" class="preview"
-              src="<%= student?.photo ? (student.photo.startsWith('http') ? student.photo : '/uploads/students/' + student.photo) : '/images/default-student.png' %>"
-              alt="Student Preview">
-            <input id="fileInput" type="file" accept="image/*" style="display:none;">
+      <div class="main-wrapper">
+        <!-- Page Header -->
+        <div class="page-header">
+          <div class="page-header-icon"><i class="fa-solid fa-user-graduate"></i></div>
+          <div>
+            <h1>Student Profile</h1>
+            <p>View and manage student records</p>
           </div>
-          <div class="student-basic">
-            <h2>
-              <%= student.name %>
-            </h2>
-            <span class="student-badge">ID: <%= student.id || 'N/A' %></span>
-          </div>
-          <div class="upload-actions">
-            <button id="chooseBtn" type="button"><i class="fa-regular fa-image"></i></button>
-            <button id="cameraBtn" type="button"><i class="fa-solid fa-camera"></i></button>
-          </div>
-          <div class="left-meta">
-            <div class="meta-item"><span>Class</span><span>
-                <%= student.class %>-<%= student.section %>
-              </span></div>
+        </div>
 
-            <div class="meta-item"><span>Fees</span><span>
-                <%= student.fees.toLocaleString('en-IN') || 'N/A' %>
-              </span></div>
-
-            <div class="meta-item"><span>Roll No</span><span>
-                <%= student.rollNo || 'N/A' %>
-              </span></div>
-
-            <div class="meta-item"><span>House</span><span>
-                <%= student.house || 'N/A' %>
-              </span></div>
-            <div class="meta-item"><span>Blood Group</span><span>
-                <%= student.bloodGroup || 'N/A' %>
-              </span></div>
-          </div>
-
-          <div id="cropModal">
-            <div class="crop-container">
-              <div style="height:350px; background:#000;"><img id="cropImage" style="max-width:100%;"></div>
-              <div class="crop-footer">
-                <button id="cropCancel" type="button" class="btn secondary">Cancel</button>
-                <button id="cropSave" type="button" class="btn edit" style="flex:1;">Save Photo</button>
-              </div>
+        <div class="profile-card">
+          <form id="imageForm" method="post" action="/student/upload-image/<%= student._id %>" class="profile-section">
+            <input type="hidden" id="croppedImageInput" name="croppedImage">
+            <div class="image">
+              <img id="previewImg" class="preview"
+                src="<%= student?.photo ? (student.photo.startsWith('http') ? student.photo : '/uploads/students/' + student.photo) : '/images/default-student.png' %>"
+                alt="Student Photo">
+              <input id="fileInput" type="file" accept="image/*" style="display:none;">
             </div>
-          </div>
-        </form>
-
-        <div class="details">
-          <div class="details-header-wrapper">
-            <div class="details-header">
-              <h1>Student Profile</h1>
-              <div class="subtitle">Academic and Personal Records</div>
+            <div class="student-basic">
+              <h2>
+                <%= student.name %>
+              </h2>
+              <span class="student-badge">ID: <%= student.id || 'N/A' %></span>
             </div>
-
-            <a href="/fee-status/<%= student._id %>" class="fee-status-btn">
-              <i class="fa-solid fa-receipt"></i> View Fee Status
-            </a>
-          </div>
-
-          <div class="readonly" id="detailForm">
-            <div class="section-title">Personal Information</div>
-            <div class="info-grid">
-              <div class="info-card">
-                <div class="label"><i class="fa-solid fa-user"></i> Student Name</div>
-                <div class="value">
-                  <%= student.name %>
-                </div>
+            <div class="upload-actions">
+              <button id="chooseBtn" type="button"><i class="fa-regular fa-image"></i> Gallery</button>
+              <button id="cameraBtn" type="button"><i class="fa-solid fa-camera"></i> Camera</button>
+            </div>
+            <div class="left-meta">
+              <div class="meta-item">
+                <span>Class</span>
+                <span>
+                  <%= student.class %>-<%= student.section %>
+                </span>
               </div>
-              <div class="info-card">
-                <div class="label">
-                  <i class="fa-solid fa-user"></i>
-                  Username
-                </div>
-                <div class="value">
-                  <%= student.username %>
-                </div>
+              <div class="meta-item">
+                <span>Annual Fees</span>
+                <span>₹<%= student.fees.toLocaleString('en-IN') %></span>
               </div>
-              <div class="info-card">
-                <div class="label"><i class="fa-solid fa-venus-mars"></i> Gender</div>
-                <div class="value">
-                  <%= student.gender || 'N/A' %>
-                </div>
+              <div class="meta-item">
+                <span>Roll No</span>
+                <span>
+                  <%= student.rollNo || 'N/A' %>
+                </span>
               </div>
-              <div class="info-card">
-                <div class="label"><i class="fa-solid fa-person-breastfeeding"></i> Mother's Name</div>
-                <div class="value">
-                  <%= student.motherName || 'N/A' %>
-                </div>
+              <div class="meta-item">
+                <span>House</span>
+                <span>
+                  <%= student.house || 'N/A' %>
+                </span>
               </div>
-              <div class="info-card">
-                <div class="label"><i class="fa-solid fa-person-rays"></i> Father's Name</div>
-                <div class="value">
-                  <%= student.fatherName || 'N/A' %>
-                </div>
+              <div class="meta-item">
+                <span>Blood Group</span>
+                <span>
+                  <%= student.bloodGroup || 'N/A' %>
+                </span>
               </div>
-              <div class="info-card">
-                <div class="label"><i class="fa-solid fa-phone"></i> Contact</div>
-                <div class="value">
-                  <%= student.phone %>
-                </div>
-              </div>
-              <div class="info-card">
-                <div class="label"><i class="fa-solid fa-cake-candles"></i> Date of Birth</div>
-                <div class="value">
-                  <%= student.DOB ? new Date(student.DOB).toLocaleDateString('en-GB') : 'N/A' %>
-                </div>
+              <div class="meta-item">
+                <span>Transport</span>
+                <span>
+                  <%= student.isVehicleAssigned ? '🚌 Assigned' : '✖ None' %>
+                </span>
               </div>
             </div>
 
-            <div class="section-title" style="margin-top:25px;">Academic History</div>
-            <div class="info-grid">
-              <div class="info-card">
-                <div class="label"><i class="fa-solid fa-calendar-check"></i> Admission Date</div>
-                <div class="value">
-                  <%= student.admissionDate ? new Date(student.admissionDate).toLocaleDateString('en-GB') : 'N/A' %>
+            <!-- Crop Modal -->
+            <div id="cropModal">
+              <div class="crop-container">
+                <div style="height:350px; background:#000;"><img id="cropImage" style="max-width:100%;"></div>
+                <div class="crop-footer">
+                  <button id="cropCancel" type="button" class="btn secondary">Cancel</button>
+                  <button id="cropSave" type="button" class="btn edit" style="flex:1;">
+                    <i class="fa-solid fa-crop-simple"></i> Save Photo
+                  </button>
                 </div>
               </div>
-              <div class="info-card">
-                <div class="label"><i class="fa-solid fa-school"></i> Admitted In Class</div>
-                <div class="value">
-                  <%= student.initialClass || 'N/A' %>
-                </div>
-              </div>
-              <div class="info-card" style="grid-column: span 2;">
-                <div class="label"><i class="fa-solid fa-building-columns"></i> Previous School</div>
-                <div class="value">
-                  <%= student.previousSchool || 'None' %>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <form id="profileForm" action="/edit-student/<%= student._id %>" method="post" class="edit-form"
-            style="display:none;">
-            <div class="section-title">Update Student Details</div>
-            <div class="form-grid">
-              <div class="form-group"><label>Full Name</label><input type="text" name="name" value="<%= student.name %>"
-                  required></div>
-              <div class="form-group"><label>Roll No</label><input type="text" name="rollNo"
-                  value="<%= student.rollNo || '' %>"></div>
-              <div class="form-group"><label>Section</label><input type="text" name="section"
-                  value="<%= student.section || '' %>"></div>
-              <div class="form-group"><label>House</label><input type="text" name="house"
-                  value="<%= student.house || '' %>"></div>
-
-              <div class="form-group"><label>Blood Group</label><input type="text" name="bloodGroup"
-                  value="<%= student.bloodGroup || '' %>"></div>
-
-              <div class="form-group"><label>Gender</label>
-                <select name="gender">
-                  <option value="Male" <%=student.gender==='Male' ? 'selected' : '' %>>Male</option>
-                  <option value="Female" <%=student.gender==='Female' ? 'selected' : '' %>>Female</option>
-                </select>
-              </div>
-              <div class="form-group"><label>Father's Name</label><input type="text" name="fatherName"
-                  value="<%= student.fatherName || '' %>"></div>
-              <div class="form-group"><label>Mother's Name</label><input type="text" name="motherName"
-                  value="<%= student.motherName || '' %>"></div>
-              <div class="form-group"><label>Mobile</label><input type="text" name="phone" value="<%= student.phone %>"
-                  required></div>
-              <div class="form-group"><label>DOB</label><input type="date" name="dob"
-                  value="<%= student.DOB? new Date(student.DOB).toISOString().split('T')[0] : '' %>"></div>
-              <div class="form-group"><label>Admission Date</label><input type="date" name="admissionDate"
-                  value="<%= student.admissionDate ? new Date(student.admissionDate).toISOString().split('T')[0] : '' %>">
-              </div>
-              <div class="form-group"><label>Initial Class</label><input type="text" name="initialClass"
-                  value="<%= student.initialClass || '' %>" placeholder="e.g. Nursery"></div>
-              <div class="form-group" style="grid-column: span 2;"><label>Previous School Name</label><input type="text"
-                  name="previousSchool" value="<%= student.previousSchool || '' %>"></div>
-              <div class="form-group" style="grid-column: span 2;"><label>Full Address</label><input type="text"
-                  name="address" value="<%= student.address %>"></div>
             </div>
           </form>
 
-          <div class="row-actions">
-            <button class="btn secondary" id="cancelBtn" type="button" style="display:none;"><i
-                class="fa-solid fa-xmark"></i> Cancel</button>
-            <button class="btn edit" id="editBtn" type="button"><i class="fa-solid fa-pen-to-square"></i> Edit
-              Profile</button>
-            <button class="btn edit" id="saveBtn" type="button" style="display:none;"><i
-                class="fa-solid fa-floppy-disk"></i> Save Changes</button>
+          <!-- Right Panel -->
+          <div class="details">
+            <div class="details-header-wrapper">
+              <div class="details-header">
+                <h1>Student Details</h1>
+                <div class="subtitle">Academic, Personal & Transport Records</div>
+              </div>
+
+              <a href="/fee-status/<%= student._id %>" class="fee-status-btn">
+                <i class="fa-solid fa-receipt"></i> View Fee Status
+              </a>
+            </div>
+
+            <!-- ── READONLY VIEW ── -->
+            <div class="readonly" id="detailForm">
+              <!-- Personal & Family -->
+              <div class="section-title">Personal Information</div>
+
+              <div class="info-grid">
+                <div class="info-card">
+                  <div class="label"><i class="fa-solid fa-user"></i> Student Name</div>
+                  <div class="value">
+                    <%= student.name %>
+                  </div>
+                </div>
+
+                <div class="info-card">
+                  <div class="label"><i class="fa-solid fa-user-gear"></i> Username</div>
+                  <div class="value">
+                    <%= student.username %>
+                  </div>
+                </div>
+
+                <div class="info-card">
+                  <div class="label"><i class="fa-solid fa-venus-mars"></i> Gender</div>
+                  <div class="value">
+                    <%= student.gender || 'N/A' %>
+                  </div>
+                </div>
+
+                <div class="info-card">
+                  <div class="label"><i class="fa-solid fa-phone"></i> Contact</div>
+                  <div class="value">
+                    <%= student.phone %>
+                  </div>
+                </div>
+
+                <div class="info-card">
+                  <div class="label"><i class="fa-solid fa-cake-candles"></i> Date of Birth</div>
+                  <div class="value">
+                    <%= student.DOB ? new Date(student.DOB).toLocaleDateString('en-GB') : 'N/A' %>
+                  </div>
+                </div>
+
+                <div class="info-card">
+                  <div class="label"><i class="fa-solid fa-id-card"></i> Aadhar Number</div>
+                  <div class="value">
+                    <%= student.aadharNo || 'N/A' %>
+                  </div>
+                </div>
+
+                <div class="info-card">
+                  <div class="label"><i class="fa-solid fa-address-card"></i> Samagra ID</div>
+                  <div class="value">
+                    <%= student.samagraId || 'N/A' %>
+                  </div>
+                </div>
+
+                <div class="info-card" style="grid-column: span 2;">
+                  <div class="label"><i class="fa-solid fa-location-dot"></i> Full Address</div>
+                  <div class="value">
+                    <%= student.address || 'N/A' %>
+                  </div>
+                </div>
+              </div>
+
+              <div class="section-divider"></div>
+
+              <div class="section-title">Family Information</div>
+
+              <div class="info-grid">
+                <div class="info-card">
+                  <div class="label"><i class="fa-solid fa-person-rays"></i> Father's Name</div>
+                  <div class="value">
+                    <%= student.fatherName || 'N/A' %>
+                  </div>
+                </div>
+
+                <div class="info-card">
+                  <div class="label"><i class="fa-solid fa-briefcase"></i> Father's Occupation</div>
+                  <div class="value">
+                    <%= student.fatherOccupation || 'N/A' %>
+                  </div>
+                </div>
+
+                <div class="info-card">
+                  <div class="label"><i class="fa-solid fa-person-breastfeeding"></i> Mother's Name</div>
+                  <div class="value">
+                    <%= student.motherName || 'N/A' %>
+                  </div>
+                </div>
+
+                <div class="info-card">
+                  <div class="label"><i class="fa-solid fa-briefcase"></i> Mother's Occupation</div>
+                  <div class="value">
+                    <%= student.motherOccupation || 'N/A' %>
+                  </div>
+                </div>
+              </div>
+
+              <div class="section-title" style="margin-top:25px;">Academic History</div>
+              <div class="info-grid">
+                <div class="info-card">
+                  <div class="label"><i class="fa-solid fa-calendar-check"></i> Admission Date</div>
+                  <div class="value">
+                    <%= student.admissionDate ? new Date(student.admissionDate).toLocaleDateString('en-GB') : 'N/A' %>
+                  </div>
+                </div>
+                <div class="info-card">
+                  <div class="label"><i class="fa-solid fa-school"></i> Admitted In Class</div>
+                  <div class="value">
+                    <%= student.initialClass || 'N/A' %>
+                  </div>
+                </div>
+                <div class="info-card" style="grid-column: span 2;">
+                  <div class="label"><i class="fa-solid fa-building-columns"></i> Previous School</div>
+                  <div class="value">
+                    <%= student.previousSchool || 'None' %>
+                  </div>
+                </div>
+              </div>
+
+              <div class="section-divider"></div>
+
+              <div class="section-title">
+                Vehicle &amp; Transport
+              </div>
+
+              <div class="info-grid">
+
+                <div class="info-card vehicle-card">
+                  <div class="label">
+                    <i class="fa-solid fa-toggle-on"></i>
+                    Transport Status
+                  </div>
+                  <div class="value">
+                    <% if (student.isVehicleAssigned) { %>
+                      <span class="vehicle-badge assigned">
+                        <span class="dot"></span>
+                        Assigned
+                      </span>
+                      <% } else { %>
+                        <span class="vehicle-badge not-opted">
+                          <span class="dot"></span>
+                          Not Opted
+                        </span>
+                        <% } %>
+                  </div>
+                </div>
+
+                <div class="info-card vehicle-card">
+                  <div class="label">
+                    <i class="fa-solid fa-bus"></i>
+                    Vehicle No.
+                  </div>
+                  <div class="value">
+                    <%= (student.vehicleDetails && student.vehicleDetails.vehicleNo) ? student.vehicleDetails.vehicleNo
+                      : 'N/A' %>
+                  </div>
+                </div>
+
+                <div class="info-card vehicle-card">
+                  <div class="label">
+                    <i class="fa-solid fa-id-badge"></i>
+                    Driver Name
+                  </div>
+                  <div class="value">
+                    <%= (student.vehicleDetails && student.vehicleDetails.driverName) ?
+                      student.vehicleDetails.driverName : 'N/A' %>
+                  </div>
+                </div>
+
+                <div class="info-card vehicle-card">
+                  <div class="label">
+                    <i class="fa-solid fa-mobile-screen-button"></i>
+                    Driver Mobile
+                  </div>
+                  <div class="value">
+                    <%= (student.vehicleDetails && student.vehicleDetails.driverPhone) ?
+                      student.vehicleDetails.driverPhone : 'N/A' %>
+                  </div>
+                </div>
+
+                <div class="info-card vehicle-card">
+                  <div class="label">
+                    <i class="fa-solid fa-route"></i>
+                    Route Details
+                  </div>
+                  <div class="value">
+                    <%= (student.vehicleDetails && student.vehicleDetails.routeDetails) ?
+                      student.vehicleDetails.routeDetails : 'N/A' %>
+                  </div>
+                </div>
+
+                <div class="info-card vehicle-card">
+                  <div class="label">
+                    <i class="fa-solid fa-indian-rupee-sign"></i>
+                    Annual Vehicle Fees
+                  </div>
+                  <div class="value">
+                    ₹<%= (student.vehicleDetails && student.vehicleDetails.vehicleFees) ?
+                      student.vehicleDetails.vehicleFees.toLocaleString('en-IN') : '0' %>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <form id="profileForm" action="/edit-student/<%= student._id %>" method="post" class="edit-form"
+              style="display:none;">
+              <div class="section-title">Update Personal & Family Profile</div>
+              <div class="form-grid">
+                <div class="form-group"><label>Full Name</label><input type="text" name="name"
+                    value="<%= student.name %>" required></div>
+                <div class="form-group"><label>Roll No</label><input type="text" name="rollNo"
+                    value="<%= student.rollNo || '' %>"></div>
+                <div class="form-group"><label>Section</label><input type="text" name="section"
+                    value="<%= student.section || '' %>"></div>
+                <div class="form-group"><label>House</label><input type="text" name="house"
+                    value="<%= student.house || '' %>"></div>
+                <div class="form-group"><label>Blood Group</label><input type="text" name="bloodGroup"
+                    value="<%= student.bloodGroup || '' %>"></div>
+                <div class="form-group"><label>Gender</label>
+                  <select name="gender">
+                    <option value="Male" <%=student.gender==='Male' ? 'selected' : '' %>>Male</option>
+                    <option value="Female" <%=student.gender==='Female' ? 'selected' : '' %>>Female</option>
+                  </select>
+                </div>
+                <div class="form-group"><label>Mobile</label><input type="text" name="phone"
+                    value="<%= student.phone %>" required></div>
+                <div class="form-group"><label>DOB</label><input type="date" name="dob"
+                    value="<%= student.DOB? new Date(student.DOB).toISOString().split('T')[0] : '' %>"></div>
+                <div class="form-group"><label>Aadhar Number</label><input type="text" name="aadharNo"
+                    value="<%= student.aadharNo || '' %>"></div>
+                <div class="form-group"><label>Samagra ID</label><input type="text" name="samagraId"
+                    value="<%= student.samagraId || '' %>"></div>
+                <div class="form-group"><label>Father's Name</label><input type="text" name="fatherName"
+                    value="<%= student.fatherName || '' %>"></div>
+                <div class="form-group"><label>Father's Occupation</label><input type="text" name="fatherOccupation"
+                    value="<%= student.fatherOccupation || '' %>"></div>
+                <div class="form-group"><label>Mother's Name</label><input type="text" name="motherName"
+                    value="<%= student.motherName || '' %>"></div>
+                <div class="form-group"><label>Mother's Occupation</label><input type="text" name="motherOccupation"
+                    value="<%= student.motherOccupation || '' %>"></div>
+                <div class="form-group" style="grid-column: span 2;"><label>Full Address</label><input type="text"
+                    name="address" value="<%= student.address %>"></div>
+              </div>
+
+              <div class="section-title" style="margin-top:25px;">Update Academic History</div>
+              <div class="form-grid">
+                <div class="form-group"><label>Admission Date</label><input type="date" name="admissionDate"
+                    value="<%= student.admissionDate ? new Date(student.admissionDate).toISOString().split('T')[0] : '' %>">
+                </div>
+                <div class="form-group"><label>Initial Class</label><input type="text" name="initialClass"
+                    value="<%= student.initialClass || '' %>" placeholder="e.g. Nursery"></div>
+                <div class="form-group" style="grid-column: span 2;"><label>Previous School Name</label><input
+                    type="text" name="previousSchool" value="<%= student.previousSchool || '' %>"></div>
+              </div>
+
+              <div class="section-title" style="margin-top:25px;">Update Vehicle & Transport Details</div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>Assign Vehicle?</label>
+                  <select name="isVehicleAssigned">
+                    <option value="true" <%=String(student.isVehicleAssigned)==='true' ? 'selected' : '' %>>Yes (Assign)
+                    </option>
+                    <option value="false" <%=String(student.isVehicleAssigned)==='false' ? 'selected' : '' %>>No
+                      (De-assign)</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label>Vehicle No.</label>
+                  <input type="text" name="vehicleNo"
+                    value="<%= (student.vehicleDetails && student.vehicleDetails.vehicleNo) ? student.vehicleDetails.vehicleNo : '' %>">
+                </div>
+
+                <div class="form-group">
+                  <label>Driver Name</label>
+                  <input type="text" name="driverName"
+                    value="<%= (student.vehicleDetails && student.vehicleDetails.driverName) ? student.vehicleDetails.driverName : '' %>">
+                </div>
+
+                <div class="form-group">
+                  <label>Driver Mobile</label>
+                  <input type="number" name="driverPhone"
+                    value="<%= (student.vehicleDetails && student.vehicleDetails.driverPhone) ? student.vehicleDetails.driverPhone : '' %>">
+                </div>
+
+                <div class="form-group">
+                  <label>Route Details</label>
+                  <input type="text" name="routeDetails" placeholder="e.g. Route No. 4, Saket Nagar"
+                    value="<%= (student.vehicleDetails && student.vehicleDetails.routeDetails) ? student.vehicleDetails.routeDetails : '' %>">
+                </div>
+
+                <div class="form-group">
+                  <label>Vehicle Total Fees (Annual)</label>
+                  <input type="number" name="vehicleFees" placeholder="e.g. 12000"
+                    value="<%= (student.vehicleDetails && student.vehicleDetails.vehicleFees) ? student.vehicleDetails.vehicleFees : '' %>">
+                </div>
+              </div>
+            </form>
+
+            <div class="row-actions">
+              <button class="btn secondary" id="cancelBtn" type="button" style="display:none;"><i
+                  class="fa-solid fa-xmark"></i> Cancel</button>
+              <button class="btn edit" id="editBtn" type="button"><i class="fa-solid fa-pen-to-square"></i> Edit
+                Profile</button>
+              <button class="btn edit" id="saveBtn" type="button" style="display:none;"><i
+                  class="fa-solid fa-floppy-disk"></i> Save Changes</button>
+            </div>
           </div>
         </div>
       </div>
-  </div>
 
-  <script>
-    // Elements
-    const fileInput = document.getElementById('fileInput');
-    const preview = document.getElementById('previewImg');
-    const cropModal = document.getElementById('cropModal');
-    const cropImage = document.getElementById('cropImage');
-    const editForm = document.getElementById('profileForm');
-    const detailForm = document.getElementById('detailForm');
-    const editBtn = document.getElementById('editBtn');
-    const saveBtn = document.getElementById('saveBtn');
-    const cancelBtn = document.getElementById('cancelBtn');
-    let cropper;
+      <script>
+        // Elements
+        const fileInput = document.getElementById('fileInput');
+        const preview = document.getElementById('previewImg');
+        const cropModal = document.getElementById('cropModal');
+        const cropImage = document.getElementById('cropImage');
+        const editForm = document.getElementById('profileForm');
+        const detailForm = document.getElementById('detailForm');
+        const editBtn = document.getElementById('editBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        let cropper;
 
-    // Toggle Edit
-    editBtn.onclick = () => {
-      editForm.style.display = 'block'; detailForm.style.display = 'none';
-      editBtn.style.display = 'none'; saveBtn.style.display = 'inline-flex'; cancelBtn.style.display = 'inline-flex';
-    };
-    cancelBtn.onclick = () => {
-      editForm.style.display = 'none'; detailForm.style.display = 'block';
-      editBtn.style.display = 'inline-flex'; saveBtn.style.display = 'none'; cancelBtn.style.display = 'none';
-    };
-    saveBtn.onclick = () => editForm.submit();
+        // Toggle Edit
+        editBtn.onclick = () => {
+          editForm.style.display = 'block'; detailForm.style.display = 'none';
+          editBtn.style.display = 'none'; saveBtn.style.display = 'inline-flex'; cancelBtn.style.display = 'inline-flex';
+        };
+        cancelBtn.onclick = () => {
+          editForm.style.display = 'none'; detailForm.style.display = 'block';
+          editBtn.style.display = 'inline-flex'; saveBtn.style.display = 'none'; cancelBtn.style.display = 'none';
+        };
+        saveBtn.onclick = () => editForm.submit();
 
-    // Image Upload & Crop
-    document.getElementById('chooseBtn').onclick = () => { fileInput.removeAttribute('capture'); fileInput.click(); };
-    document.getElementById('cameraBtn').onclick = () => { fileInput.setAttribute('capture', 'user'); fileInput.click(); };
+        // Image Upload & Crop
+        document.getElementById('chooseBtn').onclick = () => { fileInput.removeAttribute('capture'); fileInput.click(); };
+        document.getElementById('cameraBtn').onclick = () => { fileInput.setAttribute('capture', 'user'); fileInput.click(); };
 
-    fileInput.onchange = (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      cropImage.src = URL.createObjectURL(file);
-      cropModal.style.display = "flex";
-      if (cropper) cropper.destroy();
-      cropper = new Cropper(cropImage, { aspectRatio: 1, viewMode: 2 });
-    };
+        fileInput.onchange = (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+          cropImage.src = URL.createObjectURL(file);
+          cropModal.style.display = "flex";
+          if (cropper) cropper.destroy();
+          cropper = new Cropper(cropImage, { aspectRatio: 1, viewMode: 2 });
+        };
 
-    document.getElementById('cropCancel').onclick = () => { cropModal.style.display = "none"; cropper.destroy(); };
-    document.getElementById('cropSave').onclick = () => {
-      const base64 = cropper.getCroppedCanvas({ width: 400, height: 400 }).toDataURL("image/jpeg");
-      document.getElementById("croppedImageInput").value = base64;
-      document.getElementById('imageForm').submit();
-    };
-  </script>
-  <script src="/backButton.js"></script>
+        document.getElementById('cropCancel').onclick = () => { cropModal.style.display = "none"; cropper.destroy(); };
+        document.getElementById('cropSave').onclick = () => {
+          const base64 = cropper.getCroppedCanvas({ width: 400, height: 400 }).toDataURL("image/jpeg");
+          document.getElementById("croppedImageInput").value = base64;
+          document.getElementById('imageForm').submit();
+        };
+      </script>
+      <script src="/backButton.js"></script>
 
 </body>
 

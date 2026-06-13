@@ -56,7 +56,6 @@ router.post("/update-fee-status/:studentId", adminAuth, async (req, res) => {
       }
     });
 
-
     await student.save();
     res.redirect("/fee-status/" + studentId);
   } catch (err) {
@@ -65,4 +64,41 @@ router.post("/update-fee-status/:studentId", adminAuth, async (req, res) => {
   }
 });
 
-module.exports = router;
+
+// ✅ Vehicle Fee Status Update Route
+router.post("/update-vehicle-fee-status/:studentId", adminAuth, async (req, res) => {
+  try {
+    const schoolCode = req.session.schoolCode;
+    const { studentId } = req.params;
+    const vehicleFeeStatus = req.body.vehicleFeeStatus;
+
+    const student = await Student.findOne({ _id: studentId, schoolCode });
+    if (!student || !vehicleFeeStatus) return res.send("Invalid data");
+
+    student.vehicleFeeStatus.forEach((fee, index) => {
+      const input = vehicleFeeStatus[index];
+      if (input) {
+        // ✅ Status hamesha update karo
+        fee.status = input.status;
+
+        // ✅ Date sirf tab save karo jab user ne select ki ho
+        if (input.paymentDate && input.paymentDate.trim() !== "") {
+          fee.paymentDate = new Date(input.paymentDate);
+        }
+
+        // ✅ Mode sirf Paid pe save karo
+        if ((input.status === "Paid") && input.mode && input.mode.trim() !== "") {
+          fee.mode = input.mode;
+        }
+      }
+    });
+
+    await student.save();
+    res.redirect("/fee-status/" + studentId);
+  } catch (err) {
+    console.error("Vehicle fee update error:", err);
+    return res.status(500).render("HomePage/500");
+  }
+});
+
+module.exports =  router;

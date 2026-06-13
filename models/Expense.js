@@ -10,7 +10,14 @@ const expenseSchema = new mongoose.Schema({
   quantity: String,
   amount: Number,
   paymentDate: Date,
-
+  bill: {
+    type: String,
+    default: ""
+  },
+  billPublicId: {
+    type: String,
+    default: ""
+  },
   uniqueKey: { type: String, index: true },  // <-- NEW
 
   createdAt: {

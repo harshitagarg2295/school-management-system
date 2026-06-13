@@ -3,7 +3,8 @@ const router = express.Router();
 const Expense = require('../../models/Expense');
 const AdminNotification = require("../../models/AdminNotificationSchema");
 const { adminAuth } = require("../../middlewares/auth");
-
+const { uploadMaterial } = require("../../config/cloudinaryConfig");
+const { cloudinary } = require("../../config/cloudinaryConfig");
 
 // helper: current FY start year (Apr–Mar)
 function currentFYStartYear(d = new Date()) {
@@ -35,7 +36,7 @@ router.get("/school_expenses", adminAuth, async (req, res) => {
         // ---------- Table rows filtering ----------
         const filteredExpenses = allExpenses.filter(exp => {
             const matchesSearch =
-                exp.title.toLowerCase().includes(search) ||
+                (exp.title || "").toLowerCase().includes(search) ||
                 exp._id.toString().includes(search);
 
             const matchesCategory =
@@ -147,7 +148,7 @@ router.get("/school_expenses", adminAuth, async (req, res) => {
 
 
 // POST route to add new expense
-router.post("/add-expense", adminAuth, async (req, res) => {
+router.post("/add-expense", adminAuth, uploadMaterial.single("bill"), async (req, res) => {
     try {
         const schoolCode = req.session.schoolCode;
         const { category, title, quantity, amount, paymentDate } = req.body;
@@ -160,7 +161,9 @@ router.post("/add-expense", adminAuth, async (req, res) => {
             quantity: toTitleCase(quantity),
             amount,
             paymentDate: pyDate,
-            schoolCode
+            schoolCode,
+            bill: req.file ? req.file.path : "",
+            billPublicId: req.file.filename
         });
 
         await expense.save();
@@ -172,22 +175,32 @@ router.post("/add-expense", adminAuth, async (req, res) => {
 });
 
 // Route for Edit particular expense
-router.post("/edit-expense/:id", adminAuth, async (req, res) => {
+router.post("/edit-expense/:id", adminAuth, uploadMaterial.single("bill"), async (req, res) => {
     try {
         const schoolCode = req.session.schoolCode;
         const { category, title, quantity, amount, paymentDate } = req.body;
 
         const pyDate = new Date(paymentDate);  // 👈 string to Date object
 
+        const updateData = {
+            category: toTitleCase(category),
+            title: toTitleCase(title),
+            quantity: toTitleCase(quantity),
+            amount,
+            paymentDate: pyDate
+        };
+
+        if (req.file) {
+            updateData.bill = req.file.path;
+            updateData.billPublicId = req.file.filename;
+        }
+
         await Expense.findOneAndUpdate(
-            { _id: req.params.id, schoolCode },
             {
-                category: toTitleCase(category),
-                title: toTitleCase(title),
-                quantity: toTitleCase(quantity),
-                amount,
-                paymentDate: pyDate
-            }
+                _id: req.params.id,
+                schoolCode
+            },
+            updateData
         );
         res.redirect("/school_expenses");
     } catch (err) {
@@ -200,15 +213,35 @@ router.post("/edit-expense/:id", adminAuth, async (req, res) => {
 router.post("/delete-expense/:id", adminAuth, async (req, res) => {
     try {
         const schoolCode = req.session.schoolCode;
+
+        const expense = await Expense.findOne({
+            _id: req.params.id,
+            schoolCode
+        });
+
+        if (!expense) {
+            return res.redirect("/school_expenses");
+        }
+
+        if (expense.bill) {
+
+            await cloudinary.uploader.destroy(
+                expense.billPublicId,
+                { resource_type: "raw" }
+            );
+        }
+
         await Expense.findOneAndDelete({
             _id: req.params.id,
             schoolCode
         });
+
         res.redirect("/school_expenses");
+
     } catch (err) {
         console.error(err);
         return res.status(500).render("HomePage/500");
     }
-})
+});
 
 module.exports = router;

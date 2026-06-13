@@ -237,92 +237,89 @@
 
                 <form action="/students/checkout-fees" method="POST" class="data">
 
-                    <label class="select">Select Installments to Pay:</label>
+                    <!-- ===== ACADEMIC FEES ===== -->
+                    <label class="select">📚 Select Academic Installments to Pay:</label>
                     <div class="installments">
-                        <% let hasPending=false; %>
-
-                            <% student.feeStatus.forEach((fee, index)=> { %>
-                                <% if (fee.status==="Pending" ) { %>
-                                    <% hasPending=true; %>
-
-                                        <div class="items">
-                                            <input type="checkbox" name="installments" value="<%= index %>"
-                                                id="installment_<%= index %>" data-amount="<%= fee.amount %>">
-                                            <label for="installment_<%= index %>">
-                                                <%= fee.feeType %> - <%= fee.installment %> - ₹<%= fee.amount %>
-                                            </label>
-                                        </div>
-
-                                        <% } %>
-                                            <% }) %>
-
-                                                <% if (!hasPending) { %>
-                                                    <p
-                                                        style="padding:10px 0; font-size:18px; color:#444; text-align: center;">
-                                                        No Due is Pending
-                                                    </p>
-                                                    <% } %>
+                          <% let hasPending = false; %>
+                        <% student.feeStatus.forEach((fee, index) => { %>
+                            <% if (fee.status === "Pending") { %>
+                                <% hasPending = true; %>
+                                <div class="items">
+                                    <input type="checkbox" name="installments" value="<%= index %>"
+                                        id="installment_<%= index %>" data-amount="<%= fee.amount %>">
+                                    <label for="installment_<%= index %>">
+                                        <%= fee.feeType %> — <%= fee.installment %> — ₹<%= fee.amount.toLocaleString('en-IN') %>
+                                    </label>
+                                </div>
+                            <% } %>
+                        <% }) %>
+                        <% if (!hasPending) { %>
+                            <p style="padding:10px 0; font-size:18px; color:#444; text-align:center;">No Academic Fee Pending</p>
+                        <% } %>
                     </div>
 
-                    <!-- ✅ Total Amount Section -->
+                               <!-- ===== VEHICLE FEES ===== -->
+                    <% if (student.isVehicleAssigned && student.vehicleFeeStatus && student.vehicleFeeStatus.length > 0) { %>
+                    <label class="select" style="margin-top:20px;">🚌 Select Vehicle Installments to Pay:</label>
+                    <div class="installments" style="border-color:#a5d6a7; background:#f1fdf4;">
+                        <% let hasVehiclePending = false; %>
+                        <% student.vehicleFeeStatus.forEach((fee, index) => { %>
+                            <% if (fee.status === "Pending" || fee.status === "Partial") { %>
+                                <% hasVehiclePending = true; %>
+                                <div class="items">
+                                    <input type="checkbox" name="vehicleInstallments" value="<%= index %>"
+                                        id="vinstallment_<%= index %>" data-amount="<%= fee.amount %>">
+                                    <label for="vinstallment_<%= index %>">
+                                        🚌 <%= fee.installment %> — <%= fee.month %> — ₹<%= fee.amount.toLocaleString('en-IN') %>
+                                    </label>
+                                </div>
+                            <% } %>
+                        <% }) %>
+                        <% if (!hasVehiclePending) { %>
+                            <p style="padding:10px 0; font-size:18px; color:#444; text-align:center;">No Vehicle Fee Pending</p>
+                        <% } %>
+                    </div>
+                          <% } %>
+
+                    <!-- ✅ Total Amount -->
                     <div class="total-amount">
                         Total: ₹<span id="totalAmount">0</span>
                     </div>
 
                     <div class="btn">
-
-                        <% if (hasPending) { %>
-                            <button type="submit"> Pay Now </button>
-                            <% } else { %>
-                                <button type="button" disabled style="background:#b5b5b5;cursor:not-allowed; ">No
-                                    Pending Fees</button>
-                                <% } %>
-
+                           <button type="submit" id="payBtn">Pay Now</button>
                     </div>
                 </form>
             </div>
     </div>
 
-    <!-- ✅ JS Logic for Total Calculation -->
     <script>
 
-        const checkboxes = document.querySelectorAll('input[name="installments"]');
+         // All checkboxes (both academic + vehicle)
+        const allCheckboxes = document.querySelectorAll('input[name="installments"], input[name="vehicleInstallments"]');
         const totalAmountSpan = document.getElementById('totalAmount');
+        const form = document.querySelector('.data');
 
-        const form = document.querySelector(".data");
+          function recalcTotal() {
+            let total = 0;
+            allCheckboxes.forEach(cb => {
+                if (cb.checked) total += parseInt(cb.getAttribute('data-amount'));
+            });
+            totalAmountSpan.textContent = total.toLocaleString('en-IN');
+        }
 
-        // Total amount calculation
+             allCheckboxes.forEach(cb => cb.addEventListener('change', recalcTotal));
 
-        checkboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', () => {
-
-                let total = 0;
-                checkboxes.forEach(cb => {
-                    if (cb.checked) {
-                        total += parseInt(cb.getAttribute('data-amount'));
-                    }
-                });
-
-                totalAmountSpan.textContent = total;
-            }
-            );
-        });
-
-
-
-        // Prevent submit without selection
 
         if (form) {
-            form.addEventListener("submit", (e) => {
-
-                const checked = document.querySelectorAll('input[name="installments"]:checked');
+              form.addEventListener('submit', (e) => {
+                const checked = document.querySelectorAll('input[name="installments"]:checked, input[name="vehicleInstallments"]:checked');
 
                 if (checked.length === 0) {
                     e.preventDefault();
-                    alert("Please select at least one installment.");
+                    alert('Please select at least one installment to pay.');
                 }
-            }
-            );
+              });
         }
 
     </script>

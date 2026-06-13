@@ -23,7 +23,7 @@ async function setup() {
         await School.findOneAndUpdate(
             { code: schoolCode },
             {
-                name: "SchoolFlow Demo School",
+                name: "VidhyaLitee Demo School",
                 code: schoolCode,
                 status: 'Active',
                 subscriptionEnd: new Date("2030-12-31")

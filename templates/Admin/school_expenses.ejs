@@ -145,6 +145,11 @@
         border: 1px solid grey;
     }
 
+    .expense-form input[type="file"] {
+        width: 180px;
+        font-size: 13px;
+    }
+
     .expense-form button {
         padding: 5px 10px;
         background-color: rgb(66, 154, 242);
@@ -174,15 +179,27 @@
     .expense-header ul,
     .list {
         display: grid;
-        grid-template-columns: 0.8fr 1.8fr 1.8fr 1.5fr 1.5fr 1.8fr 1fr;
+        grid-template-columns: 0.6fr 1.5fr 2fr 1fr 1.2fr 1.8fr 0.8fr 1fr;
         list-style: none;
         font-size: 18px;
-        padding: 10px 10px;
+        padding: 10px;
         align-items: center;
         gap: 8px;
         word-break: break-word;
         min-width: 950px;
         /* 👈 SCROLL ENABLED */
+    }
+
+    .bill {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+    }
+
+    .bill a {
+        color: #2563eb;
+        font-size: 18px;
+        text-decoration: none;
     }
 
     .expense-header ul {
@@ -494,7 +511,7 @@
         .expense-header ul,
         .list {
             display: grid !important;
-            grid-template-columns: 0.5fr 1.5fr 2fr 1fr 1.5fr 2fr !important;
+            grid-template-columns: 0.5fr 1.3fr 2fr 1fr 1.3fr 1.8fr 0.8fr !important;
             min-width: 100% !important;
             padding: 5px 0 !important;
             font-size: 12px !important;
@@ -660,6 +677,7 @@
                                     <li>Quantity</li>
                                     <li>Amount</li>
                                     <li>Payment Date</li>
+                                    <li>Bill</li>
                                     <li>Action</li>
                                 </ul>
                             </div>
@@ -668,7 +686,8 @@
 
                             <div class="expense-form-wrapper">
 
-                                <form class="expense-form" action="/add-expense" method="POST">
+                                <form class="expense-form" action="/add-expense" method="POST"
+                                    enctype="multipart/form-data">
                                     <select class=".expense-category" name="category">
                                         <option value="maintenance">Maintenance</option>
                                         <option value="management">Management</option>
@@ -689,6 +708,7 @@
                                     <input type="text" name="amount" placeholder="Amount" required>
                                     <input type="text" onfocus="(this.type='date')" name="paymentDate"
                                         placeholder="Payment Date" required>
+                                    <input type="file" name="bill" accept=".pdf,.jpg,.jpeg,.png">
                                     <button type="submit">Save</button>
                                 </form>
                             </div>
@@ -718,6 +738,23 @@
                                                 <%= expense.paymentDate.toISOString().split("T")[0] %>
                                             </div>
 
+                                            <div class="bill">
+                                                <% if(expense.bill){ %>
+
+                                                    <a href="<%= expense.bill %>" target="_blank" title="View Bill">
+                                                        <i class="fa-solid fa-eye"></i>
+                                                    </a>
+
+                                                    <a href="<%= expense.bill.replace('/upload/', '/upload/fl_attachment/') %>"
+                                                        target="_blank" title="Download Bill">
+                                                        <i class="fa-solid fa-download"></i>
+                                                    </a>
+
+                                                    <% } else { %>
+                                                        N/A
+                                                        <% } %>
+                                            </div>
+
                                             <div class="icons">
                                                 <!-- Edit icon -->
                                                 <i class="fa-solid fa-pen-to-square" style="cursor:pointer"
@@ -736,7 +773,7 @@
                                         <!-- Editable Form View -->
                                         <form id="edit-<%= expense._id %>" class="expense-edit-form list"
                                             action="/edit-expense/<%= expense._id %>" method="POST"
-                                            style="display: none;">
+                                            enctype="multipart/form-data" style="display: none;">
                                             <div class="id">
                                                 <%= index + 1 %>
                                             </div>
@@ -781,7 +818,7 @@
                                             <input type="text" name="amount" value="<%= expense.amount %>" required>
                                             <input type="date" name="paymentDate"
                                                 value="<%= expense.paymentDate.toISOString().split('T')[0] %>" required>
-
+                                            <input type="file" name="bill" accept=".pdf,.jpg,.jpeg,.png">
                                             <button type="submit">Save</button>
                                         </form>
 

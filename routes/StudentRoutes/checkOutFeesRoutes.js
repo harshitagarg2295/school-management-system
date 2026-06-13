@@ -51,10 +51,12 @@ router.post("/students/checkout-fees", studentAuth, async (req, res) => {
         const studentId = req.session.studentId.id;
 
         let selectedIndexes = req.body.installments;
-        // Agar koi installment select nahi ki
+         let selectedVehicleIndexes = req.body.vehicleInstallments;
 
-        if (!selectedIndexes || selectedIndexes.length === 0
-        ) {
+         // Koi bhi ek select honi chahiye
+        const hasAcademic = selectedIndexes && selectedIndexes.length > 0;
+        const hasVehicle = selectedVehicleIndexes && selectedVehicleIndexes.length > 0;
+        if (!hasAcademic && !hasVehicle) {
             return res.send(`
                 <script>
                     alert("Please select at least one installment.");
@@ -62,25 +64,21 @@ router.post("/students/checkout-fees", studentAuth, async (req, res) => {
                 </script>
             `);
         }
-
         // Single checkbox ko array me convert karna
+        if (selectedIndexes && !Array.isArray(selectedIndexes)) selectedIndexes = [selectedIndexes];
+        if (selectedVehicleIndexes && !Array.isArray(selectedVehicleIndexes)) selectedVehicleIndexes = [selectedVehicleIndexes];
+          
 
-        if (!Array.isArray(selectedIndexes)) {
-            selectedIndexes = [selectedIndexes];
-        }
+        selectedIndexes = selectedIndexes || [];
+        selectedVehicleIndexes = selectedVehicleIndexes || [];
 
-        const student = await Student.findOne({
-            _id: studentId,
-            schoolCode
-        });
+         const student = await Student.findOne({ _id: studentId, schoolCode });
 
         if (!student) {
             return res.status(404).send("Student not found");
         }
 
-        const admin = await AdminProfile.findOne({
-            schoolCode
-        });
+        const admin = await AdminProfile.findOne({ schoolCode });
 
         const schoolName = req.session.schoolName || student.schoolName || "School";
 
@@ -88,9 +86,9 @@ router.post("/students/checkout-fees", studentAuth, async (req, res) => {
 
         if (!admin?.schoolAccountId) {
 
-            return res.send(`
+               return res.send(`
                 <script>
-                    alert( "School payment account is not configured yet.");
+                    alert("School payment account is not configured yet.");
                     window.location.href = "/students/checkout-fees";
                 </script>
             `);
@@ -99,13 +97,13 @@ router.post("/students/checkout-fees", studentAuth, async (req, res) => {
         res.render("Students/paymentOptions", {
             student,
             selectedIndexes,
+               selectedVehicleIndexes,
             schoolName,
             schoolAccountId: admin.schoolAccountId
         });
 
     }
-
-    catch (err) {
+ catch (err) {
         console.error("Checkout fees post error:", err);
         res.status(500).send("Something went wrong");
     }
