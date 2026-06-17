@@ -281,6 +281,86 @@
 
     }
 
+    /* ── Bulk Upload Modal ── */
+    .bulk-upload-btn {
+        margin: 10px 5px;
+        padding: 7px 12px;
+        font-size: 15px;
+        border-radius: 6px;
+        outline: none;
+        border: none;
+        background-color: #16a34a;
+        color: white;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: background 0.2s;
+    }
+    .bulk-upload-btn:hover { background-color: #15803d; }
+    .bulk-modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.55);
+        z-index: 9999;
+        justify-content: center;
+        align-items: center;
+    }
+    .bulk-modal-overlay.active { display: flex; }
+    .bulk-modal {
+        background: #fff;
+        border-radius: 14px;
+        padding: 30px 32px;
+        width: 420px;
+        max-width: 95vw;
+        box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+        position: relative;
+        animation: modalIn 0.22s ease;
+    }
+    @keyframes modalIn {
+        from { transform: scale(0.92); opacity: 0; }
+        to   { transform: scale(1);    opacity: 1; }
+    }
+    .bulk-modal h2 { margin: 0 0 6px; font-size: 20px; color: #1e293b; }
+    .bulk-modal p.bulk-sub { font-size: 13px; color: #64748b; margin-bottom: 18px; }
+    .bulk-modal .sample-link {
+        display: inline-flex; align-items: center; gap: 5px;
+        font-size: 13px; color: #2563eb; text-decoration: none;
+        margin-bottom: 16px; font-weight: 500;
+    }
+    .bulk-modal .sample-link:hover { text-decoration: underline; }
+    .bulk-modal .file-drop-area {
+        border: 2px dashed #93c5fd; border-radius: 10px; padding: 22px 16px;
+        text-align: center; color: #475569; font-size: 14px; background: #f0f9ff;
+        cursor: pointer; transition: border-color 0.2s, background 0.2s;
+        margin-bottom: 16px; position: relative;
+    }
+    .bulk-modal .file-drop-area:hover, .bulk-modal .file-drop-area.dragover {
+        border-color: #3b82f6; background: #dbeafe;
+    }
+    .bulk-modal .file-drop-area input[type=file] {
+        position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+    }
+    .bulk-modal .file-name-display { font-size: 13px; color: #16a34a; font-weight: 600; margin-top: 6px; min-height: 18px; }
+    .bulk-modal .modal-actions { display: flex; gap: 10px; margin-top: 6px; }
+    .bulk-modal .upload-submit-btn {
+        flex: 1; padding: 10px; background: #16a34a; color: white; border: none;
+        border-radius: 8px; font-size: 15px; cursor: pointer; font-weight: 600; transition: background 0.2s;
+    }
+    .bulk-modal .upload-submit-btn:hover { background: #15803d; }
+    .bulk-modal .upload-submit-btn:disabled { background: #86efac; cursor: not-allowed; }
+    .bulk-modal .cancel-btn {
+        padding: 10px 18px; background: #f1f5f9; border: 1px solid #cbd5e1;
+        border-radius: 8px; font-size: 15px; cursor: pointer; color: #475569;
+    }
+    .bulk-modal .cancel-btn:hover { background: #e2e8f0; }
+    .bulk-modal .close-modal {
+        position: absolute; top: 14px; right: 16px; background: none; border: none;
+        font-size: 22px; cursor: pointer; color: #94a3b8; line-height: 1;
+    }
+    .bulk-uploading-spinner { display: none; font-size: 13px; color: #2563eb; text-align: center; margin-top: 8px; }
+
     @media print {
         body {
             background: white !important;
@@ -386,6 +466,9 @@
 
                             <div class="btn">
                                 <button class="add_staff">Add staff</button>
+                                <button class="bulk-upload-btn no-print" id="openStaffBulkModal">
+                                    <i class="fa-solid fa-file-arrow-up"></i> Bulk Upload (Excel)
+                                </button>
                             </div>
 
                             <div class="staff-form-wrapper">
@@ -515,6 +598,71 @@
                             </div>
                         </div>
                     </div>
+                    <!-- BULK UPLOAD MODAL (STAFF) -->
+                    <div class="bulk-modal-overlay" id="staffBulkModalOverlay">
+                        <div class="bulk-modal" id="staffBulkModal">
+                            <button class="close-modal" id="closeStaffBulkModal">&times;</button>
+
+                            <!-- UPLOAD VIEW -->
+                            <div id="staffUploadView">
+                                <h2><i class="fa-solid fa-id-badge" style="color:#16a34a"></i> Bulk Upload Staff</h2>
+                                <p class="bulk-sub">Upload an Excel file to add all staff members at once</p>
+
+                                <a href="/download-sample/staff" class="sample-link" download>
+                                    <i class="fa-solid fa-download"></i> Download Sample Excel Template
+                                </a>
+
+                                <div class="file-drop-area" id="staffDropArea">
+                                    <i class="fa-solid fa-cloud-arrow-up" style="font-size:28px; color:#3b82f6; margin-bottom:8px;"></i>
+                                    <p style="margin:0;">Drop file here or <strong>Click to Browse</strong></p>
+                                    <p style="margin:4px 0 0; font-size:12px; color:#94a3b8;">.xlsx, .xls, .csv supported</p>
+                                    <input type="file" id="staffFileInput" accept=".xlsx,.xls,.csv">
+                                </div>
+                                <p class="file-name-display" id="staffFileName"></p>
+
+                                <div class="modal-actions">
+                                    <button type="button" class="upload-submit-btn" id="staffUploadBtn">
+                                        <i class="fa-solid fa-upload"></i> Upload
+                                    </button>
+                                    <button type="button" class="cancel-btn" id="cancelStaffBulk">Cancel</button>
+                                </div>
+                                <div id="staffProcessingState" style="display:none; text-align:center; padding:14px 0;">
+                                    <i class="fa-solid fa-spinner fa-spin" style="font-size:26px; color:#3b82f6;"></i>
+                                    <p style="margin:8px 0 0; color:#475569; font-size:14px;">Processing file, please wait...</p>
+                                </div>
+                            </div>
+
+                            <!-- RESULT VIEW -->
+                            <div id="staffResultView" style="display:none;">
+                                <div id="staffResultSuccess" style="display:none;">
+                                    <div style="text-align:center; margin-bottom:16px;">
+                                        <i class="fa-solid fa-circle-check" style="font-size:40px; color:#16a34a;"></i>
+                                        <h2 style="margin:8px 0 4px; color:#1e293b;">Upload Successful!</h2>
+                                    </div>
+                                    <div id="staffResultStats" style="display:flex; gap:12px; margin-bottom:16px;"></div>
+                                </div>
+                                <div id="staffResultError" style="display:none;">
+                                    <div style="text-align:center; margin-bottom:16px;">
+                                        <i class="fa-solid fa-circle-xmark" style="font-size:40px; color:#ef4444;"></i>
+                                        <h2 style="margin:8px 0 4px; color:#1e293b;">Upload Failed</h2>
+                                        <p id="staffErrorMsg" style="color:#64748b; font-size:14px; margin:0;"></p>
+                                    </div>
+                                </div>
+                                <div id="staffSkippedSection" style="display:none;">
+                                    <p style="font-size:13px; font-weight:600; color:#b45309; margin:0 0 8px;"><i class="fa-solid fa-triangle-exclamation"></i> Records Not Uploaded:</p>
+                                    <div id="staffSkippedList" style="max-height:180px; overflow-y:auto; font-size:12px; background:#fef9c3; border-radius:8px; padding:10px;"></div>
+                                </div>
+                                <div class="modal-actions" style="margin-top:16px;">
+                                    <button type="button" class="upload-submit-btn" id="staffGoToListBtn" style="display:none;" onclick="window.location.href='/staff-menu'">
+                                        <i class="fa-solid fa-list"></i> View Staff List
+                                    </button>
+                                    <button type="button" class="cancel-btn" id="staffUploadAnotherBtn">Upload Another File</button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
                     <div class="pdf-btn">
                         <button onclick="window.print()" class="print-btn no-print">
                             Download PDF
@@ -529,7 +677,6 @@
         searchInput.addEventListener("input", function () {
             const searchText = this.value.toLowerCase();
             const staffRows = document.querySelectorAll(".staff-wrapper");
-
             staffRows.forEach(row => {
                 const name = row.dataset.name;
                 row.style.display = name.includes(searchText) ? "" : "none";
@@ -537,16 +684,13 @@
         });
 
         let btn = document.querySelector(".add_staff");
-
         btn.addEventListener("click", () => {
-            // document.querySelector(".staff-form").style.display = 'block';
             document.querySelector(".staff-form").classList.add("show");
-
         });
 
         function enableEdit(id) {
             document.getElementById("display-" + id).style.display = "none";
-            document.getElementById("edit-" + id).style.display = "grid";  // grid for layout
+            document.getElementById("edit-" + id).style.display = "grid";
         }
 
         function confirmDelete() {
@@ -558,18 +702,113 @@
 
         allDots.forEach((dot, index) => {
             dot.addEventListener("click", () => {
-                // Hide all dropdowns first
                 allMenus.forEach(menu => menu.style.display = "none");
-
-                // Show clicked one
                 allMenus[index].style.display = "block";
             });
         });
 
-        // Hide if clicked outside
         document.addEventListener("click", function (e) {
             if (!e.target.closest(".dropdown")) {
                 allMenus.forEach(menu => menu.style.display = "none");
+            }
+        });
+
+        // ── Bulk Upload Modal Logic (Staff) — AJAX ──
+        const staffOverlay   = document.getElementById("staffBulkModalOverlay");
+        const openStaffBtn   = document.getElementById("openStaffBulkModal");
+        const closeStaffBtn  = document.getElementById("closeStaffBulkModal");
+        const cancelStaffBtn = document.getElementById("cancelStaffBulk");
+        const staffFileInput = document.getElementById("staffFileInput");
+        const staffFileName  = document.getElementById("staffFileName");
+        const staffUploadBtn = document.getElementById("staffUploadBtn");
+        const staffDropArea  = document.getElementById("staffDropArea");
+
+        function openStaffModal() { staffOverlay.classList.add("active"); showStaffUploadView(); }
+        function closeStaffModal() { staffOverlay.classList.remove("active"); }
+        function showStaffUploadView() {
+            document.getElementById("staffUploadView").style.display = "";
+            document.getElementById("staffResultView").style.display = "none";
+            document.getElementById("staffProcessingState").style.display = "none";
+            staffUploadBtn.disabled = false;
+            staffUploadBtn.style.display = "";
+            staffFileInput.value = "";
+            staffFileName.textContent = "";
+        }
+
+        openStaffBtn.addEventListener("click", openStaffModal);
+        closeStaffBtn.addEventListener("click", closeStaffModal);
+        cancelStaffBtn.addEventListener("click", closeStaffModal);
+        document.getElementById("staffUploadAnotherBtn").addEventListener("click", showStaffUploadView);
+        staffOverlay.addEventListener("click", (e) => { if (e.target === staffOverlay) closeStaffModal(); });
+
+        staffFileInput.addEventListener("change", () => {
+            staffFileName.textContent = staffFileInput.files[0]?.name || "";
+        });
+        staffDropArea.addEventListener("dragover", (e) => { e.preventDefault(); staffDropArea.classList.add("dragover"); });
+        staffDropArea.addEventListener("dragleave", () => staffDropArea.classList.remove("dragover"));
+        staffDropArea.addEventListener("drop", (e) => {
+            e.preventDefault(); staffDropArea.classList.remove("dragover");
+            staffFileInput.files = e.dataTransfer.files;
+            staffFileName.textContent = e.dataTransfer.files[0]?.name || "";
+        });
+
+        staffUploadBtn.addEventListener("click", async () => {
+            if (!staffFileInput.files || !staffFileInput.files[0]) { alert("Please select a file first."); return; }
+            staffUploadBtn.disabled = true;
+            document.getElementById("staffProcessingState").style.display = "block";
+            staffUploadBtn.style.display = "none";
+            document.getElementById("cancelStaffBulk").style.display = "none";
+
+            const formData = new FormData();
+            formData.append("excelFile", staffFileInput.files[0]);
+
+            try {
+                const res  = await fetch("/bulk-upload-staff", { method: "POST", body: formData });
+                const data = await res.json();
+                document.getElementById("staffUploadView").style.display = "none";
+                document.getElementById("staffResultView").style.display = "";
+                document.getElementById("cancelStaffBulk").style.display = "";
+
+                if (data.success) {
+                    document.getElementById("staffResultSuccess").style.display = "";
+                    document.getElementById("staffResultError").style.display = "none";
+                    document.getElementById("staffResultStats").innerHTML = `
+                        <div style="flex:1; background:#dcfce7; border-radius:10px; padding:12px; text-align:center;">
+                            <div style="font-size:26px; font-weight:700; color:#16a34a;">${data.created}</div>
+                            <div style="font-size:12px; color:#15803d;">Staff Added</div>
+                        </div>
+                        <div style="flex:1; background:${data.skipped > 0 ? '#fef9c3' : '#f1f5f9'}; border-radius:10px; padding:12px; text-align:center;">
+                            <div style="font-size:26px; font-weight:700; color:${data.skipped > 0 ? '#b45309' : '#64748b'};">${data.skipped}</div>
+                            <div style="font-size:12px; color:#64748b;">Skipped</div>
+                        </div>
+                        <div style="flex:1; background:#f1f5f9; border-radius:10px; padding:12px; text-align:center;">
+                            <div style="font-size:26px; font-weight:700; color:#475569;">${data.total}</div>
+                            <div style="font-size:12px; color:#64748b;">Total Rows</div>
+                        </div>
+                    `;
+                    if (data.skipped > 0 && data.skippedList?.length > 0) {
+                        document.getElementById("staffSkippedSection").style.display = "";
+                        document.getElementById("staffSkippedList").innerHTML = data.skippedList.map(s =>
+                            `<div style="padding:4px 0; border-bottom:1px solid #fde68a;"><strong>${s.name}</strong> [${s.id}] — ${s.reason}</div>`
+                        ).join("") + (data.hasMoreSkipped ? `<div style="color:#b45309;">...and more records were skipped.</div>` : "");
+                    } else { document.getElementById("staffSkippedSection").style.display = "none"; }
+                    document.getElementById("staffGoToListBtn").style.display = data.created > 0 ? "" : "none";
+                } else {
+                    document.getElementById("staffResultSuccess").style.display = "none";
+                    document.getElementById("staffResultError").style.display = "";
+                    document.getElementById("staffSkippedSection").style.display = "none";
+                    document.getElementById("staffGoToListBtn").style.display = "none";
+                    document.getElementById("staffErrorMsg").textContent = data.message || "Upload failed. Please try again.";
+                }
+            } catch (err) {
+                document.getElementById("staffUploadView").style.display = "none";
+                document.getElementById("staffResultView").style.display = "";
+                document.getElementById("staffResultSuccess").style.display = "none";
+                document.getElementById("staffResultError").style.display = "";
+                document.getElementById("staffSkippedSection").style.display = "none";
+                document.getElementById("staffGoToListBtn").style.display = "none";
+                document.getElementById("staffErrorMsg").textContent = "Network error. Please check your connection and try again.";
+                document.getElementById("cancelStaffBulk").style.display = "";
             }
         });
     </script>

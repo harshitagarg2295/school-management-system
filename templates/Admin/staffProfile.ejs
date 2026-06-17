@@ -577,6 +577,13 @@
                             </div>
 
                             <div class="info-card">
+                                <div class="label"><i class="fa-solid fa-user"></i>Gender</div>
+                                <div class="value">
+                                    <%= staff.gender || 'N/A' %>
+                                </div>
+                            </div>
+
+                            <div class="info-card">
                                 <div class="label"><i class="fa-solid fa-phone"></i> Mobile</div>
                                 <div class="value">
                                     <%= staff.phone %>
@@ -673,6 +680,14 @@
                         <div class="form-grid">
                             <div class="form-group"><label>Full Name</label><input type="text" name="name"
                                     value="<%= staff.name %>" required></div>
+                            <div class="form-group"><label>Gender</label>
+                                <select name="gender">
+                                    <option value="">Select Gender</option>
+                                    <option value="Male" <%=staff.gender==='Male' ? 'selected' : '' %>>Male</option>
+                                    <option value="Female" <%=staff.gender==='Female' ? 'selected' : '' %>>Female</option>
+                                    <option value="Other" <%=staff.gender==='Other' ? 'selected' : '' %>>Other</option>
+                                </select>
+                            </div>
                             <div class="form-group"><label>Mobile Number</label><input type="text" name="phone"
                                     value="<%= staff.phone %>" required></div>
                             <div class="form-group"><label>Salary</label><input type="number" name="salary"

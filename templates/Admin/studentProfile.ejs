@@ -911,8 +911,10 @@
                     value="<%= student.bloodGroup || '' %>"></div>
                 <div class="form-group"><label>Gender</label>
                   <select name="gender">
+                    <option value="">Select Gender</option>
                     <option value="Male" <%=student.gender==='Male' ? 'selected' : '' %>>Male</option>
                     <option value="Female" <%=student.gender==='Female' ? 'selected' : '' %>>Female</option>
+                    <option value="Other" <%=student.gender==='Other' ? 'selected' : '' %>>Other</option>
                   </select>
                 </div>
                 <div class="form-group"><label>Mobile</label><input type="text" name="phone"

@@ -17,7 +17,7 @@ const staffSchema = new mongoose.Schema({
   // 🔥 NEW FIELDS
   gender: {
     type: String,
-    enum: ["male", "female", "other"]
+    enum: ["Male", "Female", "Other"]
   },
 
   dob: Date,

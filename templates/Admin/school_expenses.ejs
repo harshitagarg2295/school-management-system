@@ -737,22 +737,24 @@
                                             <div class="payment-date">
                                                 <%= expense.paymentDate.toISOString().split("T")[0] %>
                                             </div>
-
                                             <div class="bill">
                                                 <% if(expense.bill){ %>
 
-                                                    <a href="<%= expense.bill %>" target="_blank" title="View Bill">
-                                                        <i class="fa-solid fa-eye"></i>
-                                                    </a>
+                                                    <%/* Sirf images ke liye View button */%>
+                                                    <% if(expense.billType && expense.billType.startsWith('image/')){ %>
+                                                        <a href="<%= expense.bill %>" target="_blank" title="View Bill">
+                                                            <i class="fa-solid fa-eye"></i>
+                                                        </a>
+                                                    <% } %>
 
-                                                    <a href="<%= expense.bill.replace('/upload/', '/upload/fl_attachment/') %>"
-                                                        target="_blank" title="Download Bill">
+                                                    <%/* Server-side download route - works for PDF, PNG, JPG sab */%>
+                                                    <a href="/download-bill/<%= expense._id %>" title="Download Bill">
                                                         <i class="fa-solid fa-download"></i>
                                                     </a>
 
-                                                    <% } else { %>
-                                                        N/A
-                                                        <% } %>
+                                                <% } else { %>
+                                                    N/A
+                                                <% } %>
                                             </div>
 
                                             <div class="icons">

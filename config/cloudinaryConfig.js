@@ -21,10 +21,11 @@ const uploadProfile = multer({ storage: profileStorage });
 
 //  NAYA STORAGE STUDY MATERIAL KE LIYE (PDF, Docs, Jpg sab chalega)
 const materialStorage = new CloudinaryStorage({
+
   cloudinary: cloudinary,
   params: async (req, file) => {
     const isImage = file.mimetype.startsWith('image/');
-    
+
     // 🔥 Real file name nikalne ke liye (बिना extension ke, jaise 'chapter1')
     const originalName = file.originalname.split('.').slice(0, -1).join('.');
     // Unique rakhne ke liye thoda timestamp jod dete hain taaki same naam ki do files takrayen nahi
@@ -32,6 +33,7 @@ const materialStorage = new CloudinaryStorage({
 
     if (isImage) {
       const ext = file.mimetype.split('/')[1];
+
       return {
         folder: 'School_Management_Material',
         resource_type: 'image',
@@ -39,10 +41,12 @@ const materialStorage = new CloudinaryStorage({
         public_id: customPublicId // Real name set ho jayega
       };
     } else {
+      const extension = file.originalname.split('.').pop().toLowerCase();
+
       return {
         folder: 'School_Management_Material',
         resource_type: 'raw',
-        public_id: customPublicId // Real name set ho jayega
+        public_id: `${customPublicId}.${extension}`
       };
     }
   }

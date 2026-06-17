@@ -118,7 +118,6 @@ router.get("/school_expenses", adminAuth, async (req, res) => {
         const pieCategoryLabels = CATEGORIES;
         const pieCategoryData = CATEGORIES.map(c => categoryTotals[c] || 0);
 
-
         const admin = await AdminNotification.findOne({ schoolCode }) || { notifications: [] };
 
         res.render("Admin/school_expenses", {
@@ -153,7 +152,7 @@ router.post("/add-expense", adminAuth, uploadMaterial.single("bill"), async (req
         const schoolCode = req.session.schoolCode;
         const { category, title, quantity, amount, paymentDate } = req.body;
 
-        const pyDate = new Date(paymentDate);  // 👈 string to Date object
+        const pyDate = new Date(paymentDate);
 
         const expense = new Expense({
             category: toTitleCase(category),
@@ -163,9 +162,11 @@ router.post("/add-expense", adminAuth, uploadMaterial.single("bill"), async (req
             paymentDate: pyDate,
             schoolCode,
             bill: req.file ? req.file.path : "",
-            billPublicId: req.file.filename
+            billPublicId: req.file ? req.file.filename : "",
+            billType: req.file ? req.file.mimetype : "",
+            originalFileName: req.file ? req.file.originalname : ""
         });
-
+        console.log(req.file);
         await expense.save();
         res.redirect("/school_expenses");
     } catch (err) {
@@ -180,7 +181,7 @@ router.post("/edit-expense/:id", adminAuth, uploadMaterial.single("bill"), async
         const schoolCode = req.session.schoolCode;
         const { category, title, quantity, amount, paymentDate } = req.body;
 
-        const pyDate = new Date(paymentDate);  // 👈 string to Date object
+        const pyDate = new Date(paymentDate);
 
         const updateData = {
             category: toTitleCase(category),
@@ -193,13 +194,12 @@ router.post("/edit-expense/:id", adminAuth, uploadMaterial.single("bill"), async
         if (req.file) {
             updateData.bill = req.file.path;
             updateData.billPublicId = req.file.filename;
+            updateData.billType = req.file.mimetype;
+            updateData.originalFileName = req.file.originalname;
         }
 
         await Expense.findOneAndUpdate(
-            {
-                _id: req.params.id,
-                schoolCode
-            },
+            { _id: req.params.id, schoolCode },
             updateData
         );
         res.redirect("/school_expenses");
@@ -214,29 +214,63 @@ router.post("/delete-expense/:id", adminAuth, async (req, res) => {
     try {
         const schoolCode = req.session.schoolCode;
 
-        const expense = await Expense.findOne({
-            _id: req.params.id,
-            schoolCode
-        });
+        const expense = await Expense.findOne({ _id: req.params.id, schoolCode });
 
         if (!expense) {
             return res.redirect("/school_expenses");
         }
 
-        if (expense.bill) {
-
+        if (expense.bill && expense.billPublicId) {
+            // image ke liye 'image', PDF/others ke liye 'raw'
+            const resourceType = (expense.billType && expense.billType.startsWith('image/')) ? 'image' : 'raw';
             await cloudinary.uploader.destroy(
                 expense.billPublicId,
-                { resource_type: "raw" }
+                { resource_type: resourceType }
             );
         }
 
-        await Expense.findOneAndDelete({
-            _id: req.params.id,
-            schoolCode
-        });
+        await Expense.findOneAndDelete({ _id: req.params.id, schoolCode });
 
         res.redirect("/school_expenses");
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).render("HomePage/500");
+    }
+});
+
+// ✅ DOWNLOAD ROUTE
+router.get("/download-bill/:id", adminAuth, async (req, res) => {
+    try {
+        const schoolCode = req.session.schoolCode;
+        const expense = await Expense.findOne({ _id: req.params.id, schoolCode });
+
+        if (!expense || !expense.bill) {
+            return res.redirect("/school_expenses");
+        }
+
+        const isImage = expense.billType && expense.billType.startsWith('image/');
+
+        if (isImage) {
+            // Images: fl_attachment image resources pe kaam karta hai
+            const downloadUrl = cloudinary.url(expense.billPublicId, {
+                resource_type: 'image',
+                flags: 'attachment',
+                secure: true,
+                sign_url: true,
+                type: 'upload'
+            });
+            return res.redirect(downloadUrl);
+        } else {
+            // PDF/raw: private_download_url → browser directly download karta hai
+            const ext = (expense.originalFileName || 'file').split('.').pop().toLowerCase();
+            const downloadUrl = cloudinary.utils.private_download_url(
+                expense.billPublicId,
+                ext,
+                { resource_type: 'raw', attachment: true }
+            );
+            return res.redirect(downloadUrl);
+        }
 
     } catch (err) {
         console.error(err);

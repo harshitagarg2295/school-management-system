@@ -147,6 +147,10 @@ app.use("/", settingRoutes);
 const uploadBiometricRoute = require("./routes/AdminRoutes/uploadBiometricRoutes");
 app.use(uploadBiometricRoute);
 
+// Route for Bulk Excel Upload (Students, Teachers, Staff)
+const bulkUploadRoute = require("./routes/AdminRoutes/bulkUploadRoutes");
+app.use(bulkUploadRoute);
+
 // Routes for Admin Dashboard
 const adminDashboardRoute = require("./routes/AdminRoutes/adminDashBoardRoutes");
 app.use(adminDashboardRoute);

@@ -37,7 +37,7 @@ router.post("/add-staff", adminAuth, async (req, res) => {
     try {
         const schoolCode = req.session.schoolCode;
 
-        const { name, empId, category, salary, address, phone } = req.body;
+        const { name, empId, category, salary, address, phone,gender } = req.body;
 
         const testaff = new Staff({
             name: toTitleCase(name),
@@ -46,7 +46,8 @@ router.post("/add-staff", adminAuth, async (req, res) => {
             salary: salary,
             phone: phone,
             empId: empId?.toUpperCase() || "",
-            schoolCode
+            schoolCode,
+            gender
         });
 
         const savedStaff = await testaff.save();
@@ -111,6 +112,7 @@ router.post("/edit-staff/:id", adminAuth, async (req, res) => {
         if (req.body.name) updateData.name = toTitleCase(req.body.name);
         if (req.body.empId) updateData.empId = req.body.empId.trim().toUpperCase();
         if (req.body.phone) updateData.phone = req.body.phone;
+         if (req.body.gender) updateData.gender = req.body.gender;
         if (req.body.salary) updateData.salary = req.body.salary;
         if (req.body.address) updateData.address = toTitleCase(req.body.address);
         if (req.body.education) updateData.education = req.body.education;

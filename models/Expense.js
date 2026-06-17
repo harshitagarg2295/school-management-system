@@ -18,6 +18,14 @@ const expenseSchema = new mongoose.Schema({
     type: String,
     default: ""
   },
+  billType: {
+    type: String,
+    default: ""
+  },
+  originalFileName: {
+    type: String,
+    default: ""
+  },
   uniqueKey: { type: String, index: true },  // <-- NEW
 
   createdAt: {

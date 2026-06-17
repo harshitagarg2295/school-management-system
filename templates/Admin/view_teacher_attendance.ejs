@@ -350,92 +350,186 @@
         .bio-modal {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.55);
-            backdrop-filter: blur(4px);
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(10, 15, 40, 0.7);
+            backdrop-filter: blur(6px);
             justify-content: center;
             align-items: center;
             z-index: 9999;
         }
+        .bio-modal.active { display: flex; }
 
-        /* POPUP BOX */
         .bio-modal-content {
-            width: 380px;
-            background: white;
-            padding: 25px;
-            border-radius: 14px;
-            text-align: center;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            width: 460px;
+            max-width: 96vw;
+            background: #fff;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
             animation: popupShow 0.25s ease;
         }
-
-        @keyframes popupShow {
-            from {
-                transform: scale(0.85);
-                opacity: 0;
-            }
-
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        /* Title */
-        .bio-modal-content h2 {
-            margin: 0 0 15px 0;
-            font-size: 20px;
-            font-weight: 700;
-            color: #1f2937;
-        }
-
-        /* File Input */
-        .bio-input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #d1d5db;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            background: #f9fafb;
-        }
-
-        /* Button Row */
-        .bio-buttons {
+        .bio-modal-header {
+            background: linear-gradient(135deg, #1e3a8a, #2563eb);
+            padding: 20px 24px;
             display: flex;
-            justify-content: center;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .bio-modal-header h2 {
+            margin: 0;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
             gap: 10px;
         }
-
-        /* Upload Button */
-        .bio-upload-btn {
+        .bio-close-x {
+            background: rgba(255,255,255,0.15);
+            border: none;
+            color: #fff;
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        .bio-close-x:hover { background: rgba(255,255,255,0.3); }
+        .bio-modal-body { padding: 24px; }
+        .bio-sample-bar {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 10px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            font-size: 13px;
+            color: #1e40af;
+        }
+        .bio-sample-bar a {
             background: #2563eb;
-            padding: 8px 18px;
+            color: #fff;
+            padding: 6px 14px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: opacity 0.2s;
+        }
+        .bio-sample-bar a:hover { opacity: 0.85; }
+        .bio-format-info {
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 16px;
+            line-height: 1.8;
+        }
+        .bio-format-info strong { color: #334155; }
+        .bio-drop-zone {
+            border: 2px dashed #93c5fd;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            background: #f0f9ff;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 16px;
+            position: relative;
+        }
+        .bio-drop-zone.dragover { border-color: #2563eb; background: #dbeafe; }
+        .bio-drop-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+        .bio-drop-icon { font-size: 28px; margin-bottom: 8px; color: #60a5fa; }
+        .bio-drop-text { font-size: 13px; color: #475569; }
+        .bio-drop-text strong { color: #1d4ed8; }
+        .bio-file-name { margin-top: 8px; font-size: 12px; color: #2563eb; font-weight: 600; min-height: 18px; }
+        .bio-buttons { display: flex; gap: 10px; }
+        .bio-upload-btn {
+            flex: 1;
+            background: linear-gradient(135deg, #1d4ed8, #2563eb);
+            padding: 11px 18px;
             color: white;
             border: none;
-            border-radius: 8px;
-            font-weight: 600;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 14px;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: opacity 0.2s;
         }
-
-        .bio-upload-btn:hover {
-            opacity: 0.9;
-        }
-
-        /* Cancel */
+        .bio-upload-btn:hover { opacity: 0.9; }
+        .bio-upload-btn:disabled { opacity: 0.55; cursor: not-allowed; }
         .bio-cancel-btn {
-            background: #d1d5db;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 8px;
+            background: #f1f5f9;
+            padding: 11px 18px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
             cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: background 0.2s;
         }
-
-        .bio-cancel-btn:hover {
-            background: #b9c0cc;
+        .bio-cancel-btn:hover { background: #e2e8f0; }
+        .bio-processing { text-align: center; padding: 30px 24px; }
+        .bio-spinner {
+            width: 48px; height: 48px;
+            border: 4px solid #dbeafe;
+            border-top-color: #2563eb;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
         }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .bio-processing p { color: #475569; font-size: 14px; font-weight: 600; margin: 0; }
+        .bio-result { padding: 24px; text-align: center; }
+        .bio-result-icon {
+            width: 60px; height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin: 0 auto 16px;
+        }
+        .bio-result-icon.success { background: #dcfce7; color: #16a34a; }
+        .bio-result-icon.error { background: #fee2e2; color: #dc2626; }
+        .bio-result h3 { font-size: 18px; font-weight: 700; margin: 0 0 8px; }
+        .bio-result-date {
+            display: inline-block;
+            background: #eff6ff;
+            color: #1d4ed8;
+            border-radius: 20px;
+            padding: 3px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        .bio-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px; }
+        .bio-stat { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 6px; }
+        .bio-stat .num { font-size: 22px; font-weight: 800; }
+        .bio-stat .lbl { font-size: 11px; color: #64748b; font-weight: 500; }
+        .bio-stat.p .num { color: #16a34a; }
+        .bio-stat.l .num { color: #d97706; }
+        .bio-stat.a .num { color: #dc2626; }
+        .bio-result-actions { display: flex; gap: 10px; justify-content: center; }
+        .bio-btn-primary { background: linear-gradient(135deg, #1d4ed8, #2563eb); color: #fff; border: none; border-radius: 10px; padding: 10px 22px; font-weight: 700; cursor: pointer; font-size: 14px; }
+        .bio-btn-secondary { background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 22px; font-weight: 600; cursor: pointer; font-size: 14px; }
+        .bio-error-msg { background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; border-radius: 10px; padding: 12px 16px; font-size: 13px; margin-bottom: 16px; text-align: left; }
+        @keyframes popupShow { from { transform: scale(0.88); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
         /* --- RESPONSIVE --- */
         @media (max-width: 992px) {
@@ -880,28 +974,65 @@
         </div>
     </div>
 
-    <!-- Popup for biometric button -->
-
+    <!-- Biometric Upload Modal -->
     <div id="uploadModal" class="bio-modal">
-
         <div class="bio-modal-content">
-
-            <h2>Upload Biometric Attendance</h2>
-
-            <form action="/upload-biometric" method="POST" enctype="multipart/form-data">
-
-                <input type="hidden" name="origin" id="originInput">
-
-                <input type="file" name="bioFile" accept="*" required class="bio-input">
-
-                <div class="bio-buttons">
-                    <button type="submit" class="bio-upload-btn">Upload</button>
-                    <button type="button" class="bio-cancel-btn" id="closeModal">Cancel</button>
+            <div class="bio-modal-header">
+                <h2><i class="fa-solid fa-fingerprint"></i> Upload Biometric Attendance</h2>
+                <button class="bio-close-x" id="closeModal" type="button">✕</button>
+            </div>
+            <div id="bioUploadView">
+                <div class="bio-modal-body">
+                    <div class="bio-sample-bar">
+                        <span><i class="fa-solid fa-circle-info"></i> Don't have the format?</span>
+                        <a href="/download-biometric-sample" download>
+                            <i class="fa-solid fa-download"></i> Download Sample
+                        </a>
+                    </div>
+                    <div class="bio-format-info">
+                        <strong>📋 Required File Format (3 columns):</strong><br>
+                        <code>Employee ID &nbsp;|&nbsp; Date (DD-MM-YYYY) &nbsp;|&nbsp; Time (HH:MM)</code><br>
+                        Accepted: <strong>.xlsx, .xls, .csv, .txt</strong><br>
+                        ⏰ Late cutoff: <strong>09:10 AM</strong> (after → Marked Late)
+                    </div>
+                    <div class="bio-drop-zone" id="bioDropZone">
+                        <input type="file" id="bioFileInput" accept=".csv,.xlsx,.xls,.txt">
+                        <div class="bio-drop-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                        <div class="bio-drop-text"><strong>Click to browse</strong> or drag & drop file here</div>
+                        <div class="bio-file-name" id="bioFileName"></div>
+                    </div>
+                    <div class="bio-buttons">
+                        <button type="button" id="bioUploadBtn" class="bio-upload-btn">
+                            <i class="fa-solid fa-upload"></i> Upload Attendance
+                        </button>
+                        <button type="button" class="bio-cancel-btn" id="bioCancelBtn">Cancel</button>
+                    </div>
                 </div>
-            </form>
-
+            </div>
+            <div id="bioProcessingView" style="display:none;">
+                <div class="bio-processing">
+                    <div class="bio-spinner"></div>
+                    <p>Processing biometric file...<br><small style="color:#94a3b8;">Please wait, updating attendance records</small></p>
+                </div>
+            </div>
+            <div id="bioResultView" style="display:none;">
+                <div class="bio-result">
+                    <div class="bio-result-icon" id="bioResultIcon"></div>
+                    <h3 id="bioResultTitle"></h3>
+                    <div id="bioResultDate" class="bio-result-date" style="display:none;"></div>
+                    <div id="bioErrorMsg" class="bio-error-msg" style="display:none;"></div>
+                    <div class="bio-stats" id="bioStatsGrid" style="display:none;">
+                        <div class="bio-stat p"><div class="num" id="bioPresentCount">0</div><div class="lbl">Present</div></div>
+                        <div class="bio-stat l"><div class="num" id="bioLateCount">0</div><div class="lbl">Late</div></div>
+                        <div class="bio-stat a"><div class="num" id="bioAbsentCount">0</div><div class="lbl">Absent</div></div>
+                    </div>
+                    <div class="bio-result-actions">
+                        <button type="button" class="bio-btn-primary" id="bioGoBtn" style="display:none;">View Attendance</button>
+                        <button type="button" class="bio-btn-secondary" id="bioRetryBtn">Upload Another</button>
+                    </div>
+                </div>
+            </div>
         </div>
-
     </div>
 
     <script>
@@ -1016,17 +1147,117 @@
         document.getElementById("closePopup").addEventListener("click", () => document.getElementById("holidayPopup").style.display = 'none');
 
 
-        // Js for open / close biometric popup
-        document.getElementById("uploadBioBtn").addEventListener("click", (e) => {
-            const origin = e.target.dataset.origin;
-            document.getElementById("originInput").value = origin;
-            document.getElementById("uploadModal").style.display = "flex";
-        });
+        // Biometric modal logic
+        (function() {
+            const modal       = document.getElementById("uploadModal");
+            const uploadView  = document.getElementById("bioUploadView");
+            const processingView = document.getElementById("bioProcessingView");
+            const resultView  = document.getElementById("bioResultView");
+            const fileInput   = document.getElementById("bioFileInput");
+            const fileName    = document.getElementById("bioFileName");
+            const dropZone    = document.getElementById("bioDropZone");
+            const uploadBtn   = document.getElementById("bioUploadBtn");
+            const cancelBtn   = document.getElementById("bioCancelBtn");
+            const closeBtn    = document.getElementById("closeModal");
+            const retryBtn    = document.getElementById("bioRetryBtn");
+            const goBtn       = document.getElementById("bioGoBtn");
+            let bioOrigin     = "teacher";
+            let redirectUrl   = "/view-attendance-teachers";
 
+            function openModal(origin) {
+                bioOrigin = origin || "teacher";
+                modal.classList.add("active");
+                showUploadView();
+            }
+            function closeModal() { modal.classList.remove("active"); }
+            function showUploadView() {
+                uploadView.style.display = "";
+                processingView.style.display = "none";
+                resultView.style.display = "none";
+                fileInput.value = "";
+                fileName.textContent = "";
+            }
+            function showResult(data) {
+                uploadView.style.display = "none";
+                processingView.style.display = "none";
+                resultView.style.display = "";
+                const icon   = document.getElementById("bioResultIcon");
+                const title  = document.getElementById("bioResultTitle");
+                const dateEl = document.getElementById("bioResultDate");
+                const errEl  = document.getElementById("bioErrorMsg");
+                const stats  = document.getElementById("bioStatsGrid");
 
-        document.getElementById("closeModal").addEventListener("click", () => {
-            document.getElementById("uploadModal").style.display = "none";
-        });
+                if (data.success) {
+                    icon.className = "bio-result-icon success";
+                    icon.innerHTML = "✓";
+                    title.textContent = "Attendance Uploaded!";
+                    title.style.color = "#15803d";
+                    dateEl.style.display = "inline-block";
+                    dateEl.textContent = "📅 " + data.date;
+                    errEl.style.display = "none";
+                    stats.style.display = "grid";
+                    document.getElementById("bioPresentCount").textContent = data.presentCount || 0;
+                    document.getElementById("bioLateCount").textContent    = data.lateCount || 0;
+                    document.getElementById("bioAbsentCount").textContent  = data.absentCount || 0;
+                    redirectUrl = data.redirectUrl || "/view-attendance-teachers";
+                    goBtn.style.display = "inline-block";
+                } else {
+                    icon.className = "bio-result-icon error";
+                    icon.innerHTML = "✕";
+                    title.textContent = "Upload Failed";
+                    title.style.color = "#b91c1c";
+                    dateEl.style.display = "none";
+                    errEl.style.display = "block";
+                    errEl.textContent = data.message || "Something went wrong.";
+                    stats.style.display = "none";
+                    goBtn.style.display = "none";
+                }
+            }
+
+            document.getElementById("uploadBioBtn").addEventListener("click", (e) => {
+                openModal(e.currentTarget.dataset.origin);
+            });
+            closeBtn.addEventListener("click", closeModal);
+            cancelBtn.addEventListener("click", closeModal);
+            modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
+            retryBtn.addEventListener("click", showUploadView);
+            goBtn.addEventListener("click", () => { window.location.href = redirectUrl; });
+
+            fileInput.addEventListener("change", () => {
+                fileName.textContent = fileInput.files[0]?.name || "";
+            });
+            dropZone.addEventListener("dragover", (e) => { e.preventDefault(); dropZone.classList.add("dragover"); });
+            dropZone.addEventListener("dragleave", () => dropZone.classList.remove("dragover"));
+            dropZone.addEventListener("drop", (e) => {
+                e.preventDefault(); dropZone.classList.remove("dragover");
+                const file = e.dataTransfer.files[0];
+                if (file) {
+                    const dt = new DataTransfer();
+                    dt.items.add(file);
+                    fileInput.files = dt.files;
+                    fileName.textContent = file.name;
+                }
+            });
+
+            uploadBtn.addEventListener("click", () => {
+                const file = fileInput.files[0];
+                if (!file) { alert("Please select a file first."); return; }
+
+                const formData = new FormData();
+                formData.append("bioFile", file);
+                formData.append("origin", bioOrigin);
+
+                uploadView.style.display = "none";
+                processingView.style.display = "";
+
+                fetch("/upload-biometric", { method: "POST", body: formData })
+                    .then(r => r.json())
+                    .then(data => { showResult(data); })
+                    .catch(() => {
+                        showResult({ success: false, message: "Network error. Please try again." });
+                    });
+            });
+        })();
 
         // For printing live date time on pdf report
         window.onbeforeprint = function () {
