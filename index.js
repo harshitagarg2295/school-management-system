@@ -121,6 +121,55 @@ app.get("/app", (req, res) => {
   return res.redirect("/login");
 });
 
+// Google Search Console ke liye Dynamic Sitemap Route
+// Google Search Console ke liye Dynamic Sitemap Route
+app.get('/sitemap.xml', (req, res) => {
+    res.header('Content-Type', 'application/xml');
+    res.send(`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://vidhyalitee.in/</loc>
+    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://vidhyalitee.in/login</loc>
+    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vidhyalitee.in/about-us</loc>
+    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://vidhyalitee.in/features</loc>
+    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://vidhyalitee.in/contact-us</loc>
+    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://vidhyalitee.in/privacy-policy</loc>
+    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://vidhyalitee.in/terms-conditions</loc>
+    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://vidhyalitee.in/refund-policy</loc>
+    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
+    <priority>0.5</priority>
+  </url>
+</urlset>`);
+});
+
 // Login for all (student, teacher & admin)
 
 const Teacher = require("./models/TeacherSchema");
