@@ -75,7 +75,7 @@
         font-size: 18px;
         padding: 20px 10px;
         align-items: center;
-        word-break: break-word;
+        /* word-break: break-word; */
         border-bottom: 1px solid black;
     }
 
@@ -83,7 +83,7 @@
     .students-header ul,
     .list {
         display: grid;
-        grid-template-columns: 0.2fr 2fr 1fr 1fr 1.5fr 2fr 1.8fr 1.2fr 1fr;
+        grid-template-columns: 0.2fr 1.8fr 1.5fr 1fr 1.5fr 2fr 1.8fr 1.2fr 1fr;
         min-width: 980px;
         gap: 10px;
         align-items: center;
@@ -564,7 +564,7 @@
                                 <ul>
                                     <div class="header-checkbox"></div>
                                     <li>Student Name</li>
-                                    <li>Id</li>
+                                    <li>Admission No</li>
                                     <li>Class</li>
                                     <li>DOB</li>
                                     <li>Address</li>
@@ -586,15 +586,17 @@
                             <div class="student-form-wrapper">
 
                                 <form class="student-form" action="/add-student" method="POST">
-                                    <input type="text" name="name" placeholder="Name" required
+                                    <input type="text" name="studentName" placeholder="Full Name" required
                                         style="text-transform: capitalize;">
-                                    <input type="text" name="id" placeholder="ID" required
-                                        style="text-transform: capitalize;">
-                                    <input type="text" name="class" placeholder="Class + Section" required
+                                    <input type="text" name="admissionNo" placeholder="Admission No" required
+                                        style="text-transform: uppercase;">
+                                    <input type="text" name="class" placeholder="Class" required
+                                        style="text-transform: uppercase;">
+                                    <input type="text" name="section" placeholder="Section" 
                                         style="text-transform: uppercase;">
                                     <input type="text" onfocus="(this.type='date')" name="DOB" placeholder="DOB"
                                         required>
-                                    <input type="text" name="address" placeholder="Address" required
+                                    <input type="text" name="address" placeholder="Address"
                                         style="text-transform: capitalize;">
                                     <input type="text" name="phone" placeholder="Phone Number" required>
                                     <input type="text" name="fees" placeholder="Fees" required>
@@ -606,21 +608,21 @@
 
                                 <% students.forEach((student, index)=> { %>
                                     <div class="student-wrapper" id="wrapper-<%= student._id %>"
-                                        data-name="<%= student.name.toLowerCase() %>">
+                                        data-name="<%= (student.studentName || '').toLowerCase() %>">
 
                                         <!-- Normal View -->
                                         <div class="list" id="display-<%= student._id %>">
-                                            <div class="id">
+                                            <div class="no">
                                                 <%= index + 1 %>
                                             </div>
                                             <div class="name">
                                                 <a href="/student/<%= student._id %>"
                                                     style="text-decoration:none; color:inherit;">
-                                                    <%= student.name %>
+                                                    <%= student.studentName %>
                                                 </a>
                                             </div>
                                             <div class="id">
-                                                <%= student.id %>
+                                                <%= student.admissionNo %>
                                             </div>
                                             <div class="class">
                                                 <%= student.class %>
@@ -673,15 +675,15 @@
                                             <div class="id">
                                                 <%= index + 1 %>
                                             </div>
-                                            <input type="text" name="name" value="<%= student.name %>" required
+                                            <input type="text" name="studentName" value="<%= student.studentName %>" required
                                                 style="text-transform: capitalize;">
-                                            <input type="text" name="id" value="<%= student.id %>" required
+                                            <input type="text" name="admissionNo" value="<%= student.admissionNo %>" required
                                                 style="text-transform: capitalize;">
                                             <input type="text" name="class" value="<%= student.class %>" required
                                                 style="text-transform: uppercase;">
                                             <input type="date" name="DOB"
-                                                value="<%= student.DOB.toISOString().split('T')[0]%>" required>
-                                            <input type="text" name="address" value="<%= student.address %>" required
+                                                value="<%= student.DOB ? student.DOB.toISOString().split('T')[0] : '' %>" required>
+                                            <input type="text" name="address" value="<%= student.address || '' %>" required
                                                 style="text-transform: capitalize;">
                                             <input type="text" name="phone" value="<%= student.phone %>" required>
                                             <input type="text" name="fees" value="<%= student.fees %>" required>

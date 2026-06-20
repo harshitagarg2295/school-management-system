@@ -229,13 +229,13 @@
                         class="hero-avatar" alt="Profile Photo">
                     <div class="hero-info">
                         <h2>
-                            <%= student.name %>
+                            <%= student.studentName %>
                         </h2>
                         <p>Class <%= student.class %> - Section <%= student.section || 'N/A' %>
                         </p>
                         <div class="hero-badges">
                             <span class="badge"><i class="fa-solid fa-id-card"></i>
-                                <%= student.id || 'N/A' %>
+                                Adm No: <%= student.admissionNo || 'N/A' %>
                             </span>
                             <span class="badge"><i class="fa-solid fa-list-ol"></i> Roll: <%= student.rollNo || 'N/A' %>
                             </span>
@@ -245,6 +245,11 @@
                             <% if (student.bloodGroup) { %>
                                 <span class="badge"><i class="fa-solid fa-droplet"></i>
                                     <%= student.bloodGroup %>
+                                </span>
+                                <% } %>
+                            <% if (student.category) { %>
+                                <span class="badge"><i class="fa-solid fa-layer-group"></i>
+                                    <%= student.category %>
                                 </span>
                                 <% } %>
                         </div>
@@ -358,6 +363,43 @@
 
                     </div>
                 </div>
+
+                <!-- GUARDIAN INFORMATION -->
+                <% if (student.guardianName) { %>
+                <div class="section-card">
+                    <div class="section-title"><i class="fa-solid fa-person-shelter"></i> &nbsp;Guardian Information</div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-icon"><i class="fa-solid fa-person-shelter"></i></div>
+                            <div class="info-text">
+                                <label>Guardian Name</label>
+                                <span><%= student.guardianName %></span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-icon"><i class="fa-solid fa-people-arrows"></i></div>
+                            <div class="info-text">
+                                <label>Relation</label>
+                                <span><%= student.guardianRelation || 'N/A' %></span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-icon"><i class="fa-solid fa-phone"></i></div>
+                            <div class="info-text">
+                                <label>Guardian Phone</label>
+                                <span><%= student.guardianPhone || 'N/A' %></span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-icon"><i class="fa-solid fa-location-dot"></i></div>
+                            <div class="info-text">
+                                <label>Guardian Address</label>
+                                <span><%= student.guardianAddress || 'Same as student' %></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
                 <!-- ======= SECTION 3: ACADEMIC HISTORY ======= -->
                 <div class="section-card">
                     <div class="section-title"><i class="fa-solid fa-graduation-cap"></i> &nbsp;Academic History</div>
@@ -396,6 +438,7 @@
                     </div>
                 </div>
                 <!-- ======= SECTION 4: GOVERNMENT IDs ======= -->
+                <!-- GOVERNMENT IDs -->
                 <% if (student.aadharNo || student.samagraId) { %>
                     <div class="section-card">
                         <div class="section-title"><i class="fa-solid fa-fingerprint"></i> &nbsp;Government IDs</div>
@@ -423,6 +466,51 @@
                         </div>
                     </div>
                     <% } %>
+
+                <!-- CATEGORY & RELIGION -->
+                <% if (student.category || student.religion || student.caste) { %>
+                <div class="section-card">
+                    <div class="section-title"><i class="fa-solid fa-layer-group"></i> &nbsp;Category & Background</div>
+                    <div class="info-grid">
+                        <% if (student.category) { %>
+                        <div class="info-item">
+                            <div class="info-icon"><i class="fa-solid fa-layer-group"></i></div>
+                            <div class="info-text">
+                                <label>Category</label>
+                                <span><%= student.category %></span>
+                            </div>
+                        </div>
+                        <% } %>
+                        <% if (student.religion) { %>
+                        <div class="info-item">
+                            <div class="info-icon"><i class="fa-solid fa-om"></i></div>
+                            <div class="info-text">
+                                <label>Religion</label>
+                                <span><%= student.religion %></span>
+                            </div>
+                        </div>
+                        <% } %>
+                        <% if (student.nationality) { %>
+                        <div class="info-item">
+                            <div class="info-icon"><i class="fa-solid fa-flag"></i></div>
+                            <div class="info-text">
+                                <label>Nationality</label>
+                                <span><%= student.nationality %></span>
+                            </div>
+                        </div>
+                        <% } %>
+                        <% if (student.motherTongue) { %>
+                        <div class="info-item">
+                            <div class="info-icon"><i class="fa-solid fa-language"></i></div>
+                            <div class="info-text">
+                                <label>Mother Tongue</label>
+                                <span><%= student.motherTongue %></span>
+                            </div>
+                        </div>
+                        <% } %>
+                    </div>
+                </div>
+                <% } %>
 
                         <!-- ======= SECTION 5: VEHICLE / TRANSPORT ======= -->
                         <% if (student.isVehicleAssigned) { %>

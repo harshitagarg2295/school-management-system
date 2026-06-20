@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const https = require('https');
 const Student = require("../../models/StudentSchema");
 const StudyMaterial = require("../../models/StudyMaterial");
 const { teacherAuth } = require("../../middlewares/auth");
@@ -147,8 +148,23 @@ router.get("/teachers/delete-material/:id", teacherAuth, async (req, res) => {
 
         // 1. Cloudinary se file delete karo
         if (material.publicId) {
-            // Note: raw files (PDFs/Docs) ke liye resource_type batana padta hai
-            await cloudinary.uploader.destroy(material.publicId, { resource_type: 'raw' });
+            // Image ya raw dono possible hain — try both
+            const isImage = material.fileUrl && (
+                material.fileUrl.includes('/image/upload/') ||
+                /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(material.fileUrl)
+            );
+            try {
+                await cloudinary.uploader.destroy(material.publicId, {
+                    resource_type: isImage ? 'image' : 'raw'
+                });
+            } catch (e) {
+                // If first attempt fails, try the other type silently
+                try {
+                    await cloudinary.uploader.destroy(material.publicId, {
+                        resource_type: isImage ? 'raw' : 'image'
+                    });
+                } catch (e2) { /* ignore */ }
+            }
         }
 
         // 2. DB se entry delete karo
@@ -158,6 +174,97 @@ router.get("/teachers/delete-material/:id", teacherAuth, async (req, res) => {
     } catch (error) {
         console.error("Delete Error:", error);
         res.redirect("/teachers/view-material?status=error");
+    }
+});
+
+// ✅ DOWNLOAD ROUTE — Works for PDF, Image, DOCX, any format
+router.get("/teachers/download-material/:id", teacherAuth, async (req, res) => {
+    try {
+        const material = await StudyMaterial.findById(req.params.id);
+        if (!material || !material.fileUrl) {
+            return res.redirect("/teachers/view-material");
+        }
+
+        const fileUrl = material.fileUrl;
+        const publicId = material.publicId;
+
+        // Detect if it is an image
+        const isImage = fileUrl.includes('/image/upload/') ||
+            /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(fileUrl);
+
+        if (isImage) {
+            // Image: add fl_attachment transformation so browser downloads it
+            const downloadUrl = cloudinary.url(publicId, {
+                resource_type: 'image',
+                flags: 'attachment',
+                secure: true,
+                sign_url: true,
+                type: 'upload'
+            });
+            return res.redirect(downloadUrl);
+        } else {
+            // PDF / DOCX / other raw files
+            // IMPORTANT: publicId in DB may NOT include file extension,
+            // so cloudinary.url(publicId) would generate a URL that 404s.
+            // Instead, inject fl_attachment directly into the stored fileUrl
+            // (Cloudinary secure_url) which always has the correct full path.
+            let downloadUrl = fileUrl;
+            if (fileUrl.includes('/upload/')) {
+                downloadUrl = fileUrl.replace('/upload/', '/upload/fl_attachment/');
+            }
+            return res.redirect(downloadUrl);
+        }
+    } catch (err) {
+        console.error("Download Error:", err);
+        return res.redirect("/teachers/view-material");
+    }
+});
+
+// ✅ PREVIEW ROUTE — Streams the file from Cloudinary with correct headers
+// (fl_inline doesn't work for raw resources; server-side proxy is reliable)
+router.get("/teachers/preview-material/:id", teacherAuth, async (req, res) => {
+    try {
+        const material = await StudyMaterial.findById(req.params.id);
+        if (!material || !material.fileUrl) return res.redirect("/teachers/view-material");
+
+        const fileUrl = material.fileUrl;
+
+        // Determine content type from the URL
+        const urlLower = fileUrl.toLowerCase();
+        let contentType = 'application/octet-stream';
+        if (/\.pdf($|\?)/i.test(urlLower))       contentType = 'application/pdf';
+        else if (/\.(jpg|jpeg)($|\?)/i.test(urlLower)) contentType = 'image/jpeg';
+        else if (/\.png($|\?)/i.test(urlLower))  contentType = 'image/png';
+        else if (/\.gif($|\?)/i.test(urlLower))  contentType = 'image/gif';
+        else if (/\.webp($|\?)/i.test(urlLower)) contentType = 'image/webp';
+        else if (/\.svg($|\?)/i.test(urlLower))  contentType = 'image/svg+xml';
+        // If URL has no extension, try publicId
+        else if (material.publicId) {
+            const pid = material.publicId.toLowerCase();
+            if (pid.endsWith('.pdf'))  contentType = 'application/pdf';
+            else if (/\.(jpg|jpeg)$/.test(pid)) contentType = 'image/jpeg';
+            else if (pid.endsWith('.png')) contentType = 'image/png';
+        }
+
+        res.setHeader('Content-Type', contentType);
+        res.setHeader('Content-Disposition', 'inline');
+        res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+
+        // Stream the file from Cloudinary to the browser
+        const request = https.get(fileUrl, (stream) => {
+            // If Cloudinary provides Content-Length, forward it
+            if (stream.headers['content-length']) {
+                res.setHeader('Content-Length', stream.headers['content-length']);
+            }
+            stream.pipe(res);
+        });
+        request.on('error', (err) => {
+            console.error('Preview stream error:', err);
+            res.redirect("/teachers/view-material");
+        });
+    } catch (err) {
+        console.error('Preview Error:', err);
+        res.redirect("/teachers/view-material");
     }
 });
 

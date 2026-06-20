@@ -77,9 +77,9 @@ function parseDate(val) {
 function normalizeGender(val) {
     if (!val) return undefined;  // undefined = Mongoose skips enum validation
     const v = val.toString().trim().toLowerCase();
-    if (v === "male"   || v === "m" || v === "boy"  || v === "gent") return "Male";
+    if (v === "male" || v === "m" || v === "boy" || v === "gent") return "Male";
     if (v === "female" || v === "f" || v === "girl" || v === "lady") return "Female";
-    if (v === "other"  || v === "o") return "Other";
+    if (v === "other" || v === "o") return "Other";
     return undefined; // unrecognized → skip (won't cause enum error)
 }
 
@@ -109,8 +109,8 @@ router.get("/download-sample/:type", adminAuth, (req, res) => {
         filename = "student_upload_sample.xlsx";
         headers = [
             // ── Required ──────────────────
-            "name",           // Student full name
-            "id",             // Admission number / Student ID
+            "studentName",    // Student full name
+            "admissionNo",    // Admission number / Student ID
             "class",          // Class (e.g. 10, 9, 8)
             "DOB",            // Date of birth YYYY-MM-DD
             // ── Academics ─────────────────
@@ -130,24 +130,36 @@ router.get("/download-sample/:type", adminAuth, (req, res) => {
             "fatherOccupation",
             "motherName",
             "motherOccupation",
+            // ── Guardian Info ─────────────
+            "guardianName",
+            "guardianRelation",
+            "guardianPhone",
+            "guardianAddress",
+            // ── Category & Religion ────────
+            "category",       // General/OBC/SC/ST/EWS
+            "religion",       // Hindu/Muslim/Christian/Sikh/Other
+            "caste",
+            "nationality",
+            "motherTongue",
             // ── Previous School ───────────
+            "initialClass",
             "previousSchool",
             // ── Govt IDs ──────────────────
-            "aadharNo",       // Student Aadhar number (optional)
-            "samagraId",      // Samagra ID (optional, MP schools)
+            "aadharNo",
+            "samagraId",
             // ── Vehicle / Transport ───────
-            "isVehicleAssigned",  // yes / no
+            "isVehicleAssigned",
             "vehicleNo",
             "driverName",
             "driverPhone",
             "routeDetails",
-            "vehicleFees"     // Annual vehicle fees (number only)
+            "vehicleFees"
         ];
 
         // Info row (row 2 — visible guide for users)
         infoRow = {
-            name: "REQUIRED: Full name",
-            id: "REQUIRED: Admission No",
+            studentName: "REQUIRED: Full name",
+            admissionNo: "REQUIRED: Admission No",
             class: "REQUIRED: e.g. 10",
             DOB: "REQUIRED: YYYY-MM-DD",
             section: "e.g. A",
@@ -163,6 +175,16 @@ router.get("/download-sample/:type", adminAuth, (req, res) => {
             fatherOccupation: "e.g. Business",
             motherName: "Mother full name",
             motherOccupation: "e.g. Homemaker",
+            guardianName: "Guardian name (if diff from parents)",
+            guardianRelation: "e.g. Uncle/Grandfather",
+            guardianPhone: "Guardian phone",
+            guardianAddress: "Guardian address (if different)",
+            category: "General/OBC/SC/ST/EWS",
+            religion: "Hindu/Muslim/Christian/Sikh/Other",
+            caste: "Caste (optional)",
+            nationality: "Default: Indian",
+            motherTongue: "e.g. Hindi",
+            initialClass: "initial class",
             previousSchool: "Previous school name",
             aadharNo: "12-digit Aadhar (optional)",
             samagraId: "Samagra ID (optional)",
@@ -177,8 +199,8 @@ router.get("/download-sample/:type", adminAuth, (req, res) => {
         sampleRows = [
             infoRow,
             {
-                name: "Aarav Sharma",
-                id: "ADM001",
+                studentName: "Aarav Sharma",
+                admissionNo: "ADM001",
                 class: "10",
                 DOB: "2010-05-15",
                 section: "A",
@@ -194,6 +216,16 @@ router.get("/download-sample/:type", adminAuth, (req, res) => {
                 fatherOccupation: "Business",
                 motherName: "Sunita Sharma",
                 motherOccupation: "Homemaker",
+                guardianName: "",
+                guardianRelation: "",
+                guardianPhone: "",
+                guardianAddress: "",
+                category: "General",
+                religion: "Hindu",
+                caste: "Sharma",
+                nationality: "Indian",
+                motherTongue: "Hindi",
+                initialClass: "8",
                 previousSchool: "ABC School",
                 aadharNo: "123456789012",
                 samagraId: "SM12345",
@@ -205,8 +237,8 @@ router.get("/download-sample/:type", adminAuth, (req, res) => {
                 vehicleFees: "6000"
             },
             {
-                name: "Priya Gupta",
-                id: "ADM002",
+                studentName: "Priya Gupta",
+                admissionNo: "ADM002",
                 class: "9",
                 DOB: "2011-08-22",
                 section: "B",
@@ -222,7 +254,17 @@ router.get("/download-sample/:type", adminAuth, (req, res) => {
                 fatherOccupation: "Teacher",
                 motherName: "Meena Gupta",
                 motherOccupation: "Nurse",
+                initialClass: "7",
                 previousSchool: "",
+                guardianName: "",
+                guardianRelation: "",
+                guardianPhone: "",
+                guardianAddress: "",
+                category: "OBC",
+                religion: "Hindu",
+                caste: "",
+                nationality: "Indian",
+                motherTongue: "Hindi",
                 aadharNo: "",
                 samagraId: "",
                 isVehicleAssigned: "no",
@@ -466,12 +508,12 @@ router.post("/bulk-upload-students", adminAuth, upload.single("excelFile"), asyn
 
         const rows = parseFile(filePath, req.file.originalname);
         if (!rows) {
-            if (filePath) fs.unlink(filePath, () => {});
+            if (filePath) fs.unlink(filePath, () => { });
             return res.status(400).json({ success: false, message: "Only .xlsx, .xls or .csv files are allowed." });
         }
 
         if (rows.length === 0) {
-            if (filePath) fs.unlink(filePath, () => {});
+            if (filePath) fs.unlink(filePath, () => { });
             return res.status(400).json({ success: false, message: "The uploaded file is empty. Please add student data and try again." });
         }
 
@@ -480,8 +522,8 @@ router.post("/bulk-upload-students", adminAuth, upload.single("excelFile"), asyn
         const skippedList = []; // {name, id, reason}
 
         for (const row of rows) {
-            const name  = getVal(row, "name", "Name");
-            const id    = getVal(row, "id", "Id", "ID").toUpperCase();
+            const name = getVal(row, "studentName", "name", "Name");
+            const id = getVal(row, "admissionNo", "id", "Id", "ID").toUpperCase();
             const studentClass = getVal(row, "class", "Class").toUpperCase();
             const dobRaw = getVal(row, "DOB", "dob", "Dob");
 
@@ -496,7 +538,7 @@ router.post("/bulk-upload-students", adminAuth, upload.single("excelFile"), asyn
                     id: id || "(no id)",
                     reason: "Missing required field: " + [
                         !name ? "Name" : null,
-                        !id ? "ID" : null,
+                        !id ? "Admission No" : null,
                         !studentClass ? "Class" : null,
                         !dobRaw ? "DOB" : null
                     ].filter(Boolean).join(", ")
@@ -535,10 +577,10 @@ router.post("/bulk-upload-students", adminAuth, upload.single("excelFile"), asyn
             const installmentAmount = Math.round(totalFees / 4);
             const feeStatusArray = [
                 { feeType: "Admission Fee", installment: "One-time", amount: 1500, status: "Pending" },
-                { feeType: "April",     installment: "1st", amount: installmentAmount, status: "Pending" },
+                { feeType: "April", installment: "1st", amount: installmentAmount, status: "Pending" },
                 { feeType: "September", installment: "2nd", amount: installmentAmount, status: "Pending" },
-                { feeType: "December",  installment: "3rd", amount: installmentAmount, status: "Pending" },
-                { feeType: "February",  installment: "4th", amount: installmentAmount, status: "Pending" }
+                { feeType: "December", installment: "3rd", amount: installmentAmount, status: "Pending" },
+                { feeType: "February", installment: "4th", amount: installmentAmount, status: "Pending" }
             ];
 
             // Vehicle details
@@ -547,10 +589,10 @@ router.post("/bulk-upload-students", adminAuth, upload.single("excelFile"), asyn
             const totalVehicleFees = parseInt(getVal(row, "vehicleFees", "VehicleFees") || 0) || 0;
             const vehicleInstallment = Math.round(totalVehicleFees / 4);
             const vehicleFeeArray = isVehicleAssigned ? [
-                { installment: "1st Installment", month: "April",     amount: vehicleInstallment, status: "Pending" },
+                { installment: "1st Installment", month: "April", amount: vehicleInstallment, status: "Pending" },
                 { installment: "2nd Installment", month: "September", amount: vehicleInstallment, status: "Pending" },
-                { installment: "3rd Installment", month: "December",  amount: vehicleInstallment, status: "Pending" },
-                { installment: "4th Installment", month: "February",  amount: vehicleInstallment, status: "Pending" }
+                { installment: "3rd Installment", month: "December", amount: vehicleInstallment, status: "Pending" },
+                { installment: "4th Installment", month: "February", amount: vehicleInstallment, status: "Pending" }
             ] : [];
 
             const section = (getVal(row, "section", "Section") || "A").toUpperCase();
@@ -558,32 +600,41 @@ router.post("/bulk-upload-students", adminAuth, upload.single("excelFile"), asyn
 
             const student = new Student({
                 schoolCode,
-                name: toTitleCase(name),
-                id,
+                studentName: toTitleCase(name),
+                admissionNo: id,
                 class: studentClass,
                 section,
-                rollNo:      getVal(row, "rollNo", "RollNo"),
-                gender:      normalizeGender(getVal(row, "gender", "Gender")),
-                DOB:         dobDate,
-                phone:       parseInt(getVal(row, "phone", "Phone")) || undefined,
-                address:     toTitleCase(getVal(row, "address", "Address")),
-                fees:        totalFees,
-                fatherName:  toTitleCase(getVal(row, "fatherName", "FatherName")),
-                motherName:  toTitleCase(getVal(row, "motherName", "MotherName")),
-                bloodGroup:  getVal(row, "bloodGroup", "BloodGroup"),
-                house:       getVal(row, "house", "House"),
-                aadharNo:    getVal(row, "aadharNo", "AadharNo"),
-                samagraId:   getVal(row, "samagraId", "SamagraId"),
+                rollNo: getVal(row, "rollNo", "RollNo"),
+                gender: normalizeGender(getVal(row, "gender", "Gender")),
+                DOB: dobDate,
+                phone: parseInt(getVal(row, "phone", "Phone")) || undefined,
+                address: toTitleCase(getVal(row, "address", "Address")),
+                fees: totalFees,
+                fatherName: toTitleCase(getVal(row, "fatherName", "FatherName")),
+                motherName: toTitleCase(getVal(row, "motherName", "MotherName")),
                 fatherOccupation: toTitleCase(getVal(row, "fatherOccupation")),
                 motherOccupation: toTitleCase(getVal(row, "motherOccupation")),
-                previousSchool:   toTitleCase(getVal(row, "previousSchool")),
+                bloodGroup: getVal(row, "bloodGroup", "BloodGroup"),
+                house: getVal(row, "house", "House"),
+                aadharNo: getVal(row, "aadharNo", "AadharNo"),
+                samagraId: getVal(row, "samagraId", "SamagraId"),
+                guardianName: toTitleCase(getVal(row, "guardianName")),
+                guardianRelation: getVal(row, "guardianRelation"),
+                guardianPhone: parseInt(getVal(row, "guardianPhone")) || null,
+                guardianAddress: toTitleCase(getVal(row, "guardianAddress")),
+                category: getVal(row, "category"),
+                religion: getVal(row, "religion"),
+                caste: toTitleCase(getVal(row, "caste")),
+                nationality: getVal(row, "nationality") || "Indian",
+                motherTongue: toTitleCase(getVal(row, "motherTongue")),
+                previousSchool: toTitleCase(getVal(row, "previousSchool")),
                 admissionDate,
-                initialClass: studentClass,
+                initialClass: getVal(row, "initialClass", "InitialClass") || studentClass,
                 feeStatus: feeStatusArray,
                 isVehicleAssigned,
                 vehicleDetails: {
-                    vehicleNo:   getVal(row, "vehicleNo", "VehicleNo"),
-                    driverName:  toTitleCase(getVal(row, "driverName", "DriverName")),
+                    vehicleNo: getVal(row, "vehicleNo", "VehicleNo"),
+                    driverName: toTitleCase(getVal(row, "driverName", "DriverName")),
                     driverPhone: parseInt(getVal(row, "driverPhone", "DriverPhone")) || null,
                     routeDetails: getVal(row, "routeDetails", "RouteDetails"),
                     vehicleFees: totalVehicleFees
@@ -597,7 +648,7 @@ router.post("/bulk-upload-students", adminAuth, upload.single("excelFile"), asyn
             created++;
         }
 
-        if (filePath) fs.unlink(filePath, () => {});
+        if (filePath) fs.unlink(filePath, () => { });
 
         return res.json({
             success: true,
@@ -610,7 +661,7 @@ router.post("/bulk-upload-students", adminAuth, upload.single("excelFile"), asyn
         });
 
     } catch (err) {
-        if (filePath) fs.unlink(filePath, () => {});
+        if (filePath) fs.unlink(filePath, () => { });
         console.error("Bulk student upload error:", err);
         return res.status(500).json({ success: false, message: "Server error: " + err.message });
     }
@@ -632,12 +683,12 @@ router.post("/bulk-upload-teachers", adminAuth, upload.single("excelFile"), asyn
 
         const rows = parseFile(filePath, req.file.originalname);
         if (!rows) {
-            if (filePath) fs.unlink(filePath, () => {});
+            if (filePath) fs.unlink(filePath, () => { });
             return res.status(400).json({ success: false, message: "Only .xlsx, .xls or .csv files are allowed." });
         }
 
         if (rows.length === 0) {
-            if (filePath) fs.unlink(filePath, () => {});
+            if (filePath) fs.unlink(filePath, () => { });
             return res.status(400).json({ success: false, message: "The uploaded file is empty. Please add teacher data and try again." });
         }
 
@@ -646,7 +697,7 @@ router.post("/bulk-upload-teachers", adminAuth, upload.single("excelFile"), asyn
         const skippedList = [];
 
         for (const row of rows) {
-            const name  = getVal(row, "name", "Name");
+            const name = getVal(row, "name", "Name");
             const empId = getVal(row, "empId", "EmpId", "empid", "EMP_ID").toUpperCase();
             const phone = getVal(row, "phone", "Phone");
 
@@ -676,14 +727,14 @@ router.post("/bulk-upload-teachers", adminAuth, upload.single("excelFile"), asyn
             }
 
             const cleanName = name.toLowerCase().replace(/\s+/g, "");
-            const phoneStr  = phone.toString();
+            const phoneStr = phone.toString();
             const baseUsername = `${cleanName.slice(0, 3)}@${phoneStr.slice(-4)}`;
             const usernameExists = await Teacher.findOne({ username: baseUsername, schoolCode });
-            const finalUsername  = usernameExists
+            const finalUsername = usernameExists
                 ? `${cleanName.slice(0, 3)}@${phoneStr.slice(-4)}${Math.floor(10 + Math.random() * 90)}`
                 : baseUsername;
 
-            const dobRaw  = getVal(row, "dob", "DOB", "Dob");
+            const dobRaw = getVal(row, "dob", "DOB", "Dob");
             const dobDate = parseDate(dobRaw);
             let dobPart = "0000";
             if (dobDate) {
@@ -696,30 +747,30 @@ router.post("/bulk-upload-teachers", adminAuth, upload.single("excelFile"), asyn
 
             const teacher = new Teacher({
                 schoolCode,
-                name:         toTitleCase(name),
+                name: toTitleCase(name),
                 empId,
-                subject:      toTitleCase(getVal(row, "subject", "Subject")),
-                class:        getVal(row, "class", "Class").toUpperCase(),
+                subject: toTitleCase(getVal(row, "subject", "Subject")),
+                class: getVal(row, "class", "Class").toUpperCase(),
                 classTeacher: getVal(row, "classTeacher", "ClassTeacher").toLowerCase() === "yes" ? "yes" : "no",
                 assignedClass: getVal(row, "assignedClass", "AssignedClass").toUpperCase() || undefined,
-                salary:       parseInt(getVal(row, "salary", "Salary")) || undefined,
-                phone:        parseInt(phone) || undefined,
-                dob:          dobDate || undefined,
-                joiningDate:  parseDate(getVal(row, "joiningDate", "JoiningDate")) || undefined,
-                gender:       normalizeGender(getVal(row, "gender", "Gender")),
-                address:      toTitleCase(getVal(row, "address", "Address")),
-                bloodGroup:   getVal(row, "bloodGroup", "BloodGroup"),
-                education:    getVal(row, "education", "Education"),
-                experience:   getVal(row, "experience", "Experience"),
-                username:     finalUsername,
-                password:     hashedPassword
+                salary: parseInt(getVal(row, "salary", "Salary")) || undefined,
+                phone: parseInt(phone) || undefined,
+                dob: dobDate || undefined,
+                joiningDate: parseDate(getVal(row, "joiningDate", "JoiningDate")) || undefined,
+                gender: normalizeGender(getVal(row, "gender", "Gender")),
+                address: toTitleCase(getVal(row, "address", "Address")),
+                bloodGroup: getVal(row, "bloodGroup", "BloodGroup"),
+                education: getVal(row, "education", "Education"),
+                experience: getVal(row, "experience", "Experience"),
+                username: finalUsername,
+                password: hashedPassword
             });
 
             await teacher.save();
             created++;
         }
 
-        if (filePath) fs.unlink(filePath, () => {});
+        if (filePath) fs.unlink(filePath, () => { });
 
         return res.json({
             success: true,
@@ -732,7 +783,7 @@ router.post("/bulk-upload-teachers", adminAuth, upload.single("excelFile"), asyn
         });
 
     } catch (err) {
-        if (filePath) fs.unlink(filePath, () => {});
+        if (filePath) fs.unlink(filePath, () => { });
         console.error("Bulk teacher upload error:", err);
         return res.status(500).json({ success: false, message: "Server error: " + err.message });
     }
@@ -754,12 +805,12 @@ router.post("/bulk-upload-staff", adminAuth, upload.single("excelFile"), async (
 
         const rows = parseFile(filePath, req.file.originalname);
         if (!rows) {
-            if (filePath) fs.unlink(filePath, () => {});
+            if (filePath) fs.unlink(filePath, () => { });
             return res.status(400).json({ success: false, message: "Only .xlsx, .xls or .csv files are allowed." });
         }
 
         if (rows.length === 0) {
-            if (filePath) fs.unlink(filePath, () => {});
+            if (filePath) fs.unlink(filePath, () => { });
             return res.status(400).json({ success: false, message: "The uploaded file is empty. Please add staff data and try again." });
         }
 
@@ -768,8 +819,8 @@ router.post("/bulk-upload-staff", adminAuth, upload.single("excelFile"), async (
         const skippedList = [];
 
         for (const row of rows) {
-            const name     = getVal(row, "name", "Name");
-            const empId    = getVal(row, "empId", "EmpId", "empid", "EMP_ID").toUpperCase();
+            const name = getVal(row, "name", "Name");
+            const empId = getVal(row, "empId", "EmpId", "empid", "EMP_ID").toUpperCase();
             const category = getVal(row, "category", "Category") || "Other";
 
             // Skip the info/guide row (row 2 in template)
@@ -796,28 +847,28 @@ router.post("/bulk-upload-staff", adminAuth, upload.single("excelFile"), async (
                 continue;
             }
 
-            const dobRaw  = getVal(row, "dob", "DOB", "Dob");
+            const dobRaw = getVal(row, "dob", "DOB", "Dob");
             const dobDate = parseDate(dobRaw);
 
-            const cat      = category.trim();
+            const cat = category.trim();
             const catTitled = cat.charAt(0).toUpperCase() + cat.slice(1).toLowerCase();
-            const isDriver  = catTitled.toLowerCase() === "driver";
+            const isDriver = catTitled.toLowerCase() === "driver";
 
             const staff = new Staff({
                 schoolCode,
-                name:       toTitleCase(name),
+                name: toTitleCase(name),
                 empId,
-                category:   catTitled,
-                salary:     parseInt(getVal(row, "salary", "Salary")) || undefined,
-                phone:      parseInt(getVal(row, "phone", "Phone")) || undefined,
-                address:    toTitleCase(getVal(row, "address", "Address")),
-                dob:        dobDate || undefined,
+                category: catTitled,
+                salary: parseInt(getVal(row, "salary", "Salary")) || undefined,
+                phone: parseInt(getVal(row, "phone", "Phone")) || undefined,
+                address: toTitleCase(getVal(row, "address", "Address")),
+                dob: dobDate || undefined,
                 joiningDate: parseDate(getVal(row, "joiningDate", "JoiningDate")) || undefined,
-                gender:     normalizeGender(getVal(row, "gender", "Gender")),
-                education:  getVal(row, "education", "Education"),
+                gender: normalizeGender(getVal(row, "gender", "Gender")),
+                education: getVal(row, "education", "Education"),
                 experience: getVal(row, "experience", "Experience"),
                 // Driver-specific fields
-                vehicle:   isDriver ? getVal(row, "vehicleType", "VehicleType") : undefined,
+                vehicle: isDriver ? getVal(row, "vehicleType", "VehicleType") : undefined,
                 vehicleNo: isDriver ? getVal(row, "vehicleNo", "VehicleNo") : undefined,
             });
 
@@ -833,7 +884,7 @@ router.post("/bulk-upload-staff", adminAuth, upload.single("excelFile"), async (
             created++;
         }
 
-        if (filePath) fs.unlink(filePath, () => {});
+        if (filePath) fs.unlink(filePath, () => { });
 
         return res.json({
             success: true,
@@ -846,7 +897,7 @@ router.post("/bulk-upload-staff", adminAuth, upload.single("excelFile"), async (
         });
 
     } catch (err) {
-        if (filePath) fs.unlink(filePath, () => {});
+        if (filePath) fs.unlink(filePath, () => { });
         console.error("Bulk staff upload error:", err);
         return res.status(500).json({ success: false, message: "Server error: " + err.message });
     }

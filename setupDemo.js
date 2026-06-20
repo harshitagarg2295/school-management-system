@@ -95,7 +95,8 @@ async function setup() {
         await Student.findOneAndUpdate(
             { username: "student_demo", schoolCode: schoolCode },
             {
-                name: "Demo Student",
+                studentName: "Demo Student",
+                admissionNo:"ST101",
                 username: "student_demo",
                 password: hashedPassword,
                 schoolCode: schoolCode,

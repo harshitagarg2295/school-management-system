@@ -619,9 +619,9 @@
             </div>
             <div class="student-basic">
               <h2>
-                <%= student.name %>
+                <%= student.studentName %>
               </h2>
-              <span class="student-badge">ID: <%= student.id || 'N/A' %></span>
+              <span class="student-badge">Adm No: <%= student.admissionNo || 'N/A' %></span>
             </div>
             <div class="upload-actions">
               <button id="chooseBtn" type="button"><i class="fa-regular fa-image"></i> Gallery</button>
@@ -700,7 +700,7 @@
                 <div class="info-card">
                   <div class="label"><i class="fa-solid fa-user"></i> Student Name</div>
                   <div class="value">
-                    <%= student.name %>
+                    <%= student.studentName %>
                   </div>
                 </div>
 
@@ -733,6 +733,13 @@
                 </div>
 
                 <div class="info-card">
+                  <div class="label"><i class="fa-solid fa-id-card"></i> Admission No</div>
+                  <div class="value">
+                    <%= student.admissionNo || 'N/A' %>
+                  </div>
+                </div>
+
+                <div class="info-card">
                   <div class="label"><i class="fa-solid fa-id-card"></i> Aadhar Number</div>
                   <div class="value">
                     <%= student.aadharNo || 'N/A' %>
@@ -751,6 +758,56 @@
                   <div class="value">
                     <%= student.address || 'N/A' %>
                   </div>
+                </div>
+              </div>
+
+              <div class="section-divider"></div>
+
+              <!-- GUARDIAN INFO -->
+              <div class="section-title">Guardian Information</div>
+              <div class="info-grid">
+                <div class="info-card">
+                  <div class="label"><i class="fa-solid fa-person-shelter"></i> Guardian Name</div>
+                  <div class="value"><%= student.guardianName || 'N/A' %></div>
+                </div>
+                <div class="info-card">
+                  <div class="label"><i class="fa-solid fa-people-arrows"></i> Relation</div>
+                  <div class="value"><%= student.guardianRelation || 'N/A' %></div>
+                </div>
+                <div class="info-card">
+                  <div class="label"><i class="fa-solid fa-phone"></i> Guardian Phone</div>
+                  <div class="value"><%= student.guardianPhone || 'N/A' %></div>
+                </div>
+                <div class="info-card" style="grid-column: span 1;">
+                  <div class="label"><i class="fa-solid fa-location-dot"></i> Guardian Address</div>
+                  <div class="value"><%= student.guardianAddress || 'Same as student' %></div>
+                </div>
+              </div>
+
+              <div class="section-divider"></div>
+
+              <!-- CATEGORY & RELIGION -->
+              <div class="section-title">Category & Background</div>
+              <div class="info-grid">
+                <div class="info-card">
+                  <div class="label"><i class="fa-solid fa-layer-group"></i> Category</div>
+                  <div class="value"><%= student.category || 'N/A' %></div>
+                </div>
+                <div class="info-card">
+                  <div class="label"><i class="fa-solid fa-om"></i> Religion</div>
+                  <div class="value"><%= student.religion || 'N/A' %></div>
+                </div>
+                <div class="info-card">
+                  <div class="label"><i class="fa-solid fa-sitemap"></i> Caste</div>
+                  <div class="value"><%= student.caste || 'N/A' %></div>
+                </div>
+                <div class="info-card">
+                  <div class="label"><i class="fa-solid fa-flag"></i> Nationality</div>
+                  <div class="value"><%= student.nationality || 'Indian' %></div>
+                </div>
+                <div class="info-card">
+                  <div class="label"><i class="fa-solid fa-language"></i> Mother Tongue</div>
+                  <div class="value"><%= student.motherTongue || 'N/A' %></div>
                 </div>
               </div>
 
@@ -897,10 +954,12 @@
 
             <form id="profileForm" action="/edit-student/<%= student._id %>" method="post" class="edit-form"
               style="display:none;">
-              <div class="section-title">Update Personal & Family Profile</div>
+              <div class="section-title">Update Personal Info</div>
               <div class="form-grid">
-                <div class="form-group"><label>Full Name</label><input type="text" name="name"
-                    value="<%= student.name %>" required></div>
+                <div class="form-group"><label>Full Name</label><input type="text" name="studentName"
+                    value="<%= student.studentName %>" required></div>
+                <div class="form-group"><label>Admission No</label><input type="text" name="admissionNo"
+                    value="<%= student.admissionNo || '' %>" required></div>
                 <div class="form-group"><label>Roll No</label><input type="text" name="rollNo"
                     value="<%= student.rollNo || '' %>"></div>
                 <div class="form-group"><label>Section</label><input type="text" name="section"
@@ -925,6 +984,12 @@
                     value="<%= student.aadharNo || '' %>"></div>
                 <div class="form-group"><label>Samagra ID</label><input type="text" name="samagraId"
                     value="<%= student.samagraId || '' %>"></div>
+                <div class="form-group" style="grid-column: span 2;"><label>Full Address</label><input type="text"
+                    name="address" value="<%= student.address %>"></div>
+              </div>
+
+              <div class="section-title" style="margin-top:25px;">Parents Information</div>
+              <div class="form-grid">
                 <div class="form-group"><label>Father's Name</label><input type="text" name="fatherName"
                     value="<%= student.fatherName || '' %>"></div>
                 <div class="form-group"><label>Father's Occupation</label><input type="text" name="fatherOccupation"
@@ -933,8 +998,61 @@
                     value="<%= student.motherName || '' %>"></div>
                 <div class="form-group"><label>Mother's Occupation</label><input type="text" name="motherOccupation"
                     value="<%= student.motherOccupation || '' %>"></div>
-                <div class="form-group" style="grid-column: span 2;"><label>Full Address</label><input type="text"
-                    name="address" value="<%= student.address %>"></div>
+              </div>
+
+              <div class="section-title" style="margin-top:25px;">Guardian Information</div>
+              <div class="form-grid">
+                <div class="form-group"><label>Guardian Name</label><input type="text" name="guardianName"
+                    value="<%= student.guardianName || '' %>" placeholder="If different from parents"></div>
+                <div class="form-group"><label>Relation with Student</label>
+                  <select name="guardianRelation">
+                    <option value="">Select Relation</option>
+                    <option value="Father" <%=student.guardianRelation==='Father' ? 'selected':'' %>>Father</option>
+                    <option value="Mother" <%=student.guardianRelation==='Mother' ? 'selected':'' %>>Mother</option>
+                    <option value="Uncle" <%=student.guardianRelation==='Uncle' ? 'selected':'' %>>Uncle</option>
+                    <option value="Aunt" <%=student.guardianRelation==='Aunt' ? 'selected':'' %>>Aunt</option>
+                    <option value="Grandfather" <%=student.guardianRelation==='Grandfather' ? 'selected':'' %>>Grandfather</option>
+                    <option value="Grandmother" <%=student.guardianRelation==='Grandmother' ? 'selected':'' %>>Grandmother</option>
+                    <option value="Elder Brother" <%=student.guardianRelation==='Elder Brother' ? 'selected':'' %>>Elder Brother</option>
+                    <option value="Other" <%=student.guardianRelation==='Other' ? 'selected':'' %>>Other</option>
+                  </select>
+                </div>
+                <div class="form-group"><label>Guardian Phone</label><input type="number" name="guardianPhone"
+                    value="<%= student.guardianPhone || '' %>"></div>
+                <div class="form-group"><label>Guardian Address</label><input type="text" name="guardianAddress"
+                    value="<%= student.guardianAddress || '' %>" placeholder="If different from student address"></div>
+              </div>
+
+              <div class="section-title" style="margin-top:25px;">Category & Background</div>
+              <div class="form-grid">
+                <div class="form-group"><label>Category</label>
+                  <select name="category">
+                    <option value="">Select Category</option>
+                    <option value="General" <%=student.category==='General' ? 'selected':'' %>>General</option>
+                    <option value="OBC" <%=student.category==='OBC' ? 'selected':'' %>>OBC</option>
+                    <option value="SC" <%=student.category==='SC' ? 'selected':'' %>>SC</option>
+                    <option value="ST" <%=student.category==='ST' ? 'selected':'' %>>ST</option>
+                    <option value="EWS" <%=student.category==='EWS' ? 'selected':'' %>>EWS</option>
+                  </select>
+                </div>
+                <div class="form-group"><label>Religion</label>
+                  <select name="religion">
+                    <option value="">Select Religion</option>
+                    <option value="Hindu" <%=student.religion==='Hindu' ? 'selected':'' %>>Hindu</option>
+                    <option value="Muslim" <%=student.religion==='Muslim' ? 'selected':'' %>>Muslim</option>
+                    <option value="Christian" <%=student.religion==='Christian' ? 'selected':'' %>>Christian</option>
+                    <option value="Sikh" <%=student.religion==='Sikh' ? 'selected':'' %>>Sikh</option>
+                    <option value="Jain" <%=student.religion==='Jain' ? 'selected':'' %>>Jain</option>
+                    <option value="Buddhist" <%=student.religion==='Buddhist' ? 'selected':'' %>>Buddhist</option>
+                    <option value="Other" <%=student.religion==='Other' ? 'selected':'' %>>Other</option>
+                  </select>
+                </div>
+                <div class="form-group"><label>Caste</label><input type="text" name="caste"
+                    value="<%= student.caste || '' %>"></div>
+                <div class="form-group"><label>Nationality</label><input type="text" name="nationality"
+                    value="<%= student.nationality || 'Indian' %>"></div>
+                <div class="form-group"><label>Mother Tongue</label><input type="text" name="motherTongue"
+                    value="<%= student.motherTongue || '' %>"></div>
               </div>
 
               <div class="section-title" style="margin-top:25px;">Update Academic History</div>

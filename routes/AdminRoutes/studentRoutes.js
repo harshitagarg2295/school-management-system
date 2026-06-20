@@ -42,7 +42,7 @@ router.get("/stud-menu", adminAuth, async (req, res) => {
         if (classFilter) {
             filter.class = classFilter;
         }
-        const students = await Student.find(filter).sort({ name: 1 });
+        const students = await Student.find(filter).sort({ studentName: 1 });
 
         // ✅ Dynamically extract all unique classes from DB
         const classList = await Student.distinct("class", { schoolCode });
@@ -72,10 +72,12 @@ router.post("/add-student", adminAuth, async (req, res) => { //add student
         }
 
         const {
-            name, id, class: studentClass, DOB, fees, phone, address, rollNo, house,
+            studentName, admissionNo, class: studentClass, DOB, fees, phone, address, rollNo, house,
             section, gender, admissionDate, fatherName, motherName,
             initialClass, previousSchool, bloodGroup,
             aadharNo, samagraId, fatherOccupation, motherOccupation,
+            guardianName, guardianRelation, guardianPhone, guardianAddress,
+            category, religion, caste, nationality, motherTongue,
             isVehicleAssigned, vehicleNo, driverName, driverPhone, vehicleFees
         } = req.body;
 
@@ -89,7 +91,7 @@ router.post("/add-student", adminAuth, async (req, res) => { //add student
         let exists = true;
 
         while (exists) {
-            username = name.trim().slice(0, 3).toLowerCase() + "@" + dobDate.getDate() + Math.floor(10 + Math.random() * 90);
+            username = studentName.trim().slice(0, 3).toLowerCase() + "@" + dobDate.getDate() + Math.floor(10 + Math.random() * 90);
 
             const existingStudent = await Student.findOne({ username, schoolCode });
 
@@ -98,7 +100,7 @@ router.post("/add-student", adminAuth, async (req, res) => { //add student
             }
         }
 
-        const cleanId = id.trim().toUpperCase();
+        const cleanId = admissionNo.trim().toUpperCase();
 
         const rawPassword = DOB.replace(/-/g, "") + "@" + cleanId;
 
@@ -153,8 +155,8 @@ router.post("/add-student", adminAuth, async (req, res) => { //add student
 
         const student = new Student({
             schoolCode,
-            name: toTitleCase(name),
-            id: id?.toUpperCase() || "",
+            studentName: toTitleCase(studentName),
+            admissionNo: admissionNo?.toUpperCase() || "",
             class: studentClass.toUpperCase(),
             section: section ? section.toUpperCase() : "A",
             gender,
@@ -165,6 +167,8 @@ router.post("/add-student", adminAuth, async (req, res) => { //add student
             admissionDate: admissionDate ? new Date(admissionDate) : new Date(),
             fatherName: toTitleCase(fatherName),
             motherName: toTitleCase(motherName),
+            fatherOccupation: toTitleCase(fatherOccupation),
+            motherOccupation: toTitleCase(motherOccupation),
             initialClass: initialClass ? initialClass.toUpperCase() : studentClass.toUpperCase(),
             previousSchool: toTitleCase(previousSchool),
             address: toTitleCase(address),
@@ -174,11 +178,24 @@ router.post("/add-student", adminAuth, async (req, res) => { //add student
             username,
             password: hashedPassword,
 
-            // --- NAYI PROFILE FIELDS DATABASE ME STORE ---
+            // --- GUARDIAN DETAILS ---
+            guardianName: toTitleCase(guardianName),
+            guardianRelation: guardianRelation || "",
+            guardianPhone: guardianPhone ? Number(guardianPhone) : null,
+            guardianAddress: toTitleCase(guardianAddress),
+
+            // --- CATEGORY & RELIGION ---
+            category: category || "",
+            religion: religion || "",
+            caste: toTitleCase(caste),
+            nationality: nationality || "Indian",
+            motherTongue: toTitleCase(motherTongue),
+
+            // --- GOVT IDs ---
             aadharNo: aadharNo || "",
             samagraId: samagraId || "",
-            fatherOccupation: toTitleCase(fatherOccupation),
-            motherOccupation: toTitleCase(motherOccupation),
+
+            // --- VEHICLE ---
             isVehicleAssigned: isVehicleAssigned === 'true',
             vehicleDetails: {
                 vehicleNo: vehicleNo || "",
@@ -268,17 +285,19 @@ router.post("/edit-student/:id", adminAuth, async (req, res) => {
     try {
         const schoolCode = req.session.schoolCode;
         const {
-            name, id, fatherName, motherName, phone, address,
+            studentName, admissionNo, fatherName, motherName, phone, address,
             gender, dob, admissionDate, initialClass, previousSchool,
-             rollNo, house, section, bloodGroup,
+            rollNo, house, section, bloodGroup,
             aadharNo, samagraId, fatherOccupation, motherOccupation,
+            guardianName, guardianRelation, guardianPhone, guardianAddress,
+            category, religion, caste, nationality, motherTongue,
             isVehicleAssigned, vehicleNo, driverName, driverPhone, routeDetails, vehicleFees
         } = req.body;
 
         const updateData = {};
 
-        if (name) updateData.name = toTitleCase(name);
-        if (id) updateData.id = id.trim().toUpperCase();
+        if (studentName) updateData.studentName = toTitleCase(studentName);
+        if (admissionNo) updateData.admissionNo = admissionNo.trim().toUpperCase();
         if (fatherName) updateData.fatherName = toTitleCase(fatherName);
         if (motherName) updateData.motherName = toTitleCase(motherName);
         if (phone) updateData.phone = phone;
@@ -294,11 +313,24 @@ router.post("/edit-student/:id", adminAuth, async (req, res) => {
         if (initialClass) updateData.initialClass = initialClass.toUpperCase();
         if (previousSchool) updateData.previousSchool = toTitleCase(previousSchool);
 
-          // ✅ Aadhar & Samagra
+        // Aadhar & Samagra
         if (aadharNo !== undefined) updateData.aadharNo = aadharNo.trim();
         if (samagraId !== undefined) updateData.samagraId = samagraId.trim();
         if (fatherOccupation !== undefined) updateData.fatherOccupation = toTitleCase(fatherOccupation);
         if (motherOccupation !== undefined) updateData.motherOccupation = toTitleCase(motherOccupation);
+
+        // Guardian Details
+        if (guardianName !== undefined) updateData.guardianName = toTitleCase(guardianName);
+        if (guardianRelation !== undefined) updateData.guardianRelation = guardianRelation;
+        if (guardianPhone !== undefined) updateData.guardianPhone = guardianPhone ? Number(guardianPhone) : null;
+        if (guardianAddress !== undefined) updateData.guardianAddress = toTitleCase(guardianAddress);
+
+        // Category & Religion
+        if (category !== undefined) updateData.category = category;
+        if (religion !== undefined) updateData.religion = religion;
+        if (caste !== undefined) updateData.caste = toTitleCase(caste);
+        if (nationality !== undefined) updateData.nationality = nationality || "Indian";
+        if (motherTongue !== undefined) updateData.motherTongue = toTitleCase(motherTongue);
         // ✅ isVehicleAssigned — yahi bug tha! Pehle ye line thi hi nahi
         updateData.isVehicleAssigned = isVehicleAssigned === 'true';
         // ✅ Vehicle Details

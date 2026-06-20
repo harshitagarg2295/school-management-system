@@ -2,251 +2,393 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Dashboard</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Dashboard | <%= student.name %></title>
 
-</head>
-<style>
+  <!-- External Styles & Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght=400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root {
+      --primary: #002244;
+      --primary-gradient: linear-gradient(135deg, #002244, #0052a3);
+      --light-bg: #f4f7fb;
+      --text-dark: #2c3e50;
+      --border: #e0e0e0;
+      --text-muted: #7f8c8d;
+      --card-bg: #ffffff;
+      --radius: 16px;
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--light-bg);
+      color: var(--text-dark);
+    }
+
     .student-dash {
-        display: flex;
+      display: flex;
+      min-height: 100vh;
     }
 
-    .main-section {
-        width: 60%;
-        padding: 30px 20px 30px 100px;
+    /* Outer Wrapper for Content + Calendar */
+    .dashboard-content-wrapper {
+      display: flex;
+      flex: 1;
+      gap: 24px;
+      padding: 24px;
+      align-items: flex-start;
     }
 
-    .name {
-        padding: 30px 0px 0px 20px;
-        color: #002244;
+    /* Main Center Profile Container */
+    .profile-container {
+      font-family: 'Poppins', sans-serif;
+      flex: 1;
+      min-width: 0; /* Prevents flex items from breaking layout */
     }
 
-    .student-data {
-        margin-top: 30px;
+    /* Top Hero Profile Banner Card */
+    .hero-card {
+      background: var(--primary-gradient);
+      border-radius: var(--radius);
+      padding: 30px;
+      display: flex;
+      align-items: center;
+      gap: 26px;
+      margin-bottom: 24px;
+      color: white;
+      box-shadow: var(--shadow);
     }
 
-
-    .data {
-        display: flex;
-        align-items: center;
-        gap: 180px;
+    .hero-avatar {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid rgba(255, 255, 255, 0.6);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+      flex-shrink: 0;
     }
 
-    .data h3 {
-        width: 250px;
+    .hero-info h2 {
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      letter-spacing: -0.5px;
+    }
+
+    .hero-info p {
+      font-size: 15px;
+      opacity: 0.9;
+      margin-bottom: 12px;
+    }
+
+    .hero-badges {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 999px;
+      padding: 5px 14px;
+      font-size: 12px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Section Cards holding data items */
+    .section-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 24px;
+      margin-bottom: 24px;
+      border: 1px solid rgba(0, 0, 0, 0.02);
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-dark);
+      border-left: 4px solid var(--primary);
+      padding-left: 12px;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Clean Information Grid */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .info-item {
+      background: #f8fafc;
+      border: 1px solid #edf2f7;
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: all 0.25s ease;
+    }
+
+    .info-item:hover {
+      border-color: var(--primary);
+      background: #e6ecf2;
+      transform: translateY(-2px);
+    }
+
+    .info-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+      font-size: 16px;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .info-text label {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 600;
+      display: block;
+      margin-bottom: 2px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .info-text span {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-dark);
+      word-break: break-word;
+    }
+
+    /* Layout Utilities */
+    .full-width {
+      grid-column: span 2;
+    }
+
+    /* Glowing dynamic Warning box style if unpaid fees */
+    .select-warning {
+      background-color: #fffbeb !important;
+      border: 1px solid #fde047 !important;
+      animation: softWarn 2.5s infinite ease-in-out;
+    }
+    .select-warning .info-icon {
+      color: #d97706 !important;
+    }
+    .select-warning label {
+      color: #b45309 !important;
+    }
+    .badge-warning {
+      background: rgba(251, 191, 36, 0.3) !important;
+      border-color: rgba(251, 191, 36, 0.5) !important;
+    }
+
+    @keyframes softWarn {
+      0%, 100% { box-shadow: var(--shadow); }
+      50% { box-shadow: 0 0 16px rgba(234, 179, 8, 0.15); border-color: #eab308 !important; }
+    }
+
+    /* --- RESPONSIVE ADJUSTMENTS --- */
+    @media (max-width: 1150px) {
+      .dashboard-content-wrapper {
+        flex-direction: column;
+        align-items: stretch;
         padding: 20px;
-        font-size: 22px;
-        color: rgb(46, 46, 46);
+      }
+      
+      .dashboard-content-wrapper > :last-child {
+        width: 100% !important;
+      }
     }
 
-    .data p {
-        display: inline-block;
-        font-size: 18px;
-        font-weight: 500;
-        padding: 8px 18px;
-        min-width: 250px;
+    @media (max-width: 768px) {
+      .dashboard-content-wrapper {
+        padding: 12px;
+        gap: 16px;
+      }
+
+      .hero-card {
+        flex-direction: column;
         text-align: center;
-        border: 2px solid #e0e0e0;
-        border-radius: 10px;
-        background-color: #ffffff;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
-        transition: all 0.2s ease-in-out;
-        /* hover पर smooth effect */
+        padding: 24px 16px;
+        gap: 16px;
+      }
+
+      .hero-info h2 {
+        font-size: 22px;
+      }
+
+      .hero-badges {
+        justify-content: center;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .full-width {
+        grid-column: span 1;
+      }
+
+      .section-card {
+        padding: 18px 16px;
+        border-radius: 14px;
+      }
     }
-
-    .data p:hover {
-        border-color: #bbb;
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
-    }
-
-    .flex {
-        display: flex;
-        gap: 60px;
-    }
-
-    .data p:hover {
-        transform: scale(1.01);
-        transition: 0.25s ease;
-        border-color: rgba(0, 105, 255, 0.45);
-        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
-    }
-
-    @media (max-width:1200px) {
-
-        .main-section {
-            width: 65%;
-            padding: 30px 20px 30px 60px;
-        }
-
-        .data {
-            gap: 100px;
-        }
-
-        .data h3 {
-            width: 200px;
-            font-size: 20px;
-        }
-
-        .data p {
-            min-width: 200px;
-        }
-    }
-
-    @media (max-width:992px) {
-
-        .main-section {
-            width: 100%;
-            padding: 25px 30px;
-        }
-
-        .data {
-            gap: 60px;
-        }
-
-        .data h3 {
-            width: 170px;
-            font-size: 19px;
-        }
-
-        .data p {
-            min-width: 170px;
-            font-size: 17px;
-            padding: 7px 12px;
-        }
-    }
-
-
-    @media (max-width:820px) {
-
-        .main-section {
-            width: 100%;
-            padding: 25px 40px;
-        }
-
-        .data {
-            gap: 40px;
-        }
-
-        .data h3 {
-            width: 300px;
-            font-size: 18px;
-        }
-
-        .data p {
-            width: 100%;
-            font-size: 16px;
-        }
-
-        .flex {
-            flex-direction: column;
-            gap: 30px;
-        }
-    }
-
-
-    @media (max-width:480px) {
-
-        .data {
-            flex-direction: column;
-            gap: 6px;
-            align-items: flex-start;
-        }
-
-        .data h3 {
-            padding: 0;
-            margin: 0;
-            font-size: 16px;
-        }
-
-        .data p {
-            width: 100%;
-            text-align: center;
-            padding: 8px;
-            font-size: 15px;
-            margin: 10px 0px 15px;
-        }
-
-        .name {
-            padding-left: 5px;
-            font-size: 24px;
-        }
-    }
-</style>
+  </style>
+</head>
 
 <body>
 
-    <div class="student-dash">
+  <div class="student-dash">
 
-        <!-- Sidebar (menu section) -->
-        <%- include("partials/StudentPageSidebar") %>
+    <!-- Sidebar Inclusion -->
+    <%- include("partials/StudentPageSidebar") %>
 
-            <!-- Main Section -->
+    <!-- Content Engine -->
+    <div class="dashboard-content-wrapper">
+      
+      <div class="profile-container">
 
-            <div class="flex">
+        <!-- Top Profile Banner -->
+        <div class="hero-card">
+          <img
+            src="<%= student?.photo ? (student.photo.startsWith('http') ? student.photo : '/uploads/students/' + student.photo) : '/images/default-student.png' %>"
+            class="hero-avatar" alt="Profile Picture">
 
-                <div class="main-section">
+          <div class="hero-info">
+            <h2><%= student.name %></h2>
+            <p>Student | Class <%= student.class || 'N/A' %></p>
 
-                    <h1 class="name">
-                        <%= student.name %>
-                    </h1>
+            <div class="hero-badges">
+              <span class="badge">
+                <i class="fa-solid fa-id-card"></i>
+                ID: <%= student.id || 'N/A' %>
+              </span>
 
-                    <div class="student-data">
-                        <div class="data">
-                            <h3>ID</h3>
-                            <p>
-                                <%= student.id%>
-                            </p>
-                        </div>
+              <span class="badge">
+                <i class="fa-solid fa-school"></i>
+                <%= student.class || 'N/A' %>
+              </span>
 
-                        <div class="data">
-                            <h3>Class</h3>
-                            <p>
-                                <%= student.class%>
-                            </p>
-                        </div>
-
-                        <div class="data">
-                            <h3>Date Of Birth</h3>
-                            <p>
-                                <%= student.DOB.getDate().toString().padStart(2,'0') %> -
-                                    <%= (student.DOB.getMonth()+1).toString().padStart(2,'0') %> -
-                                        <%= student.DOB.getFullYear() %>
-                            </p>
-                        </div>
-
-                        <div class="data">
-                            <h3>Fees</h3>
-                            <p>
-                                <%= student.fees %>
-                            </p>
-                        </div>
-
-                        <div class="data">
-                            <h3>Address</h3>
-                            <p>
-                                <%= student.address %>
-                            </p>
-                        </div>
-
-                        <div class="data">
-                            <h3>Phone Number</h3>
-                            <p>
-                                <%= student.phone %>
-                            </p>
-                        </div>
-
-                    </div>
-
-
-                </div>
-
-                <%- include("partials/attendanceCalendar", { size: "small" , type: "attendance-student" , attendance:
-                    attendance }) %>
+              <span class="badge <%= student.fees !== 'Paid' ? 'badge-warning' : '' %>">
+                <i class="fa-solid fa-wallet"></i>
+                Fees: <%= student.fees || 'Unpaid' %>
+              </span>
             </div>
+          </div>
+        </div>
+
+        <!-- Academic Details -->
+        <div class="section-card">
+          <div class="section-title">
+            <i class="fa-solid fa-graduation-cap"></i> Academic Details
+          </div>
+
+          <div class="info-grid">
+            <div class="info-item">
+              <div class="info-icon"><i class="fa-solid fa-hashtag"></i></div>
+              <div class="info-text">
+                <label>Student ID</label>
+                <span><%= student.id || 'N/A' %></span>
+              </div>
+            </div>
+
+            <div class="info-item">
+              <div class="info-icon"><i class="fa-solid fa-chalkboard-user"></i></div>
+              <div class="info-text">
+                <label>Current Class</label>
+                <span><%= student.class || 'N/A' %></span>
+              </div>
+            </div>
+
+            <!-- Glowing Alert condition if fees status is not "Paid" -->
+            <div class="info-item <%= student.fees !== 'Paid' ? 'select-warning' : '' %>">
+              <div class="info-icon"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+              <div class="info-text">
+                <label>Fees Status</label>
+                <span><%= student.fees || 'Pending' %></span>
+              </div>
+            </div>
+
+            <div class="info-item">
+              <div class="info-icon"><i class="fa-solid fa-cake-candles"></i></div>
+              <div class="info-text">
+                <label>Date Of Birth</label>
+                <span>
+                  <%= student.DOB ? student.DOB.getDate().toString().padStart(2,'0') : '00' %> -
+                  <%= student.DOB ? (student.DOB.getMonth()+1).toString().padStart(2,'0') : '00' %> -
+                  <%= student.DOB ? student.DOB.getFullYear() : '0000' %>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Personal Information Section -->
+        <div class="section-card">
+          <div class="section-title">
+            <i class="fa-solid fa-address-card"></i> Contact & Personal Details
+          </div>
+
+          <div class="info-grid">
+            <div class="info-item">
+              <div class="info-icon"><i class="fa-solid fa-phone"></i></div>
+              <div class="info-text">
+                <label>Phone Number</label>
+                <span><%= student.phone || 'N/A' %></span>
+              </div>
+            </div>
+
+            <div class="info-item full-width">
+              <div class="info-icon"><i class="fa-solid fa-location-dot"></i></div>
+              <div class="info-text">
+                <label>Residential Address</label>
+                <span><%= student.address || 'N/A' %></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column Attendance Integration Component -->
+      <%- include("partials/attendanceCalendar", { size: "small" , type: "attendance-student" , attendance: attendance }) %>
+
     </div>
-<script src="/backButton.js"></script>
+  </div>
+
+  <script src="/backButton.js"></script>
 </body>
 
 </html>

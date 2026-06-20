@@ -154,20 +154,54 @@
     }
 
     /* Download Button */
-    .download-btn {
-        padding: 8px 16px;
-        background-color: #3498db;
+    .btn-group {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    .preview-btn {
+        padding: 7px 13px;
+        background-color: #10b981;
         color: white;
         border: none;
-        border-radius: 25px;
-        font-size: 0.9em;
+        border-radius: 20px;
+        font-size: 0.85em;
         cursor: pointer;
         font-weight: 600;
         transition: background 0.25s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
     }
-
-    .download-btn:hover {
-        background-color: #227ac5;
+    .preview-btn:hover { background-color: #059669; }
+    .download-btn {
+        padding: 7px 13px;
+        background-color: #3498db;
+        color: white;
+        border: none;
+        border-radius: 20px;
+        font-size: 0.85em;
+        cursor: pointer;
+        font-weight: 600;
+        transition: background 0.25s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .download-btn:hover { background-color: #227ac5; }
+    .file-type-badge {
+        display: inline-block;
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        padding: 2px 7px;
+        font-size: 0.72em;
+        font-weight: 700;
+        color: #475569;
+        text-transform: uppercase;
     }
 
     /* No data style */
@@ -265,12 +299,36 @@
                                 </span>
                             </div>
 
-                            <!-- Cloudinary compatibility secure link -->
-                            <a href="<%= material.fileUrl %>" target="_blank">
-                                <button class="download-btn">
+                            <!-- Preview + Download -->
+                            <%
+                                const fUrl = material.fileUrl || '';
+                                const fPublicId = (material.publicId || '').toLowerCase();
+                                const isImg = fUrl.includes('/image/upload/') || /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(fUrl);
+                                // Check BOTH fileUrl and publicId — publicId may lack extension
+                                const isPdf = /\.pdf$/i.test(fUrl) || fPublicId.endsWith('.pdf');
+                                let extLabel = 'FILE';
+                                if (isImg) extLabel = 'IMAGE';
+                                else if (isPdf) extLabel = 'PDF';
+                                else if (/\.docx?$/i.test(fUrl) || fPublicId.endsWith('.doc') || fPublicId.endsWith('.docx')) extLabel = 'DOC';
+                                else if (/\.xlsx?$/i.test(fUrl) || fPublicId.endsWith('.xls') || fPublicId.endsWith('.xlsx')) extLabel = 'XLS';
+                                else if (/\.pptx?$/i.test(fUrl) || fPublicId.endsWith('.ppt') || fPublicId.endsWith('.pptx')) extLabel = 'PPT';
+                                // Build preview URL: inject fl_inline so PDFs open in-browser
+                                const previewUrl = (isPdf && fUrl.includes('/upload/'))
+                                    ? fUrl.replace('/upload/', '/upload/fl_inline/')
+                                    : fUrl;
+                            %>
+                            <div class="btn-group">
+                                <span class="file-type-badge"><i class="fas fa-file"></i> <%= extLabel %></span>
+                                <% if (isImg || isPdf) { %>
+                                    <!-- Preview: fl_inline ensures PDFs open in browser tab, not as download -->
+                                    <a href="<%= previewUrl %>" target="_blank" class="preview-btn">
+                                        <i class="fas fa-eye"></i> Preview
+                                    </a>
+                                <% } %>
+                                <a href="/students/download-material/<%= material._id %>" class="download-btn">
                                     <i class="fas fa-download"></i> Download
-                                </button>
-                            </a>
+                                </a>
+                            </div>
                         </div>
                     </div> <!-- ✅ LOOP SE PEHLE BOX DIV SAHI SE BAND KIYA -->
 

@@ -262,13 +262,13 @@ router.get("/download-bill/:id", adminAuth, async (req, res) => {
             });
             return res.redirect(downloadUrl);
         } else {
-            // PDF/raw: private_download_url → browser directly download karta hai
-            const ext = (expense.originalFileName || 'file').split('.').pop().toLowerCase();
-            const downloadUrl = cloudinary.utils.private_download_url(
-                expense.billPublicId,
-                ext,
-                { resource_type: 'raw', attachment: true }
-            );
+            // IMPORTANT: billPublicId in DB may NOT include file extension,
+            // so cloudinary.url(billPublicId) would generate a URL that 404s.
+            // Inject fl_attachment directly into the stored expense.bill URL instead.
+            let downloadUrl = expense.bill;
+            if (expense.bill.includes('/upload/')) {
+                downloadUrl = expense.bill.replace('/upload/', '/upload/fl_attachment/');
+            }
             return res.redirect(downloadUrl);
         }
 

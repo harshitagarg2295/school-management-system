@@ -109,3 +109,9 @@ Proper Auth & Role-based access control
 https://themeforest.net/item/schoolhub-school-management-dashboard-figma-template/52706786
 
 
+
+bulkupload initialClass problem
+bulkupload date issue
+file download preview problem
+add performance section
+generate marksheet, admit card, TC and more 
