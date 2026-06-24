@@ -61,7 +61,7 @@ async function updateStudentPayment({ student, parsedInstallments, paymentId, sc
   }, 0);
 
 
-  adminNotify.notifications.unshift({ message: `Payment Received: ₹${totalPaidAmount} from ${student.name} (Class: ${student.class}).` });
+  adminNotify.notifications.unshift({ message: `Payment Received: ₹${totalPaidAmount} from ${student.studentName} (Class: ${student.class}).` });
 
   await adminNotify.save();
 }

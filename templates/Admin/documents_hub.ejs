@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documents & Essentials</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f0f4f8;
+            min-height: 100vh;
+        }
+
+        .admin_dash {
+            display: flex;
+        }
+
+        .main-section {
+            flex: 1;
+            /* margin-left: 280px; */
+            padding: 30px 35px;
+            min-height: 100vh;
+        }
+
+        @media (max-width: 900px) {
+            .main-section {
+                margin-left: 0;
+                padding: 80px 16px 30px;
+            }
+        }
+
+        .page-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* ── PAGE HEADER ── */
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 35px 40px;
+            color: white;
+            margin-bottom: 35px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 50%;
+        }
+
+        .page-header::after {
+            content: '';
+            position: absolute;
+            bottom: -60px;
+            right: 80px;
+            width: 150px;
+            height: 150px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+        }
+
+        .page-header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-header p {
+            font-size: 15px;
+            opacity: 0.85;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-icon {
+            font-size: 50px;
+            opacity: 0.2;
+            position: absolute;
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        /* ── CARDS GRID ── */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .doc-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px 28px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.06);
+            text-decoration: none;
+            display: block;
+        }
+
+        .doc-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .doc-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--card-color);
+        }
+
+        .card-icon-wrap {
+            width: 65px;
+            height: 65px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 20px;
+            background: var(--card-bg);
+        }
+
+        .doc-card h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 8px;
+        }
+
+        .doc-card p {
+            font-size: 13px;
+            color: #718096;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .card-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: white;
+            background: var(--card-color);
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+
+        .card-btn:hover {
+            opacity: 0.88;
+        }
+
+        /* Card color variants */
+        .card-marksheet {
+            --card-color: #667eea;
+            --card-bg: #eef0fd;
+        }
+
+        .card-admit {
+            --card-color: #f6a623;
+            --card-bg: #fef5e7;
+        }
+
+        .card-tc {
+            --card-color: #e53e3e;
+            --card-bg: #fff5f5;
+        }
+
+        .card-bonafide {
+            --card-color: #38a169;
+            --card-bg: #f0fff4;
+        }
+
+        /* ── INFO BOX ── */
+        .info-box {
+            background: white;
+            border-radius: 16px;
+            padding: 24px 28px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .info-box i {
+            font-size: 22px;
+            color: #667eea;
+            margin-top: 2px;
+        }
+
+        .info-box h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 6px;
+        }
+
+        .info-box p {
+            font-size: 13px;
+            color: #718096;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin_dash">
+        <%- include("partials/AdminPageSidebar") %>
+
+            <section class="main-section">
+                <!-- <%- include("partials/adminNotification", { admin: admin }) %> -->
+
+                <div class="page-content">
+                    <!-- Page Header -->
+                    <div class="page-header">
+                        <h1>📄 Documents & Essentials</h1>
+                        <p>Generate official school documents instantly — PDFs ready to print or download</p>
+                        <i class="fa-solid fa-file-lines header-icon"></i>
+                    </div>
+
+                    <!-- Document Cards -->
+                    <div class="cards-grid">
+
+                        <!-- Marksheet -->
+                        <a href="/admin/documents/marksheet" class="doc-card card-marksheet">
+                            <div class="card-icon-wrap">📊</div>
+                            <h3>Marksheet</h3>
+                            <p>Generate subject-wise marks report for any student based on exam results.</p>
+                            <span class="card-btn">
+                                <i class="fa-solid fa-arrow-right"></i> Generate
+                            </span>
+                        </a>
+
+                        <!-- Admit Card -->
+                        <a href="/admin/documents/admit-card" class="doc-card card-admit">
+                            <div class="card-icon-wrap">🎫</div>
+                            <h3>Admit Card</h3>
+                            <p>Issue official exam admit cards with student photo, roll no., and exam schedule.</p>
+                            <span class="card-btn">
+                                <i class="fa-solid fa-arrow-right"></i> Generate
+                            </span>
+                        </a>
+
+                        <!-- Transfer Certificate -->
+                        <a href="/admin/documents/tc" class="doc-card card-tc">
+                            <div class="card-icon-wrap">📋</div>
+                            <h3>Transfer Certificate</h3>
+                            <p>Create a formal TC for students leaving the school, with conduct and class details.</p>
+                            <span class="card-btn">
+                                <i class="fa-solid fa-arrow-right"></i> Generate
+                            </span>
+                        </a>
+
+                        <!-- Bonafide Certificate -->
+                        <a href="/admin/documents/bonafide" class="doc-card card-bonafide">
+                            <div class="card-icon-wrap">🏅</div>
+                            <h3>Bonafide Certificate</h3>
+                            <p>Issue proof of enrollment certificate for scholarship, bank account, or other purposes.
+                            </p>
+                            <span class="card-btn">
+                                <i class="fa-solid fa-arrow-right"></i> Generate
+                            </span>
+                        </a>
+
+                    </div>
+
+                    <!-- Info note -->
+                    <div class="info-box">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <div>
+                            <h4>How it works</h4>
+                            <p>Select a document type above → Choose the student → Fill in any additional details →
+                                Click Generate. The PDF will open in a new tab ready for printing or download.</p>
+                        </div>
+                    </div>
+
+                </div><!-- /page-content -->
+            </section>
+    </div>
+</body>
+
+</html>

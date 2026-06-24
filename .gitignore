@@ -6,4 +6,8 @@ uploads/
 
 android/app/build/
 
+# Extra files that are not need to push
 password of mongo uri
+tasksToDo.txt
+Tasks.txt
+notes.txt

@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <title>
-    <%= student.name %> - Attendance
+    <%= student.studentName %> - Attendance
   </title>
 
   <style>
@@ -420,7 +420,7 @@
     <%- include("partials/StudentPageSidebar") %>
 
       <div class="attendance_card">
-        <h2>Attendance - <%= student.name %> (<%= student.class %>)</h2>
+        <h2>Attendance - <%= student.studentName %> (<%= student.class %>)</h2>
 
         <div class="date_month_year">
           <form method="GET" action="/students/view-attendance" style="display: flex; gap: 15px;">
@@ -462,7 +462,7 @@
           <div class="attend_list list">
             <ul>
               <li class="students_name sticky-name">
-                <%= student.name %>
+                <%= student.studentName %>
               </li>
 
               <% for (let i=1; i <=daysInMonth; i++) { %>

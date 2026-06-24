@@ -622,23 +622,23 @@
                             <div class="student-list">
                                 <% students.forEach(student=> { %>
 
-                                    <div class="student-wrapper" data-name="<%= student.name.toLowerCase() %>"
-                                        data-id="<%= student.id %>">
+                                    <div class="student-wrapper" data-name="<%= student.studentName.toLowerCase() %>"
+                                        data-id="<%= student.admissionNo %>">
                                         <ul>
                                             <li style="cursor: pointer;">
                                                 <a href="/fee-status/<%= student._id %>"
                                                     style="text-decoration: none; color: inherit;">
-                                                    <%= student.name %>
+                                                    <%= student.studentName %>
                                                 </a>
                                             </li>
                                             <li>
-                                                <%= student.id %>
+                                                <%= student.admissionNo %>
                                             </li>
                                             <li>
                                                 <%= student.class %>
                                             </li>
 
-                                            <li>₹<%= student.fees.toLocaleString('en-IN') %>
+                                            <li>₹<%= student.totalStudentFees.toLocaleString('en-IN') %>
                                             </li>
                                             <li>₹<%= student.paidFees.toLocaleString('en-IN') %>
                                             </li>

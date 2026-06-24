@@ -243,6 +243,10 @@ app.use(profileRoute);
 const bankSetupRoute = require("./routes/AdminRoutes/bankSetupRoutes");
 app.use(bankSetupRoute);
 
+// Route for Documents & Essentials (Marksheet, Admit Card, TC, Bonafide)
+const documentsRoute = require("./routes/AdminRoutes/documentsRoutes");
+app.use(documentsRoute);
+
 //  <---- Teaacher Dashboard related routes ---->
 
 

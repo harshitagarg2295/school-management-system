@@ -47,7 +47,7 @@
     }
 
     .hero-card {
-      background: linear-gradient(135deg, #1976d2, #42a5f5);
+      background: linear-gradient(160deg, #1a2342 0%, #2d3e8c 55%, #4361ee 100%);
       border-radius: var(--radius);
       padding: 28px 30px;
       display: flex;
@@ -387,19 +387,21 @@
               </div>
             </div>
 
-               <div class="info-item">
+            <div class="info-item">
               <div class="info-icon">
-               <i class="fa-solid fa-calendar-check"></i>
+                <i class="fa-solid fa-calendar-check"></i>
               </div>
               <div class="info-text">
                 <label>Joining Date</label>
-                <span><%= teacher.joiningDate ? new Date(teacher.joiningDate).toLocaleDateString('en-GB') : "N/A" %></span>
+                <span>
+                  <%= teacher.joiningDate ? new Date(teacher.joiningDate).toLocaleDateString('en-GB') : "N/A" %>
+                </span>
               </div>
             </div>
 
           </div>
         </div>
-          
+
         <div class="section-card">
           <div class="section-title">
             <i class="fa-solid fa-school"></i> &nbsp;Class Information

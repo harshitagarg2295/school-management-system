@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Bonafide Certificate — <%= student.studentName %>
+    </title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f4f6f9;
+            color: #1a1a2e;
+        }
+
+        .print-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            padding: 14px 20px;
+            background: #1a6e3c;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            font-size: 14px;
+        }
+
+        .print-toolbar span {
+            opacity: 0.85;
+        }
+
+        .btn-print {
+            background: #f6a623;
+            color: #1a1a2e;
+            border: none;
+            padding: 9px 22px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-back {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: none;
+            padding: 9px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 20px auto;
+            padding: 16mm 20mm;
+            position: relative;
+            background: white;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .page::before {
+            content: '';
+            position: absolute;
+            inset: 6mm;
+            border: 3px solid #1a6e3c;
+            pointer-events: none;
+            border-radius: 4px;
+        }
+
+        .page::after {
+            content: '';
+            position: absolute;
+            inset: 9.5mm;
+            border: 1px solid #a0d0b0;
+            pointer-events: none;
+            border-radius: 2px;
+        }
+
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 70px;
+            font-weight: 900;
+            color: rgba(26, 110, 60, 0.04);
+            white-space: nowrap;
+            pointer-events: none;
+            letter-spacing: 6px;
+        }
+
+        .cert-no-box {
+            position: absolute;
+            top: 20mm;
+            right: 22mm;
+            font-size: 11px;
+            color: #888;
+            text-align: right;
+        }
+
+        .cert-no-box strong {
+            color: #1a6e3c;
+        }
+
+        .school-header {
+            text-align: center;
+            padding-bottom: 14px;
+            border-bottom: 3px solid #1a6e3c;
+            margin-bottom: 16px;
+        }
+
+        .school-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a6e3c;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .school-address {
+            font-size: 11px;
+            color: #555;
+            margin-top: 3px;
+        }
+
+        .doc-title-wrap {
+            text-align: center;
+            margin: 16px 0 26px;
+        }
+
+        .doc-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a6e3c;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            border-bottom: 2px solid #1a6e3c;
+            padding-bottom: 6px;
+            display: inline-block;
+        }
+
+        .cert-body {
+            font-size: 14px;
+            line-height: 2.2;
+            color: #2d2d2d;
+            text-align: justify;
+            margin-bottom: 30px;
+        }
+
+        .cert-body .highlight {
+            font-weight: 700;
+            color: #1a1a6e;
+            border-bottom: 1px dotted #aaa;
+        }
+
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12.5px;
+            margin: 16px 0 26px;
+            border: 1px solid #b0d8b0;
+        }
+
+        .details-table td {
+            padding: 9px 16px;
+            border: 1px solid #c8e8c8;
+        }
+
+        .details-table td:first-child {
+            background: #f0fff4;
+            font-weight: 600;
+            color: #1a6e3c;
+            width: 40%;
+        }
+
+        .details-table tr:nth-child(even) td:last-child {
+            background: #f8fff8;
+        }
+
+        .cert-closing {
+            font-size: 13.5px;
+            line-height: 2;
+            color: #2d2d2d;
+            margin-bottom: 40px;
+        }
+
+        .sig-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 50px;
+        }
+
+        .date-box {
+            font-size: 12px;
+        }
+
+        .date-label {
+            font-weight: 600;
+            color: #444;
+        }
+
+        .sig-box {
+            text-align: center;
+        }
+
+        .sig-line {
+            border-top: 1.5px solid #333;
+            width: 150px;
+            margin-bottom: 5px;
+        }
+
+        .sig-label {
+            font-weight: 600;
+            color: #333;
+            font-size: 12px;
+        }
+
+        .sig-sub {
+            color: #777;
+            font-size: 10px;
+            margin-top: 2px;
+        }
+
+        .doc-footer {
+            text-align: center;
+            font-size: 10px;
+            color: #bbb;
+            border-top: 1px solid #eee;
+            padding-top: 8px;
+            margin-top: 20px;
+        }
+
+        @media print {
+            body {
+                background: white !important;
+            }
+
+            .print-toolbar {
+                display: none !important;
+            }
+
+            .page {
+                margin: 0 !important;
+                box-shadow: none !important;
+                width: 100% !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="print-toolbar">
+        <button class="btn-back" onclick="window.close()">← Back</button>
+        <span>🏅 Bonafide Certificate — <%= student.studentName %></span>
+        <button class="btn-print" onclick="window.print()">🖨️ Print / Save as PDF</button>
+    </div>
+
+    <div class="page">
+        <div class="watermark">BONAFIDE</div>
+        <div class="cert-no-box">Cert. No.: <strong>
+                <%= certNumber %>
+            </strong><br>Date: <%= generatedDate %>
+        </div>
+
+        <div class="school-header">
+            <div class="school-name">
+                <%= schoolName %>
+            </div>
+            <% if (schoolAddress) { %>
+                <div class="school-address">
+                    <%= schoolAddress %>
+                </div>
+                <% } %>
+        </div>
+        <div class="doc-title-wrap">
+            <div class="doc-title">Bonafide Certificate</div>
+        </div>
+
+        <div class="cert-body">
+            This is to certify that <span class="highlight">
+                <%= student.studentName %>
+            </span>,
+            son/daughter of <span class="highlight">
+                <%= student.fatherName || '—' %>
+            </span>
+            and <span class="highlight">
+                <%= student.motherName || '—' %>
+            </span>,
+            is a bonafide student of this school.
+        </div>
+
+        <table class="details-table">
+            <tr>
+                <td>Student Name</td>
+                <td><strong>
+                        <%= student.studentName %>
+                    </strong></td>
+            </tr>
+            <tr>
+                <td>Admission Number</td>
+                <td>
+                    <%= student.admissionNo || '—' %>
+                </td>
+            </tr>
+            <tr>
+                <td>Class & Section</td>
+                <td>Class <%= student.class %> — Section <%= student.section || '—' %>
+                </td>
+            </tr>
+            <tr>
+                <td>Roll Number</td>
+                <td>
+                    <%= student.rollNo || '—' %>
+                </td>
+            </tr>
+            <tr>
+                <td>Date of Birth</td>
+                <td>
+                    <%= student.DOB ? new Date(student.DOB).toLocaleDateString('en-IN', {day:'2-digit', month:'long',
+                        year:'numeric'}) : '—' %>
+                </td>
+            </tr>
+            <tr>
+                <td>Date of Admission</td>
+                <td>
+                    <%= student.admissionDate ? new Date(student.admissionDate).toLocaleDateString('en-IN',
+                        {day:'2-digit', month:'long', year:'numeric'}) : '—' %>
+                </td>
+            </tr>
+            <tr>
+                <td>Nationality</td>
+                <td>
+                    <%= student.nationality || 'Indian' %>
+                </td>
+            </tr>
+            <tr>
+                <td>Father's Occupation</td>
+                <td>
+                    <%= student.fatherOccupation || '—' %>
+                </td>
+            </tr>
+            <tr>
+                <td>Address</td>
+                <td>
+                    <%= student.address || '—' %>
+                </td>
+            </tr>
+        </table>
+
+        <div class="cert-closing">
+            This certificate is issued for the purpose of
+            <strong>
+                <%= purpose %>
+            </strong>
+            and is valid for the current academic year.
+            <br><br>
+            To whomsoever it may concern.
+        </div>
+
+        <div class="sig-row">
+            <div class="date-box">
+                <div class="date-label">Date of Issue</div>
+                <div style="margin-top:4px; font-size:13px;">
+                    <%= generatedDate %>
+                </div>
+            </div>
+            <div class="sig-box">
+                <div class="sig-line"></div>
+                <div class="sig-label">Principal</div>
+                <div class="sig-sub">Signature & Official Seal</div>
+            </div>
+        </div>
+        <div class="doc-footer">This is a computer-generated Bonafide Certificate. — <%= schoolName %>
+        </div>
+    </div>
+</body>
+
+</html>

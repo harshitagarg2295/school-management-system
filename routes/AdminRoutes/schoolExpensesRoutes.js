@@ -5,6 +5,7 @@ const AdminNotification = require("../../models/AdminNotificationSchema");
 const { adminAuth } = require("../../middlewares/auth");
 const { uploadMaterial } = require("../../config/cloudinaryConfig");
 const { cloudinary } = require("../../config/cloudinaryConfig");
+const { redirectDownload, redirectPreview } = require("../../utils/streamHelper");
 
 // helper: current FY start year (Apr–Mar)
 function currentFYStartYear(d = new Date()) {
@@ -239,39 +240,68 @@ router.post("/delete-expense/:id", adminAuth, async (req, res) => {
     }
 });
 
-// ✅ DOWNLOAD ROUTE
+// ─── Helper: detect MIME from URL/billType/publicId ─────────────────────────
+function detectBillMime(expense) {
+    // 1. Prefer billType from DB (most reliable)
+    if (expense.billType) {
+        return expense.billType;
+    }
+    // 2. Fallback: detect from URL
+    const urlLower = (expense.bill || "").toLowerCase();
+    const pidLower = (expense.billPublicId || "").toLowerCase();
+    const extMatch = urlLower.match(/\.(pdf|jpg|jpeg|png|gif|webp|svg|doc|docx|xls|xlsx|ppt|pptx|txt)(\?|$)/);
+    const pidMatch = pidLower.match(/\.(pdf|jpg|jpeg|png|gif|webp|svg|doc|docx|xls|xlsx|ppt|pptx|txt)$/);
+    const ext = extMatch ? extMatch[1] : (pidMatch ? pidMatch[1] : "");
+    const mimeMap = {
+        "pdf": "application/pdf", "jpg": "image/jpeg", "jpeg": "image/jpeg",
+        "png": "image/png", "gif": "image/gif", "webp": "image/webp",
+        "svg": "image/svg+xml", "doc": "application/msword",
+        "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "xls": "application/vnd.ms-excel",
+        "xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "ppt": "application/vnd.ms-powerpoint",
+        "pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "txt": "text/plain"
+    };
+    return mimeMap[ext] || "application/octet-stream";
+}
+
+function detectBillExt(expense) {
+    const mime = detectBillMime(expense);
+    const extMap = {
+        "application/pdf": ".pdf", "image/jpeg": ".jpg", "image/png": ".png",
+        "image/gif": ".gif", "image/webp": ".webp", "image/svg+xml": ".svg",
+        "application/msword": ".doc",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document": ".docx",
+        "application/vnd.ms-excel": ".xls",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": ".xlsx",
+        "application/vnd.ms-powerpoint": ".ppt",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation": ".pptx",
+        "text/plain": ".txt"
+    };
+    return extMap[mime] || "";
+}
+
+// ✅ DOWNLOAD
 router.get("/download-bill/:id", adminAuth, async (req, res) => {
     try {
         const schoolCode = req.session.schoolCode;
         const expense = await Expense.findOne({ _id: req.params.id, schoolCode });
+        if (!expense || !expense.bill) return res.redirect("/school_expenses");
+        redirectDownload(expense.bill, res, "/school_expenses");
+    } catch (err) {
+        console.error(err);
+        return res.status(500).render("HomePage/500");
+    }
+});
 
-        if (!expense || !expense.bill) {
-            return res.redirect("/school_expenses");
-        }
-
-        const isImage = expense.billType && expense.billType.startsWith('image/');
-
-        if (isImage) {
-            // Images: fl_attachment image resources pe kaam karta hai
-            const downloadUrl = cloudinary.url(expense.billPublicId, {
-                resource_type: 'image',
-                flags: 'attachment',
-                secure: true,
-                sign_url: true,
-                type: 'upload'
-            });
-            return res.redirect(downloadUrl);
-        } else {
-            // IMPORTANT: billPublicId in DB may NOT include file extension,
-            // so cloudinary.url(billPublicId) would generate a URL that 404s.
-            // Inject fl_attachment directly into the stored expense.bill URL instead.
-            let downloadUrl = expense.bill;
-            if (expense.bill.includes('/upload/')) {
-                downloadUrl = expense.bill.replace('/upload/', '/upload/fl_attachment/');
-            }
-            return res.redirect(downloadUrl);
-        }
-
+// ✅ PREVIEW
+router.get("/preview-bill/:id", adminAuth, async (req, res) => {
+    try {
+        const schoolCode = req.session.schoolCode;
+        const expense = await Expense.findOne({ _id: req.params.id, schoolCode });
+        if (!expense || !expense.bill) return res.redirect("/school_expenses");
+        redirectPreview(expense.bill, res, "/school_expenses");
     } catch (err) {
         console.error(err);
         return res.status(500).render("HomePage/500");

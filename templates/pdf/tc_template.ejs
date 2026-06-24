@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Transfer Certificate — <%= student.studentName %>
+    </title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f4f6f9;
+            color: #1a1a2e;
+        }
+
+        .print-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            padding: 14px 20px;
+            background: #8B0000;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            font-size: 14px;
+        }
+
+        .print-toolbar span {
+            opacity: 0.85;
+        }
+
+        .btn-print {
+            background: #f6a623;
+            color: #1a1a2e;
+            border: none;
+            padding: 9px 22px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-back {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: none;
+            padding: 9px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 20px auto;
+            padding: 14mm 18mm;
+            position: relative;
+            background: white;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .page::before {
+            content: '';
+            position: absolute;
+            inset: 6mm;
+            border: 4px double #8B0000;
+            pointer-events: none;
+        }
+
+        .page::after {
+            content: '';
+            position: absolute;
+            inset: 9mm;
+            border: 1px solid #d0a0a0;
+            pointer-events: none;
+        }
+
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 72px;
+            font-weight: 900;
+            color: rgba(139, 0, 0, 0.04);
+            white-space: nowrap;
+            pointer-events: none;
+            letter-spacing: 6px;
+            text-align: center;
+        }
+
+        .school-header {
+            text-align: center;
+            padding-bottom: 14px;
+            border-bottom: 3px solid #8B0000;
+            margin-bottom: 10px;
+        }
+
+        .school-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: #8B0000;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .school-address {
+            font-size: 11px;
+            color: #555;
+            margin-top: 3px;
+        }
+
+        .doc-title-wrap {
+            text-align: center;
+            margin: 14px 0 20px;
+        }
+
+        .doc-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: #8B0000;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            border-bottom: 2px solid #8B0000;
+            padding-bottom: 6px;
+            display: inline-block;
+        }
+
+        .tc-number {
+            font-size: 12px;
+            color: #666;
+            margin-top: 8px;
+        }
+
+        .tc-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12.5px;
+            margin: 20px 0;
+        }
+
+        .tc-table tr td {
+            padding: 8px 14px;
+            border: 1px solid #ddd;
+        }
+
+        .tc-table tr td:first-child {
+            background: #fff8f8;
+            font-weight: 600;
+            color: #8B0000;
+            width: 42%;
+        }
+
+        .tc-table tr:nth-child(even) td:last-child {
+            background: #fffafa;
+        }
+
+        .conduct-badge {
+            display: inline-block;
+            background: #8B0000;
+            color: white;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .tc-declaration {
+            background: #fff8f8;
+            border: 1px solid #e0b0b0;
+            border-radius: 6px;
+            padding: 14px 18px;
+            font-size: 12px;
+            color: #444;
+            line-height: 1.9;
+            margin-bottom: 30px;
+        }
+
+        .signatures {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+            font-size: 11.5px;
+        }
+
+        .sig-box {
+            text-align: center;
+        }
+
+        .sig-line {
+            border-top: 1.5px solid #333;
+            width: 130px;
+            margin-bottom: 5px;
+        }
+
+        .sig-label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .sig-sub {
+            color: #777;
+            font-size: 10px;
+            margin-top: 2px;
+        }
+
+        .doc-footer {
+            text-align: center;
+            font-size: 10px;
+            color: #bbb;
+            border-top: 1px solid #eee;
+            padding-top: 8px;
+            margin-top: 20px;
+        }
+
+        @media print {
+            body {
+                background: white !important;
+            }
+
+            .print-toolbar {
+                display: none !important;
+            }
+
+            .page {
+                margin: 0 !important;
+                box-shadow: none !important;
+                width: 100% !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="print-toolbar">
+        <button class="btn-back" onclick="window.close()">← Back</button>
+        <span>📋 Transfer Certificate — <%= student.studentName %></span>
+        <button class="btn-print" onclick="window.print()">🖨️ Print / Save as PDF</button>
+    </div>
+
+    <div class="page">
+        <div class="watermark">TRANSFER<br>CERTIFICATE</div>
+        <div class="school-header">
+            <div class="school-name">
+                <%= schoolName %>
+            </div>
+            <% if (schoolAddress) { %>
+                <div class="school-address">
+                    <%= schoolAddress %>
+                </div>
+                <% } %>
+        </div>
+        <div class="doc-title-wrap">
+            <div class="doc-title">Transfer Certificate</div>
+            <div class="tc-number">TC No.: <%= tcNumber %> &nbsp;|&nbsp; Date of Issue: <%= generatedDate %>
+            </div>
+        </div>
+
+        <table class="tc-table">
+            <tr>
+                <td>Student Name</td>
+                <td><strong>
+                        <%= student.studentName %>
+                    </strong></td>
+            </tr>
+            <tr>
+                <td>Admission No.</td>
+                <td>
+                    <%= student.admissionNo || '—' %>
+                </td>
+            </tr>
+            <tr>
+                <td>Father's Name</td>
+                <td>
+                    <%= student.fatherName || '—' %>
+                </td>
+            </tr>
+            <tr>
+                <td>Mother's Name</td>
+                <td>
+                    <%= student.motherName || '—' %>
+                </td>
+            </tr>
+            <tr>
+                <td>Date of Birth</td>
+                <td>
+                    <%= student.DOB ? new Date(student.DOB).toLocaleDateString('en-IN', {day:'2-digit', month:'long',
+                        year:'numeric'}) : '—' %>
+                </td>
+            </tr>
+            <tr>
+                <td>Nationality</td>
+                <td>
+                    <%= student.nationality || 'Indian' %>
+                </td>
+            </tr>
+            <tr>
+                <td>Religion</td>
+                <td>
+                    <%= student.religion || '—' %>
+                </td>
+            </tr>
+            <tr>
+                <td>Category</td>
+                <td>
+                    <%= student.category || '—' %>
+                </td>
+            </tr>
+            <tr>
+                <td>Class at Time of Leaving</td>
+                <td>Class <%= student.class %> — Section <%= student.section || '—' %>
+                </td>
+            </tr>
+            <tr>
+                <td>Initial Admission Class</td>
+                <td>
+                    <%= student.initialClass || '—' %>
+                </td>
+            </tr>
+            <tr>
+                <td>Date of Admission</td>
+                <td>
+                    <%= student.admissionDate ? new Date(student.admissionDate).toLocaleDateString('en-IN',
+                        {day:'2-digit', month:'long', year:'numeric'}) : '—' %>
+                </td>
+            </tr>
+            <tr>
+                <td>Last Exam Passed</td>
+                <td>
+                    <%= lastExamPassed %>
+                </td>
+            </tr>
+            <tr>
+                <td>Date of Leaving</td>
+                <td>
+                    <%= dateOfLeaving %>
+                </td>
+            </tr>
+            <tr>
+                <td>Reason for Leaving</td>
+                <td>
+                    <%= reasonForLeaving %>
+                </td>
+            </tr>
+            <tr>
+                <td>Conduct & Character</td>
+                <td><span class="conduct-badge">
+                        <%= conduct %>
+                    </span></td>
+            </tr>
+        </table>
+
+        <div class="tc-declaration">
+            This is to certify that the above particulars are correct as per the school records. The student
+            <strong>
+                <%= student.studentName %>
+            </strong>, son/daughter of <strong>
+                <%= student.fatherName || '—' %>
+            </strong>,
+            has been a bonafide student of this school. The student's conduct and character during the period of
+            study was found to be <strong>
+                <%= conduct %>
+            </strong>.
+            The student is hereby granted this Transfer Certificate for the purpose of seeking admission to another
+            institution.
+        </div>
+
+        <div class="signatures">
+            <div class="sig-box">
+                <div class="sig-line"></div>
+                <div class="sig-label">Class Teacher</div>
+                <div class="sig-sub">Signature & Stamp</div>
+            </div>
+            <div class="sig-box">
+                <div class="sig-line"></div>
+                <div class="sig-label">Principal</div>
+                <div class="sig-sub">Signature & Official Seal</div>
+            </div>
+        </div>
+        <div class="doc-footer">This is a computer-generated Transfer Certificate. — <%= schoolName %>
+        </div>
+    </div>
+</body>
+
+</html>

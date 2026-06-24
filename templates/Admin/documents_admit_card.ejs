@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Admit Card</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f0f4f8;
+            min-height: 100vh;
+        }
+
+        .admin_dash {
+            display: flex;
+        }
+
+        .main-section {
+            font-family: 'Inter', sans-serif;
+            flex: 1;
+            /* margin-left: 280px; */
+            padding: 30px 35px;
+            min-height: 100vh;
+        }
+
+        @media (max-width: 900px) {
+            .main-section {
+                margin-left: 0;
+                padding: 30px 16px;
+            }
+        }
+
+        /* Centre the content */
+        .page-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #f6a623 0%, #f7971e 100%);
+            border-radius: 20px;
+            padding: 28px 35px;
+            color: white;
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.25);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .page-header h1 {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .page-header p {
+            font-size: 13px;
+            opacity: 0.85;
+            margin-top: 3px;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 20px;
+            padding: 28px 32px;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.06);
+            margin-bottom: 20px;
+        }
+
+        .form-card h2 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f0f4f8;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .step-badge {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: #f6a623;
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 7px;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 11px 14px;
+            border: 2px solid #e8ecf0;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            color: #2d3748;
+            transition: border-color 0.2s;
+            background: #fafbfc;
+            appearance: none;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: #f6a623;
+            background: white;
+        }
+
+        /* Timetable info box */
+        .timetable-info {
+            background: #fff8ec;
+            border: 1.5px solid #fde68a;
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-top: 12px;
+            display: none;
+        }
+
+        .timetable-info.show {
+            display: block;
+        }
+
+        .timetable-info h4 {
+            font-size: 13px;
+            font-weight: 700;
+            color: #744210;
+            margin-bottom: 10px;
+        }
+
+        .timetable-info .subj-chip {
+            display: inline-block;
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            color: #92400e;
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin: 3px;
+        }
+
+        .btn-generate {
+            background: linear-gradient(135deg, #f6a623, #f7971e);
+            color: white;
+            border: none;
+            padding: 13px 30px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: opacity 0.2s;
+        }
+
+        .btn-generate:hover {
+            opacity: 0.88;
+        }
+
+        .filter-btn {
+            background: #f0f4f8;
+            color: #4a5568;
+            border: 2px solid #e8ecf0;
+            padding: 11px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            background: #e8ecf0;
+        }
+
+        .notice-info {
+            background: #eef0fd;
+            border: 1.5px solid #c7d2fe;
+            border-radius: 12px;
+            padding: 14px 18px;
+            font-size: 13px;
+            color: #4c51bf;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin_dash">
+        <%- include("partials/AdminPageSidebar") %>
+            <section class="main-section">
+                <!-- <%- include("partials/adminNotification", { admin: admin }) %> -->
+
+                    <div class="page-content">
+                        <div class="page-header">
+                            <a href="/admin/documents" class="back-btn"><i class="fa-solid fa-chevron-left"></i></a>
+                            <div>
+                                <h1>🎫 Generate Admit Card</h1>
+                                <p>Pick an existing exam timetable — subjects & dates auto-fill</p>
+                            </div>
+                        </div>
+
+                        <!-- STEP 1: Filter class/section -->
+                        <div class="form-card">
+                            <h2><span class="step-badge">1</span> Select Class & Section</h2>
+                            <form method="GET" action="/admin/documents/admit-card">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Class</label>
+                                        <select name="class" required>
+                                            <option value="">— Select Class —</option>
+                                            <% allClasses.forEach(cls=> { %>
+                                                <option value="<%= cls %>" <%=selectedClass===cls ? 'selected' : '' %>>
+                                                    <%= cls %>
+                                                </option>
+                                                <% }) %>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Section</label>
+                                        <select name="section">
+                                            <option value="">All Sections</option>
+                                            <% sections.forEach(sec=> { %>
+                                                <option value="<%= sec %>" <%=selectedSection===sec ? 'selected' : '' %>
+                                                    ><%= sec %>
+                                                </option>
+                                                <% }) %>
+                                        </select>
+                                    </div>
+                                </div>
+                                <button type="submit" class="filter-btn"><i class="fa-solid fa-filter"></i> Filter
+                                    Students</button>
+                            </form>
+                        </div>
+
+                        <% if (students.length> 0) { %>
+                            <!-- STEP 2: Generate form -->
+                            <div class="form-card">
+                                <h2><span class="step-badge">2</span> Admit Card Details</h2>
+
+                                <% if (timetables.length===0) { %>
+                                    <div class="notice-info">
+                                        <i class="fa-solid fa-circle-info"></i>
+                                        No exam timetables found. Please add an exam timetable from the
+                                        <strong>Timetable</strong> section in the sidebar first.
+                                    </div>
+                                    <% } else { %>
+
+                                        <!-- Timetable preview selector (GET to preview) -->
+                                        <form method="GET" action="/admin/documents/admit-card"
+                                            style="margin-bottom: 16px;">
+                                            <input type="hidden" name="class" value="<%= selectedClass %>">
+                                            <input type="hidden" name="section" value="<%= selectedSection %>">
+                                            <div class="form-group">
+                                                <label>Select Exam Timetable</label>
+                                                <select name="timetableId" onchange="this.form.submit()">
+                                                    <option value="">— Select an Exam —</option>
+                                                    <% timetables.forEach(tt => { %>
+                                                        <option value="<%= tt._id %>" <%= selectedTimetableId === tt._id.toString() ? 'selected' : '' %>>
+                                                            [<%= tt.type === 'exams' ? 'Exam' : 'Monthly Test' %>] <%= tt.period %> — Class <%= tt.class %>
+                                                        </option>
+                                                    <% }) %>
+                                                </select>
+                                            </div>
+                                        </form>
+
+                                        <!-- Show timetable subjects preview -->
+                                        <% if (selectedTimetable) { %>
+                                            <div class="timetable-info show">
+                                                <h4>📅 Subjects from "<%= selectedTimetable.period %>" timetable:</h4>
+                                                <% selectedTimetable.subjects.forEach(s=> { %>
+                                                    <span class="subj-chip">
+                                                        <%= s.name %> — <%= new Date(s.date).toLocaleDateString('en-IN',
+                                                                {day:'2-digit', month:'short'}) %>
+                                                    </span>
+                                                    <% }) %>
+                                            </div>
+                                            <% } %>
+
+                                                <!-- Actual generate form (POST) -->
+                                                <form method="POST" action="/admin/documents/admit-card/generate"
+                                                    target="_blank" style="margin-top: 20px;">
+                                                    <input type="hidden" name="timetableId"
+                                                        value="<%= selectedTimetableId %>">
+                                                    <div class="form-row">
+                                                        <div class="form-group">
+                                                            <label>Student</label>
+                                                            <select name="studentId" required>
+                                                                <option value="">— Select Student —</option>
+                                                                <% students.forEach(s=> { %>
+                                                                    <option value="<%= s._id %>">
+                                                                        <%= s.studentName %> — Roll: <%= s.rollNo
+                                                                                || 'N/A' %>
+                                                                    </option>
+                                                                    <% }) %>
+                                                            </select>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label>Exam Time (same for all subjects)</label>
+                                                            <input type="text" name="examTime"
+                                                                placeholder="e.g. 10:00 AM – 12:30 PM" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Exam Center <span
+                                                                style="font-weight:400; color:#aaa;">(leave blank to use
+                                                                school name)</span></label>
+                                                        <input type="text" name="examCenter"
+                                                            placeholder="e.g. School Main Hall">
+                                                    </div>
+
+                                                    <% if (!selectedTimetableId) { %>
+                                                        <div class="notice-info" style="margin-bottom: 14px;">
+                                                            <i class="fa-solid fa-circle-info"></i>
+                                                            Please select an exam timetable above first.
+                                                        </div>
+                                                        <% } %>
+
+                                                            <button type="submit" class="btn-generate"
+                                                                <%=!selectedTimetableId
+                                                                ? 'disabled style="opacity:0.5; cursor:not-allowed"'
+                                                                : '' %>>
+                                                                <i class="fa-solid fa-file-pdf"></i> Generate Admit Card
+                                                            </button>
+                                                </form>
+
+                                                <% } %>
+                            </div>
+                            <% } %>
+                    </div>
+            </section>
+    </div>
+</body>
+
+</html>

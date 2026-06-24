@@ -43,23 +43,46 @@ function parseFile(filePath, originalName) {
 // ─────────────────────────────────────────────────────
 function parseDate(val) {
     if (!val) return null;
+    // Excel serial number
     if (typeof val === "number") {
         const date = xlsx.SSF.parse_date_code(val);
         if (date) {
-            const y = date.y;
-            const m = String(date.m).padStart(2, "0");
-            const d = String(date.d).padStart(2, "0");
-            return new Date(`${y}-${m}-${d}`);
+            // Date.UTC se banao taaki timezone shift na ho
+            return new Date(Date.UTC(date.y, date.m - 1, date.d));
         }
     }
     const strVal = String(val).trim();
-    const patterns = [
-        { regex: /^(\d{4})-(\d{2})-(\d{2})$/, fn: (m) => `${m[1]}-${m[2]}-${m[3]}` },
-        { regex: /^(\d{2})-(\d{2})-(\d{4})$/, fn: (m) => `${m[3]}-${m[2]}-${m[1]}` },
-        { regex: /^(\d{2})\/(\d{2})\/(\d{4})$/, fn: (m) => `${m[3]}-${m[2]}-${m[1]}` },
-        { regex: /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/, fn: (m) => `${m[3]}-${String(m[2]).padStart(2, "0")}-${String(m[1]).padStart(2, "0")}` },
+
+    // Month name abbreviation map
+    const monthNames = {
+        jan: "01", feb: "02", mar: "03", apr: "04", may: "05", jun: "06",
+        jul: "07", aug: "08", sep: "09", oct: "10", nov: "11", dec: "12",
+        january: "01", february: "02", march: "03", april: "04",
+        june: "06", july: "07", august: "08", september: "09",
+        october: "10", november: "11", december: "12"
+    };
+
+    // Helper to resolve month text to 2-digit number
+    function resolveMonth(m) {
+        const asNum = parseInt(m);
+        if (!isNaN(asNum)) return String(asNum).padStart(2, "0");
+        return monthNames[m.toLowerCase()] || null;
+    }
+
+    // Helper to expand 2-digit year → 4-digit
+    function expandYear(yy) {
+        const n = parseInt(yy);
+        return n <= 30 ? 2000 + n : 1900 + n;
+    }
+
+    // Numeric patterns: YYYY-MM-DD, DD-MM-YYYY, DD/MM/YYYY, YYYY/MM/DD
+    const numericPatterns = [
+        // YYYY-MM-DD  or  YYYY/MM/DD
+        { regex: /^(\d{4})[\-\/](\d{1,2})[\-\/](\d{1,2})$/, fn: (m) => `${m[1]}-${m[2].padStart(2,"0")}-${m[3].padStart(2,"0")}` },
+        // DD-MM-YYYY  or  DD/MM/YYYY
+        { regex: /^(\d{1,2})[\-\/](\d{1,2})[\-\/](\d{4})$/, fn: (m) => `${m[3]}-${m[2].padStart(2,"0")}-${m[1].padStart(2,"0")}` },
     ];
-    for (const p of patterns) {
+    for (const p of numericPatterns) {
         const match = strVal.match(p.regex);
         if (match) {
             const iso = p.fn(match);
@@ -67,6 +90,33 @@ function parseDate(val) {
             if (!isNaN(d)) return d;
         }
     }
+
+    // Month-name patterns (separator can be space, dash, or slash)
+    const sep = "[\\s\\-\\/]";
+    const monthNamePatterns = [
+        // DD-Mon-YYYY  e.g. 23-Jun-2026  or  23 June 2026
+        { regex: new RegExp(`^(\\d{1,2})${sep}([A-Za-z]+)${sep}(\\d{4})$`), fn: (m) => { const mo = resolveMonth(m[2]); return mo ? `${m[3]}-${mo}-${m[1].padStart(2,"0")}` : null; } },
+        // DD-Mon-YY  e.g. 18-Apr-18  (2-digit year — Excel default export)
+        { regex: new RegExp(`^(\\d{1,2})${sep}([A-Za-z]+)${sep}(\\d{2})$`), fn: (m) => { const mo = resolveMonth(m[2]); return mo ? `${expandYear(m[3])}-${mo}-${m[1].padStart(2,"0")}` : null; } },
+        // Mon-DD-YYYY  e.g. Jun-23-2026
+        { regex: new RegExp(`^([A-Za-z]+)${sep}(\\d{1,2})${sep}(\\d{4})$`), fn: (m) => { const mo = resolveMonth(m[1]); return mo ? `${m[3]}-${mo}-${m[2].padStart(2,"0")}` : null; } },
+        // Mon-DD-YY  e.g. Jun-23-26
+        { regex: new RegExp(`^([A-Za-z]+)${sep}(\\d{1,2})${sep}(\\d{2})$`), fn: (m) => { const mo = resolveMonth(m[1]); return mo ? `${expandYear(m[3])}-${mo}-${m[2].padStart(2,"0")}` : null; } },
+        // YYYY-Mon-DD  e.g. 2026-Jun-23
+        { regex: new RegExp(`^(\\d{4})${sep}([A-Za-z]+)${sep}(\\d{1,2})$`), fn: (m) => { const mo = resolveMonth(m[2]); return mo ? `${m[1]}-${mo}-${m[3].padStart(2,"0")}` : null; } },
+    ];
+    for (const p of monthNamePatterns) {
+        const match = strVal.match(p.regex);
+        if (match) {
+            const iso = p.fn(match);
+            if (iso) {
+                const d = new Date(iso);
+                if (!isNaN(d)) return d;
+            }
+        }
+    }
+
+    // Fallback: let JS parse it (handles many natural language dates)
     const d = new Date(strVal);
     return isNaN(d) ? null : d;
 }
@@ -90,6 +140,25 @@ function getVal(row, ...keys) {
         }
     }
     return "";
+}
+
+// ─────────────────────────────────────────────────────
+// HELPER: Parse phone number — handles scientific notation, country code
+// ─────────────────────────────────────────────────────
+function parsePhone(val) {
+    if (!val) return null;
+    // If it's a number (e.g., from xlsx), convert to integer first to avoid float/scientific issues
+    const asFloat = parseFloat(val);
+    if (!isNaN(asFloat) && isFinite(asFloat)) {
+        const fullStr = Math.round(asFloat).toString().replace(/\D/g, "");
+        // Extract last 10 digits (handles +91 country code prefix)
+        if (fullStr.length >= 10) return parseInt(fullStr.slice(-10));
+        return parseInt(fullStr) || null;
+    }
+    // Handle string like "9876543210" or "+919876543210"
+    const stripped = val.replace(/\D/g, "");
+    if (stripped.length >= 10) return parseInt(stripped.slice(-10));
+    return null;
 }
 
 
@@ -522,10 +591,10 @@ router.post("/bulk-upload-students", adminAuth, upload.single("excelFile"), asyn
         const skippedList = []; // {name, id, reason}
 
         for (const row of rows) {
-            const name = getVal(row, "studentName", "name", "Name");
-            const id = getVal(row, "admissionNo", "id", "Id", "ID").toUpperCase();
-            const studentClass = getVal(row, "class", "Class").toUpperCase();
-            const dobRaw = getVal(row, "DOB", "dob", "Dob");
+            const name = getVal(row, "studentName", "Student Name", "student name", "name", "Name", "StudentName");
+            const id = getVal(row, "admissionNo", "AdmissionNo", "Admission No", "admission no", "admNo", "id", "Id", "ID", "SR No.", "SR No", "sr no", "SrNo", "srNo", "SR_No", "AdmNo").toUpperCase();
+            const studentClass = getVal(row, "class", "Class", "CLASS", "currentClass", "Current Class").toUpperCase();
+            const dobRaw = getVal(row, "DOB", "dob", "Dob", "Date of Birth", "date of birth", "DateOfBirth", "dateofbirth");
 
             // Skip the info/guide row (row 2 in template)
             if (name && name.toLowerCase().startsWith("required:")) continue;
@@ -553,7 +622,7 @@ router.post("/bulk-upload-students", adminAuth, upload.single("excelFile"), asyn
                 continue;
             }
 
-            const existing = await Student.findOne({ id, schoolCode });
+            const existing = await Student.findOne({ admissionNo: id, schoolCode });
             if (existing) {
                 skipped++;
                 skippedList.push({ name, id, reason: "Already exists in the system" });
@@ -607,7 +676,7 @@ router.post("/bulk-upload-students", adminAuth, upload.single("excelFile"), asyn
                 rollNo: getVal(row, "rollNo", "RollNo"),
                 gender: normalizeGender(getVal(row, "gender", "Gender")),
                 DOB: dobDate,
-                phone: parseInt(getVal(row, "phone", "Phone")) || undefined,
+                phone: parsePhone(getVal(row, "phone", "Phone")) || undefined,
                 address: toTitleCase(getVal(row, "address", "Address")),
                 fees: totalFees,
                 fatherName: toTitleCase(getVal(row, "fatherName", "FatherName")),
@@ -629,7 +698,7 @@ router.post("/bulk-upload-students", adminAuth, upload.single("excelFile"), asyn
                 motherTongue: toTitleCase(getVal(row, "motherTongue")),
                 previousSchool: toTitleCase(getVal(row, "previousSchool")),
                 admissionDate,
-                initialClass: getVal(row, "initialClass", "InitialClass") || studentClass,
+                initialClass: getVal(row, "initialClass", "InitialClass") || "",
                 feeStatus: feeStatusArray,
                 isVehicleAssigned,
                 vehicleDetails: {

@@ -20,7 +20,7 @@ router.get("/school_fees_collection", adminAuth, async (req, res) => {
       filter.class = classFilter;
     }
 
-    const allStudents = await Student.find(filter).sort({ name: 1 });
+    const allStudents = await Student.find(filter).sort({ studentName: 1 });
 
     // Prepare monthly graph data
     const monthlyCollection = new Array(12).fill(0);
@@ -106,6 +106,7 @@ router.get("/school_fees_collection", adminAuth, async (req, res) => {
         ...student.toObject(),
         paidFees,
         remainingFees,
+        totalStudentFees,
         overallStatus: allPaid ? "Paid" : "Pending"
       };
     });

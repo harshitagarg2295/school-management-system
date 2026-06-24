@@ -747,18 +747,10 @@
                                                         const billIsPdf   = bType === 'application/pdf' || /\.pdf$/i.test(bUrl);
                                                     %>
 
-                                                    <%/* Preview button — for images and PDFs */%>
-                                                    <% if(billIsImage || billIsPdf){
-                                                        // fl_inline → Cloudinary sets Content-Disposition: inline
-                                                        // so PDFs open in-browser instead of downloading/showing as text
-                                                        const previewBillUrl = (billIsPdf && bUrl.includes('/upload/'))
-                                                            ? bUrl.replace('/upload/', '/upload/fl_inline/')
-                                                            : bUrl;
-                                                    %>
-                                                        <a href="<%= previewBillUrl %>" target="_blank" title="Preview Bill">
-                                                            <i class="fa-solid fa-eye"></i>
-                                                        </a>
-                                                    <% } %>
+                                                    <%/* Preview button — for all file types */%>
+                                                    <a href="/preview-bill/<%= expense._id %>" target="_blank" title="Preview Bill">
+                                                        <i class="fa-solid fa-eye"></i>
+                                                    </a>
 
                                                     <%/* Download — server-side route works for all types */%>
                                                     <a href="/download-bill/<%= expense._id %>" title="Download Bill">

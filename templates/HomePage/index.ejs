@@ -12,17 +12,23 @@
 
     <title>VidhyaLitee | Digital School Management System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
     <style>
         :root {
             --primary: #2563eb;
+            --primary-dark: #1d4ed8;
             --dark: #1e293b;
             --light: #f8fafc;
             --accent: #3b82f6;
+            --navy: #1e3c72;
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Inter', -apple-system, sans-serif;
-            margin: 0;
             background: var(--light);
             color: var(--dark);
             line-height: 1.6;
@@ -30,125 +36,548 @@
 
         /* ---------- HERO SECTION ---------- */
         .hero-section {
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            background: linear-gradient(135deg, #0f2444 0%, #1e3c72 55%, #2a5298 100%);
             color: white;
-            padding: 100px 20px;
-            /* Reduced padding for mobile */
+            padding: 110px 20px 80px;
             text-align: center;
             overflow: hidden;
+            position: relative;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: -30%;
+            left: -5%;
+            width: 50%;
+            height: 160%;
+            background: radial-gradient(circle, rgba(59,130,246,0.13) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(59,130,246,0.18);
+            border: 1px solid rgba(96,165,250,0.3);
+            color: #93c5fd;
+            padding: 7px 18px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 26px;
         }
 
         .hero-section h1 {
-            font-size: clamp(2rem, 8vw, 3.5rem);
-            /* Responsive font size */
+            font-size: clamp(2rem, 7vw, 3.6rem);
             margin-bottom: 20px;
-            font-weight: 800;
-            line-height: 1.2;
+            font-weight: 900;
+            line-height: 1.15;
         }
 
-        .hero-section p {
-            font-size: clamp(1rem, 4vw, 1.25rem);
-            opacity: 0.9;
-            max-width: 700px;
+        .hero-section h1 span { color: #60a5fa; }
+
+        .hero-section > p {
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            opacity: 0.88;
+            max-width: 680px;
             margin: 0 auto 40px;
-            padding: 0 10px;
+        }
+
+        .hero-btns {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 70px;
         }
 
         .cta-btn {
-            padding: 14px 30px;
-            font-size: 1.1rem;
+            padding: 14px 32px;
+            font-size: 1rem;
             border-radius: 50px;
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 700;
             transition: all 0.3s ease;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .btn-primary {
             background: #fff;
             color: #1e3c72;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
         }
 
         .btn-primary:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-            background: #f8fbff;
-        }
-
-        /* ---------- FEATURES GRID ---------- */
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            /* Adjusted min-width */
-            gap: 25px;
-            padding: 80px 5%;
-            /* Flexible side padding */
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        /* 350px se choti screen ke liye fix */
-        @media (max-width: 350px) {
-            .features-grid {
-                grid-template-columns: 1fr;
-                /* Force single column */
-                padding: 40px 15px;
-            }
-
-            .feature-card {
-                padding: 25px !important;
-            }
-        }
-
-        .feature-card {
-            background: white;
-            padding: 40px;
-            border-radius: 24px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
-            transition: transform 0.3s ease;
-            border: 1px solid rgba(0, 0, 0, 0.02);
-        }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.07);
-        }
-
-        .feature-card i {
-            font-size: 2.5rem;
-            color: var(--primary);
-            margin-bottom: 20px;
-            background: #eff6ff;
-            width: 80px;
-            height: 80px;
-            line-height: 80px;
-            border-radius: 20px;
-            display: inline-block;
-        }
-
-        .feature-card h3 {
-            margin-bottom: 12px;
-            font-size: 1.4rem;
-            color: var(--dark);
-        }
-
-        .feature-card p {
-            color: #64748b;
-            font-size: 0.95rem;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.22);
         }
 
         .download-btn {
             background: transparent;
             color: white;
-            border: 2px solid rgba(255, 255, 255, 0.7);
-            margin-top: 18px;
+            border: 2px solid rgba(255,255,255,0.65);
         }
 
         .download-btn:hover {
-            background: rgba(255, 255, 255, 0.12);
+            background: rgba(255,255,255,0.1);
             transform: translateY(-3px);
+        }
+
+        /* ---------- APP PREVIEW / SCREENSHOTS ---------- */
+        .preview-section {
+            background: linear-gradient(180deg, #0f2444 0%, #f8fafc 40%);
+            padding: 0 20px 80px;
+        }
+
+        .preview-wrapper {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .preview-card {
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.25);
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            background: #fff;
+        }
+
+        .preview-card:hover {
+            transform: translateY(-8px) scale(1.01);
+            box-shadow: 0 35px 80px rgba(37,99,235,0.25);
+        }
+
+        .preview-card img {
+            width: 100%;
+            display: block;
+            border-radius: 20px;
+        }
+
+        .preview-card-label {
+            padding: 14px 18px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .preview-card-label i {
+            color: var(--primary);
+            font-size: 15px;
+        }
+
+        /* ---------- COLLAGE + SS STRIP ---------- */
+        .collage-wrapper {
+            max-width: 1000px;
+            margin: 0 auto 28px;
+            padding: 0 20px;
+        }
+
+        .collage-card {
+            border-radius: 22px;
+            overflow: hidden;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.35);
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: transform 0.4s ease;
+        }
+
+        .collage-card:hover {
+            transform: translateY(-6px) scale(1.01);
+        }
+
+        .collage-card img {
+            width: 100%;
+            display: block;
+        }
+
+        .ss-strip {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .ss-card {
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.22);
+            border: 1px solid rgba(255,255,255,0.08);
+            background: #fff;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .ss-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 50px rgba(37,99,235,0.25);
+        }
+
+        .ss-card img {
+            width: 100%;
+            display: block;
+            border-radius: 14px 14px 0 0;
+        }
+
+        .ss-label {
+            padding: 10px 14px;
+            background: #fff;
+            font-size: 12px;
+            font-weight: 600;
+            color: #475569;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .ss-label i { color: var(--primary); font-size: 13px; }
+
+        @media (max-width: 640px) {
+            .ss-strip { grid-template-columns: 1fr; }
+        }
+
+        /* ---------- STATS STRIP ---------- */
+        .stats-strip {
+            background: var(--primary);
+            padding: 50px 5%;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 30px;
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .stat-item {
+            color: white;
+        }
+
+        .stat-number {
+            font-size: 2.6rem;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+
+        .stat-label {
+            font-size: 0.88rem;
+            opacity: 0.85;
+            font-weight: 500;
+        }
+
+        /* ---------- FEATURES GRID ---------- */
+        .features-section {
+            padding: 90px 5%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-head {
+            text-align: center;
+            margin-bottom: 55px;
+        }
+
+        .section-head .tag {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--primary);
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .section-head h2 {
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 12px;
+        }
+
+        .section-head p {
+            color: #64748b;
+            font-size: 1rem;
+            max-width: 580px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 38px 32px;
+            border-radius: 22px;
+            text-align: left;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0,0,0,0.04);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px rgba(37,99,235,0.1);
+            border-color: var(--primary);
+        }
+
+        .feature-card .icon-wrap {
+            width: 68px;
+            height: 68px;
+            background: #eff6ff;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 22px;
+        }
+
+        .feature-card .icon-wrap i {
+            font-size: 1.7rem;
+            color: var(--primary);
+        }
+
+        .feature-card h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 10px;
+        }
+
+        .feature-card p {
+            color: #64748b;
+            font-size: 0.93rem;
+            flex: 1;
+        }
+
+        .feature-card .card-tag {
+            display: inline-block;
+            margin-top: 18px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--primary);
+            background: #eff6ff;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        
+        /* ---------- DOCUMENT GENERATION SECTION ---------- */
+        .docs-section {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            padding: 90px 5%;
+            color: white;
+            text-align: center;
+        }
+
+        .docs-section .section-head h2 { color: white; }
+        .docs-section .section-head p { color: rgba(255,255,255,0.8); }
+        .docs-section .section-head .tag { color: #93c5fd; }
+
+        .docs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 22px;
+            max-width: 1000px;
+            margin: 0 auto 50px;
+        }
+
+        .doc-card {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 18px;
+            padding: 32px 24px;
+            text-align: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .doc-card:hover {
+            background: rgba(255,255,255,0.14);
+            transform: translateY(-6px);
+            border-color: rgba(96,165,250,0.5);
+        }
+
+        .doc-card .doc-icon {
+            font-size: 2.2rem;
+            color: #93c5fd;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .doc-card h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .doc-card p {
+            font-size: 0.88rem;
+            color: rgba(255,255,255,0.7);
+            line-height: 1.55;
+        }
+
+        /* ---------- CHART PREVIEW SECTION ---------- */
+        .charts-section {
+            padding: 90px 5%;
+            background: white;
+        }
+
+        .charts-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            max-width: 1100px;
+            margin: 0 auto;
+            align-items: center;
+        }
+
+        .charts-text h2 {
+            font-size: clamp(1.6rem, 4vw, 2.3rem);
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 18px;
+        }
+
+        .charts-text p {
+            color: #64748b;
+            font-size: 0.97rem;
+            margin-bottom: 25px;
+        }
+
+        .charts-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .charts-list li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.95rem;
+            color: #334155;
+            font-weight: 500;
+        }
+
+        .charts-list li i {
+            color: var(--primary);
+            font-size: 1rem;
+            width: 20px;
+        }
+
+        .charts-img {
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(37,99,235,0.15);
+        }
+
+        .charts-img img {
+            width: 100%;
+            display: block;
+        }
+
+        @media (max-width: 750px) {
+            .charts-layout { grid-template-columns: 1fr; }
+        }
+
+        /* ---------- CTA SECTION ---------- */
+        .final-cta {
+            background: #f0f5ff;
+            padding: 90px 20px;
+            text-align: center;
+        }
+
+        .final-cta h2 {
+            font-size: clamp(1.8rem, 4vw, 2.6rem);
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 14px;
+        }
+
+        .final-cta p {
+            color: #64748b;
+            font-size: 1rem;
+            margin-bottom: 36px;
+        }
+
+        .final-btns {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-blue {
+            background: var(--primary);
+            color: white;
+            padding: 14px 34px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-blue:hover {
+            background: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(37,99,235,0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--dark);
+            border: 2px solid #cbd5e1;
+            padding: 14px 34px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .hero-section { padding: 80px 16px 60px; }
+            .features-section { padding: 60px 4%; }
+            .doc-card { padding: 24px 18px; }
         }
     </style>
 </head>
@@ -156,39 +585,180 @@
 <body>
     <%- include("partials/HomePageNavbar") %>
 
-        <section class="hero-section">
-            <h1>VidhyaLitee: The Future of School Management</h1>
-            <p>Automate attendance, simplify fee collection, and manage results with India's most intuitive school ERP
-                software.</p>
+    <!-- ── HERO ───────────────────────────────── -->
+    <section class="hero-section">
+        <div class="hero-badge">
+            <i class="fa-solid fa-star"></i> India's Smartest School ERP
+        </div>
+        <h1>VidhyaLitee: The <span>Future</span> of<br>School Management</h1>
+        <p>Automate attendance, simplify fee collection, generate marksheets & certificates — all from one powerful dashboard.</p>
+        <div class="hero-btns">
             <a href="/login" class="cta-btn btn-primary">
-                <i class="fa-solid fa-rocket" style="margin-right: 8px;"></i> Get Started Now
+                <i class="fa-solid fa-rocket"></i> Get Started Now
             </a>
             <a href="/downloads/SchoolApp.apk" class="cta-btn download-btn" download>
-                <i class="fa-solid fa-mobile-screen-button" style="margin-right: 8px;"></i>
-                Download App
+                <i class="fa-solid fa-mobile-screen-button"></i> Download App
             </a>
-        </section>
+        </div>
+    </section>
 
-        <div class="features-grid">
-            <div class="feature-card">
-                <i class="fa-solid fa-credit-card"></i>
-                <h3>Smart Fee Payment</h3>
-                <p>Integrated Razorpay for seamless and secure online fee collection with automated receipts.</p>
-            </div>
-            <div class="feature-card">
-                <i class="fa-solid fa-user-check"></i>
-                <h3>Attendance Tracking</h3>
-                <p>Track daily attendance of students and staff with detailed monthly real-time reports.</p>
-            </div>
-            <div class="feature-card">
-                <i class="fa-solid fa-bullhorn"></i>
-                <h3>Instant Notices</h3>
-                <p>Send important announcements and digital circulars to parents and staff instantly.</p>
+    <!-- ── APP PREVIEW SCREENSHOTS ───────────── -->
+    <div class="preview-section">
+        <!-- Main collage -->
+        <div class="collage-wrapper">
+            <div class="collage-card">
+                <img src="/images/app_collage.png" alt="VidhyaLitee App Preview — Dashboard, Charts, Fees, Teachers">
             </div>
         </div>
+        <!-- Individual screenshot strip -->
+        <div class="ss-strip">
+            <div class="ss-card">
+                <img src="/images/ss_dashboard.png" alt="Admin Dashboard">
+                <div class="ss-label"><i class="fa-solid fa-house-chimney"></i> Admin Dashboard</div>
+            </div>
+            <div class="ss-card">
+                <img src="/images/ss_fees.png" alt="Fees Collection">
+                <div class="ss-label"><i class="fa-solid fa-credit-card"></i> Fees Collection</div>
+            </div>
+            <div class="ss-card">
+                <img src="/images/ss_teachers.png" alt="Teachers Management">
+                <div class="ss-label"><i class="fa-solid fa-chalkboard-teacher"></i> Teachers List</div>
+            </div>
+        </div>
+    </div>
 
-        <%- include("partials/HomePageFooter") %>
-        <script src="/backButton.js"></script>
+    <!-- ── STATS STRIP ────────────────────────── -->
+    <div class="stats-strip">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-number">50+</div>
+                <div class="stat-label">Schools Using VidhyaLitee</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">25,000+</div>
+                <div class="stat-label">Students Managed</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">99.9%</div>
+                <div class="stat-label">Uptime Guaranteed</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">₹2Cr+</div>
+                <div class="stat-label">Fees Collected Online</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── FEATURE CARDS ──────────────────────── -->
+    <div class="features-section">
+        <div class="section-head">
+            <span class="tag">What We Offer</span>
+            <h2>Everything Your School Needs</h2>
+            <p>From daily attendance to online fee collection — VidhyaLitee handles it all, beautifully.</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="icon-wrap"><i class="fa-solid fa-credit-card"></i></div>
+                <h3>Smart Fee Payment</h3>
+                <p>Integrated Razorpay for seamless and secure online fee collection with automated receipts and pending due tracking.</p>
+                <span class="card-tag">Razorpay Integrated</span>
+            </div>
+            <div class="feature-card">
+                <div class="icon-wrap"><i class="fa-solid fa-user-check"></i></div>
+                <h3>Attendance Tracking</h3>
+                <p>Track daily attendance of students and staff. View beautiful pie charts and monthly real-time reports in one click.</p>
+                <span class="card-tag">Real-time Reports</span>
+            </div>
+            <div class="feature-card">
+                <div class="icon-wrap"><i class="fa-solid fa-bullhorn"></i></div>
+                <h3>Instant Notices</h3>
+                <p>Send important announcements and digital circulars to parents and staff in seconds. No paper, no delays.</p>
+                <span class="card-tag">Push Notifications</span>
+            </div>
+            <div class="feature-card">
+                <div class="icon-wrap"><i class="fa-solid fa-file-invoice"></i></div>
+                <h3>Marksheet Generation</h3>
+                <p>Generate professional marksheets/report cards as PDFs with subject-wise marks, grades, and school branding.</p>
+                <span class="card-tag">PDF Export</span>
+            </div>
+            <div class="feature-card">
+                <div class="icon-wrap"><i class="fa-solid fa-id-card"></i></div>
+                <h3>Admit Card Generator</h3>
+                <p>Create and issue exam admit cards instantly for each student with roll number, exam schedule, and photo.</p>
+                <span class="card-tag">Exam Ready</span>
+            </div>
+            <div class="feature-card">
+                <div class="icon-wrap"><i class="fa-solid fa-graduation-cap"></i></div>
+                <h3>TC & Bonafide Certificates</h3>
+                <p>Generate Transfer Certificates and Bonafide certificates with a single click. Formal, printable, professional.</p>
+                <span class="card-tag">Official Documents</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── DOCUMENT GENERATION SECTION ──────── -->
+    <div class="docs-section">
+        <div class="section-head">
+            <span class="tag">Document Generation</span>
+            <h2>Professional Documents in One Click</h2>
+            <p>Marksheets, Transfer Certificates, Admit Cards, and Bonafide Certificates — all instantly generated as PDFs.</p>
+        </div>
+        <div class="docs-grid">
+            <div class="doc-card">
+                <i class="fa-solid fa-file-invoice doc-icon"></i>
+                <h4>Marksheet / Report Card</h4>
+                <p>Subject-wise marks, grades, total, percentage, result status — all in a professionally designed layout.</p>
+            </div>
+            <div class="doc-card">
+                <i class="fa-solid fa-right-from-bracket doc-icon"></i>
+                <h4>Transfer Certificate (TC)</h4>
+                <p>Instant TC generation with school seal, student details, and formal formatting. Ready to print.</p>
+            </div>
+            <div class="doc-card">
+                <i class="fa-solid fa-id-badge doc-icon"></i>
+                <h4>Admit Card</h4>
+                <p>Exam admit cards with student photo, roll number, exam schedule, and subject details.</p>
+            </div>
+            <div class="doc-card">
+                <i class="fa-solid fa-certificate doc-icon"></i>
+                <h4>Bonafide Certificate</h4>
+                <p>Issue bonafide certificates on-demand for bank, scholarship, or other official purposes.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── CHARTS / ANALYTICS SECTION ────────── -->
+    <div class="charts-section">
+        <div class="charts-layout">
+            <div class="charts-text">
+                <h2>Powerful Analytics at a Glance</h2>
+                <p>VidhyaLitee's dashboard gives you real-time insights through beautiful charts and reports — so you always know what's happening at your school.</p>
+                <ul class="charts-list">
+                    <li><i class="fa-solid fa-chart-pie"></i> Student attendance pie chart — daily & monthly</li>
+                    <li><i class="fa-solid fa-chart-bar"></i> Fee collection bar graphs — month-wise</li>
+                    <li><i class="fa-solid fa-chart-line"></i> Academic performance trend lines</li>
+                    <li><i class="fa-solid fa-table-columns"></i> Class-wise and student-wise breakdown</li>
+                    <li><i class="fa-solid fa-rupee-sign"></i> Expense vs income financial reports</li>
+                </ul>
+            </div>
+            <div class="charts-img">
+                <img src="/images/ss_charts.png" alt="Revenue & Expenses Pie Charts — VidhyaLitee Analytics Dashboard">
+            </div>
+        </div>
+    </div>
+
+    <!-- ── FINAL CTA ───────────────────────────── -->
+    <div class="final-cta">
+        <h2>Ready to Digitalise Your School?</h2>
+        <p>Join 50+ schools already using VidhyaLitee. Get started in minutes — no setup fee.</p>
+        <div class="final-btns">
+            <a href="/login" class="btn-blue"><i class="fa-solid fa-rocket"></i> Get Started Now</a>
+            <a href="/features" class="btn-outline"><i class="fa-solid fa-list-check"></i> See All Features</a>
+        </div>
+    </div>
+
+    <%- include("partials/HomePageFooter") %>
+    <script src="/backButton.js"></script>
 </body>
 
 </html>

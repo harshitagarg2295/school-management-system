@@ -4,137 +4,438 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Features | VidhyaLitee - All-in-One ERP</title>
+    <title>Features | VidhyaLitee - All-in-One School ERP</title>
+    <meta name="description" content="Explore all features of VidhyaLitee — attendance tracking, fee management, marksheet generation, TC, admit cards, notices, analytics and more.">
+    <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #2563eb;
+            --primary-dark: #1d4ed8;
             --dark: #0f172a;
             --text-slate: #475569;
             --bg-light: #f8fafc;
             --white: #ffffff;
+            --navy: #1e3c72;
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Inter', sans-serif;
-            margin: 0;
             background-color: var(--bg-light);
             color: var(--dark);
             line-height: 1.6;
         }
 
-        /* ---------- HERO SECTION ---------- */
+        /* ---------- HERO ---------- */
         .features-hero {
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            background: linear-gradient(135deg, #0f2444 0%, #1e3c72 55%, #2a5298 100%);
             color: white;
-            padding: 100px 20px;
+            padding: 110px 20px 80px;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .features-hero::before {
+            content: '';
+            position: absolute;
+            top: -30%;
+            right: -5%;
+            width: 45%;
+            height: 160%;
+            background: radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(59,130,246,0.18);
+            border: 1px solid rgba(96,165,250,0.3);
+            color: #93c5fd;
+            padding: 7px 18px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 24px;
         }
 
         .features-hero h1 {
-            font-size: clamp(2.2rem, 5vw, 3.2rem);
-            font-weight: 800;
-            margin-bottom: 15px;
+            font-size: clamp(2.2rem, 5vw, 3.4rem);
+            font-weight: 900;
+            margin-bottom: 16px;
+            line-height: 1.15;
         }
 
+        .features-hero h1 span { color: #60a5fa; }
+
         .features-hero p {
-            font-size: 1.2rem;
-            max-width: 700px;
+            font-size: 1.15rem;
+            max-width: 680px;
             margin: 0 auto;
-            opacity: 0.9;
+            opacity: 0.88;
         }
 
         /* ---------- FEATURES GRID ---------- */
         .container {
             max-width: 1200px;
-            margin: -60px auto 100px;
+            margin: -50px auto 80px;
             padding: 0 20px;
         }
 
         .features-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 30px;
+            gap: 28px;
         }
 
         .feature-item {
             background: var(--white);
-            padding: 45px 35px;
+            padding: 42px 34px;
             border-radius: 24px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 10px 35px rgba(0,0,0,0.06);
             transition: all 0.3s ease;
-            border: 1px solid rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0,0,0,0.04);
             text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), #60a5fa);
+            opacity: 0;
+            transition: opacity 0.3s;
         }
 
         .feature-item:hover {
             transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(37, 99, 235, 0.1);
+            box-shadow: 0 25px 50px rgba(37,99,235,0.12);
             border-color: var(--primary);
         }
 
+        .feature-item:hover::before { opacity: 1; }
+
         .icon-box {
-            width: 70px;
-            height: 70px;
+            width: 72px;
+            height: 72px;
             background: #eff6ff;
             color: var(--primary);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.8rem;
-            border-radius: 18px;
-            margin-bottom: 25px;
+            font-size: 1.9rem;
+            border-radius: 20px;
+            margin-bottom: 24px;
+            transition: all 0.3s;
+        }
+
+        .feature-item:hover .icon-box {
+            background: var(--primary);
+            color: white;
         }
 
         .feature-item h3 {
-            font-size: 1.5rem;
-            margin-bottom: 15px;
+            font-size: 1.4rem;
+            margin-bottom: 12px;
             color: var(--dark);
+            font-weight: 700;
         }
 
         .feature-item p {
             color: var(--text-slate);
+            font-size: 0.97rem;
+            line-height: 1.65;
+            margin-bottom: 18px;
+        }
+
+        .feature-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: auto;
+        }
+
+        .feature-tag {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: var(--primary);
+            background: #eff6ff;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        /* ---------- DOCUMENT GENERATION SECTION ---------- */
+        .docs-showcase {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            padding: 90px 5%;
+            color: white;
+        }
+
+        .docs-showcase .section-head {
+            text-align: center;
+            margin-bottom: 55px;
+        }
+
+        .docs-showcase .section-head .tag {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #93c5fd;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        .docs-showcase .section-head h2 {
+            font-size: clamp(1.8rem, 4vw, 2.6rem);
+            font-weight: 900;
+            margin-bottom: 14px;
+            color: white;
+        }
+
+        .docs-showcase .section-head p {
+            color: rgba(255,255,255,0.78);
             font-size: 1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .docs-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            max-width: 1100px;
+            margin: 0 auto;
+            align-items: center;
+        }
+
+        .docs-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .doc-card {
+            background: rgba(255,255,255,0.09);
+            border: 1px solid rgba(255,255,255,0.16);
+            border-radius: 18px;
+            padding: 28px 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .doc-card:hover {
+            background: rgba(255,255,255,0.16);
+            transform: translateY(-5px);
+            border-color: rgba(96,165,250,0.5);
+        }
+
+        .doc-card .doc-icon {
+            font-size: 2rem;
+            color: #93c5fd;
+            margin-bottom: 14px;
+            display: block;
+        }
+
+        .doc-card h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: white;
+        }
+
+        .doc-card p {
+            font-size: 0.83rem;
+            color: rgba(255,255,255,0.68);
+            line-height: 1.5;
+        }
+
+        .docs-preview-img {
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.3);
+        }
+
+        .docs-preview-img img {
+            width: 100%;
+            display: block;
+        }
+
+        @media (max-width: 800px) {
+            .docs-layout { grid-template-columns: 1fr; }
+            .docs-cards { grid-template-columns: 1fr 1fr; }
+        }
+
+        @media (max-width: 480px) {
+            .docs-cards { grid-template-columns: 1fr; }
+        }
+
+        /* ---------- ANALYTICS / CHARTS SECTION ---------- */
+        .analytics-section {
+            padding: 90px 5%;
+            background: white;
+        }
+
+        .analytics-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            max-width: 1100px;
+            margin: 0 auto;
+            align-items: center;
+        }
+
+        .analytics-img {
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(37,99,235,0.15);
+        }
+
+        .analytics-img img {
+            width: 100%;
+            display: block;
+        }
+
+        .analytics-text h2 {
+            font-size: clamp(1.6rem, 4vw, 2.4rem);
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 16px;
+        }
+
+        .analytics-text p {
+            color: var(--text-slate);
+            font-size: 0.97rem;
+            margin-bottom: 28px;
+        }
+
+        .analytics-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .analytics-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+
+        .analytics-list li .alist-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: #eff6ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: var(--primary);
+            font-size: 14px;
+        }
+
+        .analytics-list li .alist-text h5 {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 2px;
+        }
+
+        .analytics-list li .alist-text p {
+            font-size: 0.83rem;
+            color: var(--text-slate);
+            margin: 0;
+        }
+
+        @media (max-width: 800px) {
+            .analytics-layout { grid-template-columns: 1fr; }
         }
 
         /* ---------- CTA SECTION ---------- */
         .bottom-cta {
             background: var(--white);
-            padding: 80px 20px;
+            padding: 90px 20px;
             text-align: center;
             border-top: 1px solid #e2e8f0;
         }
 
         .bottom-cta h2 {
-            font-size: 2rem;
-            margin-bottom: 20px;
+            font-size: clamp(1.8rem, 4vw, 2.4rem);
+            font-weight: 800;
+            margin-bottom: 14px;
+        }
+
+        .bottom-cta p {
+            color: var(--text-slate);
+            margin-bottom: 36px;
+            font-size: 1rem;
+        }
+
+        .cta-btns {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
         }
 
         .btn-cta {
             background: var(--primary);
             color: white;
-            padding: 15px 40px;
+            padding: 14px 36px;
             border-radius: 50px;
             text-decoration: none;
-            font-weight: 600;
-            display: inline-block;
+            font-weight: 700;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
             transition: 0.3s;
         }
 
         .btn-cta:hover {
-            background: var(--dark);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            background: var(--primary-dark);
+            box-shadow: 0 10px 25px rgba(37,99,235,0.3);
+            transform: translateY(-3px);
+        }
+
+        .btn-cta-outline {
+            background: transparent;
+            color: var(--dark);
+            border: 2px solid #cbd5e1;
+            padding: 14px 36px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+
+        .btn-cta-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-3px);
         }
 
         /* Responsive */
         @media (max-width: 350px) {
-            .feature-item {
-                padding: 30px 20px;
-            }
-
-            .features-hero h1 {
-                font-size: 1.8rem;
-            }
+            .feature-item { padding: 28px 18px; }
+            .features-hero h1 { font-size: 1.8rem; }
         }
     </style>
 </head>
@@ -143,67 +444,207 @@
 
     <%- include("partials/HomePageNavbar") %>
 
-        <section class="features-hero">
-            <h1>Powerful Tools for Powerful Schools</h1>
-            <p>Everything you need to manage your institution from a single, intuitive dashboard.</p>
-        </section>
+    <!-- ── HERO ──────────────────────────────── -->
+    <section class="features-hero">
+        <div class="hero-badge">
+            <i class="fa-solid fa-list-check"></i> Complete Feature List
+        </div>
+        <h1>Powerful Tools for <span>Powerful Schools</span></h1>
+        <p>Everything you need to manage your institution — attendance, fees, documents, results, and more — from a single intuitive dashboard.</p>
+    </section>
 
-        <div class="container">
-            <div class="features-grid">
+    <!-- ── CORE FEATURES GRID ────────────────── -->
+    <div class="container">
+        <div class="features-grid">
 
-                <div class="feature-item">
-                    <div class="icon-box"><i class="fa-solid fa-calendar-check"></i></div>
-                    <h3>Smart Attendance</h3>
-                    <p>Digital attendance for students and staff with automatic SMS alerts to parents. Generate monthly
-                        reports in one click.</p>
+            <div class="feature-item">
+                <div class="icon-box"><i class="fa-solid fa-calendar-check"></i></div>
+                <h3>Smart Attendance</h3>
+                <p>Digital attendance for students and staff with automatic SMS alerts to parents. View daily, weekly, and monthly attendance with beautiful charts and generate reports in one click.</p>
+                <div class="feature-tags">
+                    <span class="feature-tag">Daily Reports</span>
+                    <span class="feature-tag">SMS Alerts</span>
+                    <span class="feature-tag">Pie Charts</span>
                 </div>
+            </div>
 
-                <div class="feature-item">
-                    <div class="icon-box"><i class="fa-solid fa-file-invoice-dollar"></i></div>
-                    <h3>Online Fee Portal</h3>
-                    <p>Integrated with Razorpay for 24/7 fee collection. Auto-generate professional receipts and track
-                        pending dues easily.</p>
+            <div class="feature-item">
+                <div class="icon-box"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+                <h3>Online Fee Portal</h3>
+                <p>Integrated with Razorpay for 24/7 fee collection. Auto-generate professional receipts, track pending dues, and view fee collection bar graphs month-wise.</p>
+                <div class="feature-tags">
+                    <span class="feature-tag">Razorpay</span>
+                    <span class="feature-tag">Auto Receipts</span>
+                    <span class="feature-tag">Pending Dues</span>
                 </div>
+            </div>
 
-                <div class="feature-item">
-                    <div class="icon-box"><i class="fa-solid fa-graduation-cap"></i></div>
-                    <h3>Result Management</h3>
-                    <p>Create report cards, manage marks, and publish exam results online for parents and students to
-                        view instantly.</p>
+            <div class="feature-item">
+                <div class="icon-box"><i class="fa-solid fa-graduation-cap"></i></div>
+                <h3>Result Management</h3>
+                <p>Enter marks, calculate percentages and grades, and publish exam results online. Parents and students can view results instantly through the app.</p>
+                <div class="feature-tags">
+                    <span class="feature-tag">Grade Calculator</span>
+                    <span class="feature-tag">Online Results</span>
                 </div>
+            </div>
 
-                <div class="feature-item">
-                    <div class="icon-box"><i class="fa-solid fa-bullhorn"></i></div>
-                    <h3>Instant Notifications</h3>
-                    <p>No more paper circulars. Send digital notices, holiday announcements, and event updates to the
-                        entire school instantly.</p>
+            <div class="feature-item">
+                <div class="icon-box"><i class="fa-solid fa-bullhorn"></i></div>
+                <h3>Instant Notifications</h3>
+                <p>No more paper circulars. Send digital notices, holiday announcements, exam schedules, and event updates to the entire school in seconds.</p>
+                <div class="feature-tags">
+                    <span class="feature-tag">Push Notifications</span>
+                    <span class="feature-tag">Paperless</span>
                 </div>
+            </div>
 
-                <div class="feature-item">
-                    <div class="icon-box"><i class="fa-solid fa-book-open"></i></div>
-                    <h3>Study Resources</h3>
-                    <p>Manage class timetables and upload syllabus or study materials so students can access them from
-                        anywhere.</p>
+            <div class="feature-item">
+                <div class="icon-box"><i class="fa-solid fa-book-open"></i></div>
+                <h3>Study Resources</h3>
+                <p>Manage class timetables and upload syllabus or study materials so students can access them from anywhere, anytime through the mobile app.</p>
+                <div class="feature-tags">
+                    <span class="feature-tag">Timetable</span>
+                    <span class="feature-tag">Study Materials</span>
                 </div>
+            </div>
 
-                <div class="feature-item">
-                    <div class="icon-box"><i class="fa-solid fa-shield-halved"></i></div>
-                    <h3>Secure & Cloud Based</h3>
-                    <p>Your school's data is 100% encrypted and stored on secure cloud servers, accessible only to
-                        authorized staff.</p>
+            <div class="feature-item">
+                <div class="icon-box"><i class="fa-solid fa-chart-pie"></i></div>
+                <h3>Analytics & Reports</h3>
+                <p>Get real-time insights through pie charts for attendance, bar graphs for fee collection, and financial dashboards for expense tracking. Fully visual and exportable.</p>
+                <div class="feature-tags">
+                    <span class="feature-tag">Pie Charts</span>
+                    <span class="feature-tag">Bar Graphs</span>
+                    <span class="feature-tag">Expense Reports</span>
                 </div>
+            </div>
 
+            <div class="feature-item">
+                <div class="icon-box"><i class="fa-solid fa-users"></i></div>
+                <h3>Student Management</h3>
+                <p>Complete student profiles, bulk upload from Excel, class promotions, and detailed academic history. Manage thousands of students effortlessly.</p>
+                <div class="feature-tags">
+                    <span class="feature-tag">Bulk Upload</span>
+                    <span class="feature-tag">Class Promotions</span>
+                </div>
+            </div>
+
+            <div class="feature-item">
+                <div class="icon-box"><i class="fa-solid fa-chalkboard-teacher"></i></div>
+                <h3>Teacher Portal</h3>
+                <p>Dedicated teacher login with timetable access, attendance marking for their classes, result entry, and assigned notice board — all in one place.</p>
+                <div class="feature-tags">
+                    <span class="feature-tag">Timetable</span>
+                    <span class="feature-tag">Mark Entry</span>
+                </div>
+            </div>
+
+            <div class="feature-item">
+                <div class="icon-box"><i class="fa-solid fa-shield-halved"></i></div>
+                <h3>Secure & Cloud Based</h3>
+                <p>Your school's data is 100% encrypted and stored on secure cloud servers, accessible only to authorized staff. Daily backups ensure zero data loss.</p>
+                <div class="feature-tags">
+                    <span class="feature-tag">Encrypted</span>
+                    <span class="feature-tag">Cloud Storage</span>
+                    <span class="feature-tag">Daily Backup</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ── DOCUMENT GENERATION SHOWCASE ─────── -->
+    <div class="docs-showcase">
+        <div class="section-head">
+            <span class="tag">📄 Document Generation</span>
+            <h2>One-Click Official Documents</h2>
+            <p>Generate professionally formatted PDF documents instantly. No manual typing — everything auto-filled from student records.</p>
+        </div>
+        <div class="docs-layout">
+            <div class="docs-cards">
+                <div class="doc-card">
+                    <i class="fa-solid fa-file-invoice doc-icon"></i>
+                    <h4>Marksheet / Report Card</h4>
+                    <p>Subject-wise marks, grades, total marks, percentage, and result status. Professional design with school branding.</p>
+                </div>
+                <div class="doc-card">
+                    <i class="fa-solid fa-right-from-bracket doc-icon"></i>
+                    <h4>Transfer Certificate (TC)</h4>
+                    <p>Formal TC with school seal, date of admission, conduct remark, and all required fields. Ready to print.</p>
+                </div>
+                <div class="doc-card">
+                    <i class="fa-solid fa-id-badge doc-icon"></i>
+                    <h4>Admit Card</h4>
+                    <p>Exam admit cards with student photo, roll number, exam schedule, venue details, and signature field.</p>
+                </div>
+                <div class="doc-card">
+                    <i class="fa-solid fa-certificate doc-icon"></i>
+                    <h4>Bonafide Certificate</h4>
+                    <p>Bonafide certificates for bank, scholarship, or other purposes. Generated in seconds with correct details.</p>
+                </div>
+            </div>
+            <div class="docs-preview-img">
+                <img src="/images/marksheet_tc_mockup.png" alt="Sample Marksheet, TC and Admit Card from VidhyaLitee">
             </div>
         </div>
+    </div>
 
-        <section class="bottom-cta">
-            <h2>Ready to Digitise Your School?</h2>
-            <p style="margin-bottom: 30px; color: var(--text-slate);">Join 50+ schools already using VidhyaLitee.</p>
-            <a href="/login" class="btn-cta">Start Your Journey Now</a>
-        </section>
+    <!-- ── ANALYTICS SECTION ─────────────────── -->
+    <div class="analytics-section">
+        <div class="analytics-layout">
+            <div class="analytics-img">
+                <img src="/images/dashboard_mockup.png" alt="VidhyaLitee Dashboard Analytics Charts">
+            </div>
+            <div class="analytics-text">
+                <h2>Insights That Help You Lead Better</h2>
+                <p>VidhyaLitee turns your school data into beautiful, easy-to-read visual reports. No spreadsheets needed.</p>
+                <ul class="analytics-list">
+                    <li>
+                        <div class="alist-icon"><i class="fa-solid fa-chart-pie"></i></div>
+                        <div class="alist-text">
+                            <h5>Attendance Pie Charts</h5>
+                            <p>See Present / Absent / Late breakdown at a glance</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="alist-icon"><i class="fa-solid fa-chart-bar"></i></div>
+                        <div class="alist-text">
+                            <h5>Fee Collection Bar Graphs</h5>
+                            <p>Monthly fee collected vs pending — visual and clear</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="alist-icon"><i class="fa-solid fa-chart-line"></i></div>
+                        <div class="alist-text">
+                            <h5>Academic Performance Trends</h5>
+                            <p>Track student progress across exams and semesters</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="alist-icon"><i class="fa-solid fa-rupee-sign"></i></div>
+                        <div class="alist-text">
+                            <h5>Expense vs Income Reports</h5>
+                            <p>Full financial visibility for school administrators</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
 
-        <%- include("partials/HomePageFooter") %>
-            <script src="/backButton.js"></script>
+    <!-- ── BOTTOM CTA ─────────────────────────── -->
+    <section class="bottom-cta">
+        <h2>Ready to Digitise Your School?</h2>
+        <p>Join 50+ schools already using VidhyaLitee. Start your free demo today.</p>
+        <div class="cta-btns">
+            <a href="/login" class="btn-cta"><i class="fa-solid fa-rocket"></i> Start Now</a>
+            <a href="/pricing" class="btn-cta-outline"><i class="fa-solid fa-tag"></i> View Pricing</a>
+        </div>
+    </section>
+
+    <%- include("partials/HomePageFooter") %>
+    <script src="/backButton.js"></script>
 </body>
 
 </html>

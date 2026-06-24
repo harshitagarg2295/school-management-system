@@ -365,9 +365,9 @@
                       <% students.forEach(stu=> {
                         const existing = resultsMap[stu._idStr];
                         %>
-                        <tr class="student-row" data-name="<%= stu.name.toLowerCase() %>">
+                        <tr class="student-row" data-name="<%= stu.studentName.toLowerCase() %>">
                           <td>
-                            <%= stu.name %>
+                            <%= stu.studentName %>
                           </td>
                           <% subjectsForClass.forEach(sub=> {
                             const oldVal = (existing && existing.marks && existing.marks[sub] !== undefined) ?

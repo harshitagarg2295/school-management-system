@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Marksheet</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f0f4f8;
+            min-height: 100vh;
+        }
+
+        .admin_dash {
+            display: flex;
+        }
+
+        .main-section {
+            font-family: 'Inter', sans-serif;
+            flex: 1;
+            /* margin-left: 280px; */
+            padding: 30px 35px;
+            min-height: 100vh;
+        }
+
+        @media (max-width: 900px) {
+            .main-section {
+                margin-left: 0;
+                padding: 30px 16px;
+            }
+        }
+
+        .page-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 28px 35px;
+            color: white;
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .page-header .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .page-header .back-btn:hover {
+            background: rgba(255, 255, 255, 0.35);
+        }
+
+        .page-header h1 {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .page-header p {
+            font-size: 13px;
+            opacity: 0.85;
+            margin-top: 3px;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 20px;
+            padding: 32px 35px;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.06);
+            margin-bottom: 24px;
+        }
+
+        .form-card h2 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 22px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f0f4f8;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 7px;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 11px 14px;
+            border: 2px solid #e8ecf0;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            color: #2d3748;
+            transition: border-color 0.2s;
+            background: #fafbfc;
+            appearance: none;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+        }
+
+        .step-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: #667eea;
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .btn-generate {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 13px 30px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: opacity 0.2s;
+        }
+
+        .btn-generate:hover {
+            opacity: 0.88;
+        }
+
+        .filter-btn {
+            background: #f0f4f8;
+            color: #4a5568;
+            border: 2px solid #e8ecf0;
+            padding: 11px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            background: #e8ecf0;
+        }
+
+        .notice-box {
+            background: #eef0fd;
+            border: 1.5px solid #c7d2fe;
+            border-radius: 12px;
+            padding: 14px 18px;
+            font-size: 13px;
+            color: #4c51bf;
+            margin-top: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin_dash">
+        <%- include("partials/AdminPageSidebar") %>
+            <section class="main-section">
+                <!-- <%- include("partials/adminNotification", { admin: admin }) %> -->
+                    <div class="page-content">
+
+                        <div class="page-header">
+                            <a href="/admin/documents" class="back-btn"><i class="fa-solid fa-chevron-left"></i></a>
+                            <div>
+                                <h1>📊 Generate Marksheet</h1>
+                                <p>Select student and exam to generate a subject-wise marks report</p>
+                            </div>
+                        </div>
+
+                        <!-- STEP 1: Filter -->
+                        <div class="form-card">
+                            <h2><span class="step-badge">1</span> Select Class & Section</h2>
+                            <form method="GET" action="/admin/documents/marksheet">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Class</label>
+                                        <select name="class" required>
+                                            <option value="">— Select Class —</option>
+                                            <% allClasses.forEach(cls=> { %>
+                                                <option value="<%= cls %>" <%=selectedClass===cls ? 'selected' : '' %>>
+                                                    <%= cls %>
+                                                </option>
+                                                <% }) %>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Section</label>
+                                        <select name="section">
+                                            <option value="">— Select Section —</option>
+                                            <% sections.forEach(sec=> { %>
+                                                <option value="<%= sec %>" <%=selectedSection===sec ? 'selected' : '' %>
+                                                    ><%= sec %>
+                                                </option>
+                                                <% }) %>
+                                        </select>
+                                    </div>
+                                </div>
+                                <button type="submit" class="filter-btn"><i class="fa-solid fa-filter"></i> Filter
+                                    Students</button>
+                            </form>
+                        </div>
+
+                        <% if (students.length> 0) { %>
+                            <!-- STEP 2: Select Student -->
+                            <div class="form-card">
+                                <h2><span class="step-badge">2</span> Select Student & Exam</h2>
+                                <form method="GET" action="/admin/documents/marksheet">
+                                    <input type="hidden" name="class" value="<%= selectedClass %>">
+                                    <input type="hidden" name="section" value="<%= selectedSection %>">
+                                    <div class="form-group">
+                                        <label>Student</label>
+                                        <select name="studentId" onchange="this.form.submit()" required>
+                                            <option value="">— Select Student —</option>
+                                            <% students.forEach(s=> { %>
+                                                <option value="<%= s._id %>" <%=selectedStudentId===s._id.toString()
+                                                    ? 'selected' : '' %>>
+                                                    <%= s.studentName %> — Roll No: <%= s.rollNo || 'N/A' %>
+                                                </option>
+                                                <% }) %>
+                                        </select>
+                                    </div>
+                                </form>
+
+                                <% if (exams.length> 0) { %>
+                                    <form method="POST" action="/admin/documents/marksheet/generate" target="_blank">
+                                        <input type="hidden" name="studentId" value="<%= selectedStudentId %>">
+                                        <div class="form-group">
+                                            <label>Select Exam</label>
+                                            <select name="resultId" required>
+                                                <option value="">— Select Exam —</option>
+                                                <% exams.forEach(e=> { %>
+                                                    <option value="<%= e._id %>">
+                                                        <%= e.examName %> (<%= e.examType %>) — <%= e.year %>
+                                                    </option>
+                                                    <% }) %>
+                                            </select>
+                                        </div>
+                                        <button type="submit" class="btn-generate">
+                                            <i class="fa-solid fa-file-pdf"></i> Generate Marksheet PDF
+                                        </button>
+                                    </form>
+                                    <% } else if (selectedStudentId) { %>
+                                        <div class="notice-box">
+                                            <i class="fa-solid fa-circle-info"></i>
+                                            No exam results found for this student. Please ensure the teacher has
+                                            submitted
+                                            results.
+                                        </div>
+                                        <% } %>
+                            </div>
+                            <% } %>
+                    </div><!-- /page-content -->
+            </section>
+    </div>
+</body>
+
+</html>

@@ -271,5 +271,9 @@ router.get("/try-demo", (req, res) => {
   res.render("HomePage/demo-access", { demoCode: "DEMO248" });
 });
 
+// --- Pricing Page ---
+router.get("/pricing", (req, res) => {
+  res.render("HomePage/pricing");
+});
 
 module.exports = router;

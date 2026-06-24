@@ -318,13 +318,11 @@
                                     : fUrl;
                             %>
                             <div class="btn-group">
-                                <span class="file-type-badge"><i class="fas fa-file"></i> <%= extLabel %></span>
-                                <% if (isImg || isPdf) { %>
-                                    <!-- Preview: fl_inline ensures PDFs open in browser tab, not as download -->
-                                    <a href="<%= previewUrl %>" target="_blank" class="preview-btn">
-                                        <i class="fas fa-eye"></i> Preview
-                                    </a>
-                                <% } %>
+                        
+                                <!-- Preview: server-side route handles all types -->
+                                <a href="/students/preview-material/<%= material._id %>" target="_blank" class="preview-btn">
+                                    <i class="fas fa-eye"></i> Preview
+                                </a>
                                 <a href="/students/download-material/<%= material._id %>" class="download-btn">
                                     <i class="fas fa-download"></i> Download
                                 </a>

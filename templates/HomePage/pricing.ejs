@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing Plans | VidhyaLitee</title>
+    <meta name="description" content="Simple, transparent pricing for VidhyaLitee School Management System. Choose a plan that fits your school size.">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --navy: #1e3a6b;
+            --navy-deep: #0f2444;
+            --light-bg: #f0f5ff;
+            --card-bg: #ffffff;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --popular-bg: #1e3a6b;
+            --popular-accent: #3b82f6;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: #f8fafc;
+            color: var(--text-dark);
+        }
+
+        /* ─── HERO SECTION ─────────────────────────────────── */
+        .pricing-hero {
+            background: linear-gradient(135deg, #0f2444 0%, #1e3a6b 50%, #2a5298 100%);
+            padding: 90px 20px 70px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pricing-hero::before {
+            content: '';
+            position: absolute;
+            top: -40%;
+            left: -10%;
+            width: 60%;
+            height: 180%;
+            background: radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .pricing-hero::after {
+            content: '';
+            position: absolute;
+            bottom: -40%;
+            right: -10%;
+            width: 50%;
+            height: 150%;
+            background: radial-gradient(circle, rgba(96,165,250,0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .pricing-hero .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(59,130,246,0.18);
+            border: 1px solid rgba(96,165,250,0.3);
+            color: #93c5fd;
+            padding: 7px 18px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 24px;
+        }
+
+        .pricing-hero h1 {
+            font-size: clamp(2.2rem, 6vw, 3.5rem);
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 16px;
+            line-height: 1.15;
+        }
+
+        .pricing-hero h1 span { color: #60a5fa; }
+
+        .pricing-hero p {
+            font-size: clamp(1rem, 2.5vw, 1.15rem);
+            color: rgba(255,255,255,0.75);
+            max-width: 560px;
+            margin: 0 auto 10px;
+        }
+
+        .toggle-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            margin-top: 32px;
+            color: rgba(255,255,255,0.8);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* ─── PRICING CARDS SECTION ─────────────────────────── */
+        .pricing-section {
+            padding: 70px 5% 90px;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .section-label {
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .section-label span {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--primary);
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: clamp(1.6rem, 4vw, 2.4rem);
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 15px;
+            margin-bottom: 52px;
+        }
+
+        /* ─── CARDS GRID ────────────────────────────────────── */
+        .plans-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 18px;
+            align-items: center;
+        }
+
+        @media (max-width: 1100px) {
+            .plans-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (max-width: 720px) {
+            .plans-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 480px) {
+            .plans-grid { grid-template-columns: 1fr; }
+        }
+
+        .plan-card {
+            background: var(--card-bg);
+            border: 1.5px solid var(--border);
+            border-radius: 20px;
+            padding: 32px 22px 28px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .plan-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 50px rgba(37,99,235,0.12);
+            border-color: var(--primary);
+        }
+
+        /* Popular Card */
+        .plan-card.popular {
+            background: var(--popular-bg);
+            border-color: transparent;
+            box-shadow: 0 25px 60px rgba(30,58,107,0.4);
+            transform: scale(1.05);
+            z-index: 2;
+        }
+
+        .plan-card.popular:hover {
+            transform: scale(1.05) translateY(-6px);
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -13px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 5px 16px;
+            border-radius: 50px;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(37,99,235,0.4);
+        }
+
+        .plan-students {
+            font-size: 2.8rem;
+            font-weight: 900;
+            color: var(--primary);
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+
+        .plan-card.popular .plan-students { color: #60a5fa; }
+
+        .plan-limit {
+            font-size: 10.5px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+
+        .plan-card.popular .plan-limit { color: rgba(255,255,255,0.55); }
+
+        .plan-divider {
+            width: 40px;
+            height: 2px;
+            background: var(--border);
+            margin: 0 auto 24px;
+            border-radius: 2px;
+        }
+
+        .plan-card.popular .plan-divider { background: rgba(255,255,255,0.15); }
+
+        .plan-price {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .plan-card.popular .plan-price { color: #fff; }
+
+        .plan-period {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 28px;
+        }
+
+        .plan-card.popular .plan-period { color: rgba(255,255,255,0.5); }
+
+        .plan-cta {
+            display: block;
+            width: 100%;
+            padding: 11px 0;
+            border-radius: 50px;
+            font-size: 13.5px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            background: transparent;
+            cursor: pointer;
+        }
+
+        .plan-cta:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .plan-card.popular .plan-cta {
+            background: #3b82f6;
+            border-color: #3b82f6;
+            color: white;
+            box-shadow: 0 6px 20px rgba(59,130,246,0.4);
+        }
+
+        .plan-card.popular .plan-cta:hover {
+            background: #2563eb;
+            border-color: #2563eb;
+        }
+
+        /* ─── FEATURES INCLUDED ─────────────────────────────── */
+        .included-note {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 42px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .included-note::before, .included-note::after {
+            content: '';
+            flex: 1;
+            max-width: 140px;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .dot-sep { color: #cbd5e1; margin: 0 4px; }
+
+        /* ─── FEATURES ROW ──────────────────────────────────── */
+        .features-strip {
+            background: white;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            padding: 60px 8%;
+        }
+
+        .features-strip h2 {
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 40px;
+            color: var(--text-dark);
+        }
+
+        .features-strip h2 span { color: var(--primary); }
+
+        .feat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .feat-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 13px;
+        }
+
+        .feat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: #eff6ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: var(--primary);
+            font-size: 15px;
+        }
+
+        .feat-item h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 3px;
+        }
+
+        .feat-item p {
+            font-size: 12.5px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* ─── CTA BANNER ────────────────────────────────────── */
+        .cta-banner {
+            background: linear-gradient(135deg, #1e3a6b, #2563eb);
+            color: white;
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .cta-banner h2 {
+            font-size: clamp(1.8rem, 5vw, 2.8rem);
+            font-weight: 900;
+            margin-bottom: 14px;
+        }
+
+        .cta-banner p {
+            font-size: 16px;
+            opacity: 0.85;
+            margin-bottom: 36px;
+        }
+
+        .cta-btns {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-white {
+            background: white;
+            color: var(--navy);
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 15px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .btn-white:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+
+        .btn-outline-white {
+            background: transparent;
+            color: white;
+            border: 2px solid rgba(255,255,255,0.6);
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 15px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .btn-outline-white:hover { background: rgba(255,255,255,0.1); transform: translateY(-3px); }
+    </style>
+</head>
+
+<body>
+
+<%- include("partials/HomePageNavbar") %>
+
+<!-- ─── HERO ──────────────────────────────────────────── -->
+<section class="pricing-hero">
+    <div class="badge"><i class="fas fa-tag"></i> Simple & Transparent Pricing</div>
+    <h1>Plans for Every <span>School Size</span></h1>
+    <p>No hidden charges. No setup fee. Cancel anytime. Full ERP access on all plans.</p>
+</section>
+
+<!-- ─── PRICING CARDS ─────────────────────────────────── -->
+<div class="pricing-section">
+    <div class="section-label"><span>Per Month · All Inclusive</span></div>
+    <h2 class="section-title">Pricing Plans</h2>
+    <p class="section-subtitle">Choose the plan that matches your student strength</p>
+
+    <div class="plans-grid">
+
+        <!-- Plan 1: 150 -->
+        <div class="plan-card">
+            <div class="plan-students">150</div>
+            <div class="plan-limit">UP TO STUDENTS</div>
+            <div class="plan-divider"></div>
+            <div class="plan-price">₹2,100</div>
+            <div class="plan-period">/ month</div>
+            <a href="/contact-us" class="plan-cta">Get Started</a>
+        </div>
+
+        <!-- Plan 2: 300 -->
+        <div class="plan-card">
+            <div class="plan-students">300</div>
+            <div class="plan-limit">UP TO STUDENTS</div>
+            <div class="plan-divider"></div>
+            <div class="plan-price">₹2,999</div>
+            <div class="plan-period">/ month</div>
+            <a href="/contact-us" class="plan-cta">Get Started</a>
+        </div>
+
+        <!-- Plan 3: 500 POPULAR -->
+        <div class="plan-card popular">
+            <div class="popular-badge">⭐ POPULAR</div>
+            <div class="plan-students">500</div>
+            <div class="plan-limit">UP TO STUDENTS</div>
+            <div class="plan-divider"></div>
+            <div class="plan-price">₹4,999</div>
+            <div class="plan-period">/ month</div>
+            <a href="/contact-us" class="plan-cta">Get Started</a>
+        </div>
+
+        <!-- Plan 4: 800 -->
+        <div class="plan-card">
+            <div class="plan-students">800</div>
+            <div class="plan-limit">UP TO STUDENTS</div>
+            <div class="plan-divider"></div>
+            <div class="plan-price">₹6,999</div>
+            <div class="plan-period">/ month</div>
+            <a href="/contact-us" class="plan-cta">Get Started</a>
+        </div>
+
+        <!-- Plan 5: 1200 -->
+        <div class="plan-card">
+            <div class="plan-students">1200</div>
+            <div class="plan-limit">UP TO STUDENTS</div>
+            <div class="plan-divider"></div>
+            <div class="plan-price">₹8,999</div>
+            <div class="plan-period">/ month</div>
+            <a href="/contact-us" class="plan-cta">Get Started</a>
+        </div>
+
+    </div>
+
+    <!-- Bottom note -->
+    <div class="included-note">
+        <i class="fas fa-check-circle" style="color:#2563eb;"></i>
+        All plans include full ERP access
+        <span class="dot-sep">·</span>
+        Automated Document Generation
+        <span class="dot-sep">·</span>
+        No setup fee
+        <span class="dot-sep">·</span>
+        Cancel anytime
+    </div>
+</div>
+
+<!-- ─── WHAT'S INCLUDED ───────────────────────────────── -->
+<div class="features-strip">
+    <h2>Everything Included in <span>Every Plan</span></h2>
+    <div class="feat-grid">
+        <div class="feat-item">
+            <div class="feat-icon"><i class="fas fa-users"></i></div>
+            <div>
+                <h4>Student Management</h4>
+                <p>Profiles, bulk upload, promotions &amp; more</p>
+            </div>
+        </div>
+        <div class="feat-item">
+            <div class="feat-icon"><i class="fas fa-user-check"></i></div>
+            <div>
+                <h4>Attendance Tracking</h4>
+                <p>Daily reports &amp; pie charts for students &amp; staff</p>
+            </div>
+        </div>
+        <div class="feat-item">
+            <div class="feat-icon"><i class="fas fa-credit-card"></i></div>
+            <div>
+                <h4>Fee Collection</h4>
+                <p>Online &amp; offline fee with auto receipts</p>
+            </div>
+        </div>
+        <div class="feat-item">
+            <div class="feat-icon"><i class="fas fa-file-invoice"></i></div>
+            <div>
+                <h4>Marksheet / Report Card</h4>
+                <p>PDF marksheets with grades &amp; subject marks</p>
+            </div>
+        </div>
+        <div class="feat-item">
+            <div class="feat-icon"><i class="fas fa-right-from-bracket"></i></div>
+            <div>
+                <h4>Transfer Certificate (TC)</h4>
+                <p>Instant formal TC generation — print ready</p>
+            </div>
+        </div>
+        <div class="feat-item">
+            <div class="feat-icon"><i class="fas fa-id-badge"></i></div>
+            <div>
+                <h4>Admit Card</h4>
+                <p>Exam admit cards with roll no. &amp; schedule</p>
+            </div>
+        </div>
+        <div class="feat-item">
+            <div class="feat-icon"><i class="fas fa-certificate"></i></div>
+            <div>
+                <h4>Bonafide Certificate</h4>
+                <p>On-demand bonafide for bank &amp; scholarship</p>
+            </div>
+        </div>
+        <div class="feat-item">
+            <div class="feat-icon"><i class="fas fa-book-open"></i></div>
+            <div>
+                <h4>Study Materials</h4>
+                <p>Upload &amp; share notes with students</p>
+            </div>
+        </div>
+        <div class="feat-item">
+            <div class="feat-icon"><i class="fas fa-bullhorn"></i></div>
+            <div>
+                <h4>Announcements</h4>
+                <p>Send notices &amp; circulars instantly</p>
+            </div>
+        </div>
+        <div class="feat-item">
+            <div class="feat-icon"><i class="fas fa-chart-bar"></i></div>
+            <div>
+                <h4>Reports &amp; Analytics</h4>
+                <p>Financial &amp; academic pie charts &amp; graphs</p>
+            </div>
+        </div>
+        <div class="feat-item">
+            <div class="feat-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+            <div>
+                <h4>Teacher Portal</h4>
+                <p>Timetable, attendance, results</p>
+            </div>
+        </div>
+        <div class="feat-item">
+            <div class="feat-icon"><i class="fas fa-mobile-alt"></i></div>
+            <div>
+                <h4>Mobile App</h4>
+                <p>Android app for parents & students</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ─── CTA BANNER ────────────────────────────────────── -->
+<div class="cta-banner">
+    <h2>Ready to Digitalise Your School?</h2>
+    <p>Join hundreds of schools already using VidhyaLitee. Get started in minutes.</p>
+    <div class="cta-btns">
+        <a href="/try-demo" class="btn-white"><i class="fas fa-play" style="margin-right:8px;"></i>Try Free Demo</a>
+        <a href="/contact-us" class="btn-outline-white"><i class="fas fa-phone-alt" style="margin-right:8px;"></i>Talk to Us</a>
+    </div>
+</div>
+
+<%- include("partials/HomePageFooter") %>
+
+<script src="/backButton.js"></script>
+</body>
+</html>

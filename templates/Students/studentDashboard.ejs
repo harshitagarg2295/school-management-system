@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Student Dashboard | <%= student.name %></title>
+  <title>Student Dashboard | <%= student.studentName %></title>
 
   <!-- External Styles & Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -287,13 +287,13 @@
             class="hero-avatar" alt="Profile Picture">
 
           <div class="hero-info">
-            <h2><%= student.name %></h2>
+            <h2><%= student.studentName %></h2>
             <p>Student | Class <%= student.class || 'N/A' %></p>
 
             <div class="hero-badges">
               <span class="badge">
                 <i class="fa-solid fa-id-card"></i>
-                ID: <%= student.id || 'N/A' %>
+                ID: <%= student.admissionNo || 'N/A' %>
               </span>
 
               <span class="badge">
@@ -320,7 +320,7 @@
               <div class="info-icon"><i class="fa-solid fa-hashtag"></i></div>
               <div class="info-text">
                 <label>Student ID</label>
-                <span><%= student.id || 'N/A' %></span>
+                <span><%= student.admissionNo || 'N/A' %></span>
               </div>
             </div>
 

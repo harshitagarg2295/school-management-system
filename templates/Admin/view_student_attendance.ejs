@@ -670,10 +670,10 @@
                         <input type="hidden" name="classFilter" value="<%= classFilter %>">
 
                         <% students.forEach(student=> { %>
-                            <div class="attend_list list student-row" data-name="<%= student.name.toLowerCase() %>">
+                            <div class="attend_list list student-row" data-name="<%= student.studentName.toLowerCase() %>">
                                 <ul>
                                     <li class="students_name">
-                                        <%= student.name %>
+                                        <%= student.studentName %>
                                     </li>
 
                                     <% for (let i=1; i <=daysInMonth; i++) { %>

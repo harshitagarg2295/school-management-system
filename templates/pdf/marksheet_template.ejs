@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Marksheet — <%= student.studentName %>
+    </title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f4f6f9;
+            color: #1a1a2e;
+        }
+
+        /* ── PRINT TOOLBAR (hidden when printing) ── */
+        .print-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            padding: 14px 20px;
+            background: #1a1a6e;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            font-size: 14px;
+        }
+
+        .print-toolbar span {
+            opacity: 0.8;
+        }
+
+        .btn-print {
+            background: #f6a623;
+            color: #1a1a2e;
+            border: none;
+            padding: 9px 22px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-back {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: none;
+            padding: 9px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        /* ── A4 PAGE ── */
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 20px auto;
+            padding: 14mm 16mm;
+            position: relative;
+            background: white;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .page::before {
+            content: '';
+            position: absolute;
+            inset: 6mm;
+            border: 3px double #4a4a8a;
+            pointer-events: none;
+        }
+
+        .page::after {
+            content: '';
+            position: absolute;
+            inset: 8.5mm;
+            border: 1px solid #b0b0d8;
+            pointer-events: none;
+        }
+
+        /* ── HEADER ── */
+        .school-header {
+            text-align: center;
+            padding-bottom: 14px;
+            border-bottom: 3px solid #4a4a8a;
+            margin-bottom: 16px;
+        }
+
+        .school-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a6e;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .school-address {
+            font-size: 11px;
+            color: #555;
+            margin-top: 4px;
+        }
+
+        .doc-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #4a4a8a;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 10px;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+
+        /* ── STUDENT INFO GRID ── */
+        .student-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px 24px;
+            background: #f7f7ff;
+            border: 1px solid #d0d0f0;
+            border-radius: 8px;
+            padding: 14px 20px;
+            margin-bottom: 20px;
+            font-size: 12.5px;
+        }
+
+        .info-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #4a4a8a;
+            min-width: 110px;
+        }
+
+        .info-value {
+            color: #2d2d2d;
+        }
+
+        .exam-banner {
+            background: linear-gradient(135deg, #4a4a8a, #7b7bc8);
+            color: white;
+            text-align: center;
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        /* ── TABLE ── */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12.5px;
+            margin-bottom: 20px;
+        }
+
+        thead tr {
+            background: #4a4a8a;
+            color: white;
+        }
+
+        thead th {
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        thead th:last-child,
+        thead th:nth-child(2),
+        thead th:nth-child(3) {
+            text-align: center;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #f0f0fa;
+        }
+
+        tbody td {
+            padding: 9px 14px;
+            border-bottom: 1px solid #e0e0f0;
+            color: #2d2d2d;
+        }
+
+        tbody td:nth-child(2),
+        tbody td:nth-child(3) {
+            text-align: center;
+        }
+
+        tbody td:nth-child(4) {
+            font-weight: 600;
+            text-align: center;
+        }
+
+        tfoot tr {
+            background: #e8e8f8;
+        }
+
+        tfoot td {
+            padding: 10px 14px;
+            font-weight: 700;
+            color: #1a1a6e;
+        }
+
+        tfoot td:nth-child(2) {
+            text-align: center;
+        }
+
+        /* ── RESULT SUMMARY ── */
+        .result-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f7f7ff;
+            border: 1px solid #d0d0f0;
+            border-radius: 8px;
+            padding: 14px 20px;
+            margin-bottom: 30px;
+            font-size: 13px;
+        }
+
+        .result-item {
+            text-align: center;
+        }
+
+        .result-item .r-label {
+            font-size: 11px;
+            color: #666;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .result-item .r-value {
+            font-size: 20px;
+            font-weight: 800;
+            color: #4a4a8a;
+            margin-top: 4px;
+        }
+
+        /* ── SIGNATURES ── */
+        .signatures {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            font-size: 11.5px;
+        }
+
+        .sig-box {
+            text-align: center;
+        }
+
+        .sig-line {
+            border-top: 1.5px solid #333;
+            width: 140px;
+            margin-bottom: 6px;
+        }
+
+        .sig-label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .sig-sub {
+            color: #777;
+            font-size: 10px;
+            margin-top: 2px;
+        }
+
+        .doc-footer {
+            text-align: center;
+            font-size: 10px;
+            color: #aaa;
+            border-top: 1px solid #eee;
+            padding-top: 8px;
+            margin-top: 20px;
+        }
+
+        /* ── PRINT MEDIA ── */
+        @media print {
+            body {
+                background: white !important;
+            }
+
+            .print-toolbar {
+                display: none !important;
+            }
+
+            .page {
+                margin: 0 !important;
+                box-shadow: none !important;
+                width: 100% !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Print Toolbar -->
+    <div class="print-toolbar">
+        <button class="btn-back" onclick="window.close()">← Back</button>
+        <span>📊 Marksheet — <%= student.studentName %></span>
+        <button class="btn-print" onclick="window.print()">🖨️ Print / Save as PDF</button>
+    </div>
+
+    <div class="page">
+        <!-- School Header -->
+        <div class="school-header">
+            <div class="school-name">
+                <%= schoolName %>
+            </div>
+            <% if (schoolAddress) { %>
+                <div class="school-address">
+                    <%= schoolAddress %>
+                </div>
+                <% } %>
+                    <div class="doc-title">Student Mark Sheet</div>
+        </div>
+
+        <!-- Student Info -->
+        <div class="student-info-grid">
+            <div class="info-row">
+                <span class="info-label">Student Name</span>
+                <span class="info-value">: <%= student.studentName %></span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Admission No.</span>
+                <span class="info-value">: <%= student.admissionNo || '—' %></span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Class</span>
+                <span class="info-value">: <%= student.class %> — Section <%= student.section || '—' %></span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Roll No.</span>
+                <span class="info-value">: <%= student.rollNo || '—' %></span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Father's Name</span>
+                <span class="info-value">: <%= student.fatherName || '—' %></span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Date of Birth</span>
+                <span class="info-value">: <%= student.DOB ? new Date(student.DOB).toLocaleDateString('en-IN',
+                        {day:'2-digit', month:'long', year:'numeric'}) : '—' %></span>
+            </div>
+        </div>
+
+        <!-- Exam Banner -->
+        <div class="exam-banner">
+            Examination: <%= result.examName %> &nbsp;|&nbsp; Type: <%= result.examType %> &nbsp;|&nbsp; Year: <%=
+                        result.year %>
+        </div>
+
+        <!-- Marks Table -->
+        <% const subjectKeys=Object.keys(result.marks); let totalObtained=0; let totalOutOf=0; subjectKeys.forEach(sub=>
+            { totalObtained += Number(result.marks[sub]); totalOutOf += Number(result.outOf); });
+            const percentage = totalOutOf > 0 ? ((totalObtained / totalOutOf) * 100).toFixed(1) : '0';
+            const grade = percentage >= 90 ? 'A+' : percentage >= 80 ? 'A' : percentage >= 70 ? 'B+' : percentage >= 60
+            ? 'B' : percentage >= 50 ? 'C' : 'F';
+            const passStatus = percentage >= 33 ? 'PASS' : 'FAIL';
+            %>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Subject</th>
+                        <th>Max. Marks</th>
+                        <th>Marks Obtained</th>
+                        <th>Grade</th>
+                        <th>Remarks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% subjectKeys.forEach((sub, i)=> {
+                        const obtained = Number(result.marks[sub]);
+                        const subPct = ((obtained / result.outOf) * 100).toFixed(0);
+                        const subGrade = subPct >= 90 ? 'A+' : subPct >= 80 ? 'A' : subPct >= 70 ? 'B+' : subPct >= 60 ?
+                        'B' : subPct >= 50 ? 'C' : 'F';
+                        %>
+                        <tr>
+                            <td>
+                                <%= i + 1 %>
+                            </td>
+                            <td>
+                                <%= sub %>
+                            </td>
+                            <td>
+                                <%= result.outOf %>
+                            </td>
+                            <td>
+                                <%= obtained %>
+                            </td>
+                            <td>
+                                <%= subGrade %>
+                            </td>
+                            <td>
+                                <%= subPct>= 33 ? '✓ Pass' : '✗ Fail' %>
+                            </td>
+                        </tr>
+                        <% }) %>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="2">Total</td>
+                        <td style="text-align:center;">
+                            <%= totalOutOf %>
+                        </td>
+                        <td style="text-align:center;">
+                            <%= totalObtained %>
+                        </td>
+                        <td colspan="2"></td>
+                    </tr>
+                </tfoot>
+            </table>
+
+            <!-- Result Summary -->
+            <div class="result-section">
+                <div class="result-item">
+                    <div class="r-label">Total Marks</div>
+                    <div class="r-value">
+                        <%= totalObtained %> / <%= totalOutOf %>
+                    </div>
+                </div>
+                <div class="result-item">
+                    <div class="r-label">Percentage</div>
+                    <div class="r-value">
+                        <%= percentage %>%
+                    </div>
+                </div>
+                <div class="result-item">
+                    <div class="r-label">Grade</div>
+                    <div class="r-value" style="color:<%= grade === 'F' ? '#e53e3e' : '#38a169' %>">
+                        <%= grade %>
+                    </div>
+                </div>
+                <div class="result-item">
+                    <div class="r-label">Result</div>
+                    <div class="r-value" style="color:<%= passStatus === 'PASS' ? '#38a169' : '#e53e3e' %>">
+                        <%= passStatus %>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Signatures -->
+            <div class="signatures">
+                <div class="sig-box">
+                    <div class="sig-line"></div>
+                    <div class="sig-label">Class Teacher</div>
+                    <div class="sig-sub">Signature & Stamp</div>
+                </div>
+                <div class="sig-box">
+                    <div class="sig-label" style="margin-bottom:6px; font-size: 11px; color: #777;">Date of Issue</div>
+                    <div class="sig-label">
+                        <%= generatedDate %>
+                    </div>
+                </div>
+                <div class="sig-box">
+                    <div class="sig-line"></div>
+                    <div class="sig-label">Principal</div>
+                    <div class="sig-sub">Signature & Stamp</div>
+                </div>
+            </div>
+
+            <div class="doc-footer">
+                This is a computer-generated marksheet. — <%= schoolName %>
+            </div>
+    </div>
+</body>
+
+</html>

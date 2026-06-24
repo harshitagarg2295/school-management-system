@@ -6,6 +6,7 @@ const StudyMaterial = require("../../models/StudyMaterial");
 const { teacherAuth } = require("../../middlewares/auth");
 
 const { cloudinary, uploadMaterial } = require("../../config/cloudinaryConfig");
+const { redirectDownload, redirectPreview } = require("../../utils/streamHelper");
 
 // ----------------------------------------
 // Function to prepare class list
@@ -88,7 +89,8 @@ router.post("/teachers/upload-material", uploadMaterial.array("material", 10), t
                 title: title,
                 description: description,
                 fileUrl: file.path,        // Cloudinary Secure URL (https://...)
-                publicId: file.filename,   // 🔥 Cloudinary public_id for deletion
+                publicId: file.filename,   // Cloudinary public_id for deletion
+                fileType: file.mimetype,   // MIME type — for reliable detection
                 uploadedBy: req.session.teacherName,
                 uploadedAt: new Date(),
                 schoolCode
@@ -177,93 +179,69 @@ router.get("/teachers/delete-material/:id", teacherAuth, async (req, res) => {
     }
 });
 
-// ✅ DOWNLOAD ROUTE — Works for PDF, Image, DOCX, any format
+// ─── Helper: detect MIME from fileType (DB) > URL > publicId ─────────────────
+function detectMime(fileUrl, publicId, fileType) {
+    const mimeMap = {
+        "application/pdf": { ext: ".pdf", ct: "application/pdf" },
+        "image/jpeg": { ext: ".jpg", ct: "image/jpeg" },
+        "image/png": { ext: ".png", ct: "image/png" },
+        "image/gif": { ext: ".gif", ct: "image/gif" },
+        "image/webp": { ext: ".webp", ct: "image/webp" },
+        "image/svg+xml": { ext: ".svg", ct: "image/svg+xml" },
+        "application/msword": { ext: ".doc", ct: "application/msword" },
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document": { ext: ".docx", ct: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" },
+        "application/vnd.ms-excel": { ext: ".xls", ct: "application/vnd.ms-excel" },
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": { ext: ".xlsx", ct: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" },
+        "application/vnd.ms-powerpoint": { ext: ".ppt", ct: "application/vnd.ms-powerpoint" },
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation": { ext: ".pptx", ct: "application/vnd.openxmlformats-officedocument.presentationml.presentation" },
+        "text/plain": { ext: ".txt", ct: "text/plain" },
+        "application/zip": { ext: ".zip", ct: "application/zip" }
+    };
+    const extCtMap = {
+        ".pdf": "application/pdf", ".jpg": "image/jpeg", ".jpeg": "image/jpeg",
+        ".png": "image/png", ".gif": "image/gif", ".webp": "image/webp",
+        ".svg": "image/svg+xml", ".doc": "application/msword",
+        ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        ".xls": "application/vnd.ms-excel",
+        ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        ".ppt": "application/vnd.ms-powerpoint",
+        ".pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        ".txt": "text/plain", ".zip": "application/zip"
+    };
+
+    // 1. DB fileType (most reliable — saved at upload time)
+    if (fileType && mimeMap[fileType]) {
+        return { ext: mimeMap[fileType].ext, contentType: mimeMap[fileType].ct };
+    }
+    // 2. Detect from URL
+    const urlLower = (fileUrl || "").toLowerCase();
+    const pidLower = (publicId || "").toLowerCase();
+    const extMatch = urlLower.match(/\.(pdf|jpg|jpeg|png|gif|webp|svg|doc|docx|xls|xlsx|ppt|pptx|txt|zip)(\?|$)/);
+    const pidMatch = pidLower.match(/\.(pdf|jpg|jpeg|png|gif|webp|svg|doc|docx|xls|xlsx|ppt|pptx|txt|zip)$/);
+    const rawExt = extMatch ? "." + extMatch[1] : (pidMatch ? "." + pidMatch[1] : "");
+    return { ext: rawExt, contentType: extCtMap[rawExt] || "application/octet-stream" };
+}
+
+// ✅ DOWNLOAD
 router.get("/teachers/download-material/:id", teacherAuth, async (req, res) => {
     try {
         const material = await StudyMaterial.findById(req.params.id);
-        if (!material || !material.fileUrl) {
-            return res.redirect("/teachers/view-material");
-        }
-
-        const fileUrl = material.fileUrl;
-        const publicId = material.publicId;
-
-        // Detect if it is an image
-        const isImage = fileUrl.includes('/image/upload/') ||
-            /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(fileUrl);
-
-        if (isImage) {
-            // Image: add fl_attachment transformation so browser downloads it
-            const downloadUrl = cloudinary.url(publicId, {
-                resource_type: 'image',
-                flags: 'attachment',
-                secure: true,
-                sign_url: true,
-                type: 'upload'
-            });
-            return res.redirect(downloadUrl);
-        } else {
-            // PDF / DOCX / other raw files
-            // IMPORTANT: publicId in DB may NOT include file extension,
-            // so cloudinary.url(publicId) would generate a URL that 404s.
-            // Instead, inject fl_attachment directly into the stored fileUrl
-            // (Cloudinary secure_url) which always has the correct full path.
-            let downloadUrl = fileUrl;
-            if (fileUrl.includes('/upload/')) {
-                downloadUrl = fileUrl.replace('/upload/', '/upload/fl_attachment/');
-            }
-            return res.redirect(downloadUrl);
-        }
+        if (!material || !material.fileUrl) return res.redirect("/teachers/view-material");
+        redirectDownload(material.fileUrl, res, "/teachers/view-material");
     } catch (err) {
         console.error("Download Error:", err);
-        return res.redirect("/teachers/view-material");
+        res.redirect("/teachers/view-material");
     }
 });
 
-// ✅ PREVIEW ROUTE — Streams the file from Cloudinary with correct headers
-// (fl_inline doesn't work for raw resources; server-side proxy is reliable)
+// ✅ PREVIEW
 router.get("/teachers/preview-material/:id", teacherAuth, async (req, res) => {
     try {
         const material = await StudyMaterial.findById(req.params.id);
         if (!material || !material.fileUrl) return res.redirect("/teachers/view-material");
-
-        const fileUrl = material.fileUrl;
-
-        // Determine content type from the URL
-        const urlLower = fileUrl.toLowerCase();
-        let contentType = 'application/octet-stream';
-        if (/\.pdf($|\?)/i.test(urlLower))       contentType = 'application/pdf';
-        else if (/\.(jpg|jpeg)($|\?)/i.test(urlLower)) contentType = 'image/jpeg';
-        else if (/\.png($|\?)/i.test(urlLower))  contentType = 'image/png';
-        else if (/\.gif($|\?)/i.test(urlLower))  contentType = 'image/gif';
-        else if (/\.webp($|\?)/i.test(urlLower)) contentType = 'image/webp';
-        else if (/\.svg($|\?)/i.test(urlLower))  contentType = 'image/svg+xml';
-        // If URL has no extension, try publicId
-        else if (material.publicId) {
-            const pid = material.publicId.toLowerCase();
-            if (pid.endsWith('.pdf'))  contentType = 'application/pdf';
-            else if (/\.(jpg|jpeg)$/.test(pid)) contentType = 'image/jpeg';
-            else if (pid.endsWith('.png')) contentType = 'image/png';
-        }
-
-        res.setHeader('Content-Type', contentType);
-        res.setHeader('Content-Disposition', 'inline');
-        res.setHeader('X-Frame-Options', 'SAMEORIGIN');
-
-        // Stream the file from Cloudinary to the browser
-        const request = https.get(fileUrl, (stream) => {
-            // If Cloudinary provides Content-Length, forward it
-            if (stream.headers['content-length']) {
-                res.setHeader('Content-Length', stream.headers['content-length']);
-            }
-            stream.pipe(res);
-        });
-        request.on('error', (err) => {
-            console.error('Preview stream error:', err);
-            res.redirect("/teachers/view-material");
-        });
+        redirectPreview(material.fileUrl, res, "/teachers/view-material");
     } catch (err) {
-        console.error('Preview Error:', err);
+        console.error("Preview Error:", err);
         res.redirect("/teachers/view-material");
     }
 });
